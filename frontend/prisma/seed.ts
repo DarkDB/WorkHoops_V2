@@ -96,8 +96,9 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
 - Desarrollo individual y colectivo de los jugadores
 - Participación activa en la competición de Liga Autonómica
 - Colaboración estrecha con el cuerpo técnico del club
-- Seguimiento del progreso académico de los jugadores`,
-      requirements: `**Requisitos imprescindibles:**
+- Seguimiento del progreso académico de los jugadores
+
+**Requisitos imprescindibles:**
 - Título de Entrenador Superior de Baloncesto
 - Experiencia mínima de 3 años entrenando cantera
 - Nivel de inglés conversacional
