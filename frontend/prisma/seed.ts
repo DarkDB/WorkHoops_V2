@@ -215,7 +215,7 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
 - Experiencia en competición federada
 - Disponibilidad para traslado a EEUU`,
       deadline: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
-      tags: ['beca', 'estados-unidos', 'universidad', 'ncaa', 'internacional'],
+      tags: 'beca,estados-unidos,universidad,ncaa,internacional',
       verified: false, // Not yet verified
       featured: false,
       createdBy: orgUser.id
