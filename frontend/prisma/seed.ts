@@ -182,7 +182,7 @@ Las pruebas se realizarán durante dos jornadas consecutivas donde evaluaremos:
       type: 'beca',
       organizationId: organization.id,
       status: 'pendiente', // Pending approval
-      level: OpportunityLevel.amateur,
+      level: 'amateur',
       city: 'California',
       region: 'California',
       country: 'Estados Unidos',
