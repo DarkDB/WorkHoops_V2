@@ -68,7 +68,7 @@ async function main() {
     create: {
       title: 'Entrenador Cantera Masculina U16',
       slug: 'entrenador-cantera-masculina-u16-barcelona',
-      type: OpportunityType.empleo,
+      type: 'empleo',
       organizationId: organization.id,
       status: OpportunityStatus.publicada,
       level: OpportunityLevel.cantera,
