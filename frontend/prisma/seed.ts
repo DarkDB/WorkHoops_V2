@@ -129,10 +129,9 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
       status: 'publicada',
       level: 'semi_pro',
       city: 'Valencia',
-      region: 'Comunidad Valenciana',
       country: 'España',
-      lat: 39.4699,
-      lng: -0.3763,
+      latitude: 39.4699,
+      longitude: -0.3763,
       modality: 'presencial',
       benefits: `**Lo que ofrecemos:**
 - Seguro deportivo completo
