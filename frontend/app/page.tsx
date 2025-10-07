@@ -226,9 +226,9 @@ export default async function HomePage() {
                     {opportunity.title}
                   </CardTitle>
                   <div className="text-sm text-gray-600 flex items-center space-x-2">
-                    {opportunity.organization.logoUrl && (
+                    {opportunity.organization.logo && (
                       <img 
-                        src={opportunity.organization.logoUrl}
+                        src={opportunity.organization.logo}
                         alt={opportunity.organization.name}
                         className="w-4 h-4 rounded-full"
                       />
