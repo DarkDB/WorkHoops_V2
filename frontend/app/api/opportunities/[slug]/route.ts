@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: Params) {
             name: true,
             slug: true,
             logo: true,
-            bio: true,
+            description: true,
             verified: true,
           },
         },
