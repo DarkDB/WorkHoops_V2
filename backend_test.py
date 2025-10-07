@@ -310,6 +310,68 @@ class BackendTester:
             self.test_results['failed'] += 1
             self.log_error("Database Seeding", str(e))
 
+    def test_applications_api(self):
+        """Test applications API endpoints"""
+        print_test_header("Applications API")
+        
+        try:
+            # Test GET /api/applications (requires authentication)
+            response = self.session.get(f"{API_BASE}/applications", timeout=10)
+            
+            if response.status_code == 401:
+                print_success("GET /api/applications - Correctly requires authentication")
+                
+                try:
+                    data = response.json()
+                    if 'error' in data and 'Authentication required' in data['error']:
+                        print_success("Authentication error message is correct")
+                    else:
+                        print_warning("Authentication error message format unexpected")
+                        self.test_results['warnings'] += 1
+                        
+                except json.JSONDecodeError:
+                    print_warning("Authentication error response is not valid JSON")
+                    self.test_results['warnings'] += 1
+                    
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 200:
+                print_info("GET /api/applications - Returned data (possibly with session)")
+                
+                try:
+                    data = response.json()
+                    if 'data' in data and isinstance(data['data'], list):
+                        print_success(f"Applications API working - found {len(data['data'])} applications")
+                        
+                        if 'pagination' in data:
+                            print_success("Pagination data present")
+                        else:
+                            print_warning("Pagination data missing")
+                            self.test_results['warnings'] += 1
+                            
+                    else:
+                        print_error("Applications response format is incorrect")
+                        self.test_results['failed'] += 1
+                        self.log_error("Applications API", "Invalid response format")
+                        
+                except json.JSONDecodeError:
+                    print_error("Applications response is not valid JSON")
+                    self.test_results['failed'] += 1
+                    self.log_error("Applications API", "Invalid JSON response")
+                    
+                self.test_results['passed'] += 1
+                
+            else:
+                print_error(f"GET /api/applications failed with status {response.status_code}")
+                print_error(f"Response: {response.text[:200]}")
+                self.test_results['failed'] += 1
+                self.log_error("Applications API", f"Status: {response.status_code}, Response: {response.text[:200]}")
+                
+        except Exception as e:
+            print_error(f"Applications API test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Applications API", str(e))
+
     def test_user_registration(self):
         """Test user registration endpoint"""
         print_test_header("User Registration")
