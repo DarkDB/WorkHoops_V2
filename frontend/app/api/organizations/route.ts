@@ -3,7 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { organizationCreateSchema } from '@/lib/validations'
-import { generateSlug, sanitizeInput } from '@/lib/sanitize'
+import { generateSlug } from '@/lib/utils'
+import { sanitizeInput } from '@/lib/sanitize'
 import { rateLimitByIP } from '@/lib/rate-limit'
 
 // GET /api/organizations - List organizations
