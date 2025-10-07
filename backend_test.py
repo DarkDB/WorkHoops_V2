@@ -534,6 +534,7 @@ class BackendTester:
         self.test_seed_endpoint()
         self.test_opportunities_api()
         self.test_organizations_api()
+        self.test_applications_api()
         self.test_user_registration()
         self.test_auth_endpoints()
         self.test_page_routes()
