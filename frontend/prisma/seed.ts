@@ -53,8 +53,8 @@ async function main() {
       name: 'FC Barcelona Basquet',
       slug: 'fc-barcelona-basquet',
       ownerId: orgUser.id,
-      logoUrl: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=200',
-      bio: 'Club de baloncesto profesional con sede en Barcelona, parte del FC Barcelona. Compitiendo en la Liga Endesa ACB.',
+      logo: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=200',
+      description: 'Club de baloncesto profesional con sede en Barcelona, parte del FC Barcelona. Compitiendo en la Liga Endesa ACB.',
       verified: true
     }
   })
