@@ -1,0 +1,4 @@
+{
+  "/publicar/page": "app/publicar/page.js",
+  "/dashboard/page": "app/dashboard/page.js"
+}
