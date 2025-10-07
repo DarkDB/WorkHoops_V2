@@ -53,8 +53,7 @@ async function getOpportunities(searchParams: OpportunitiesPageProps['searchPara
         skip,
         take: limit,
         orderBy: [
-          { featured: 'desc' },
-          { publishedAt: 'desc' },
+          { publishedAt: 'desc' }
         ],
         include: {
           organization: {
