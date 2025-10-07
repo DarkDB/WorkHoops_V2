@@ -3,6 +3,7 @@
   "/api/opportunities/route": "app/api/opportunities/route.js",
   "/api/organizations/route": "app/api/organizations/route.js",
   "/api/seed/route": "app/api/seed/route.js",
+  "/api/applications/route": "app/api/applications/route.js",
   "/api/auth/register/route": "app/api/auth/register/route.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
   "/planes/page": "app/planes/page.js",
