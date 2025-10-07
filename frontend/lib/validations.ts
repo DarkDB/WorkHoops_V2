@@ -36,7 +36,7 @@ export const applicationUpdateSchema = z.object({
 export const organizationCreateSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres").max(100, "El nombre no puede superar los 100 caracteres"),
   bio: z.string().max(500, "La biografía no puede superar los 500 caracteres").optional(),
-  logoUrl: z.string().url("URL de logo inválida").optional(),
+  logo: z.string().url("URL de logo inválida").optional(),
 })
 
 export const userUpdateSchema = z.object({
