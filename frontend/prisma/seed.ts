@@ -216,6 +216,7 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
       deadline: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
       tags: 'beca,estados-unidos,universidad,ncaa,internacional',
       verified: false, // Not yet verified
+      contactEmail: 'becas@basketusa.com',
       authorId: orgUser.id
     }
   })
