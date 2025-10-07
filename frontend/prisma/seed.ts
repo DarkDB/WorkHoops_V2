@@ -180,7 +180,6 @@ Las pruebas se realizarán durante dos jornadas consecutivas donde evaluaremos:
       status: 'pendiente', // Pending approval
       level: 'amateur',
       city: 'California',
-      region: 'California',
       country: 'Estados Unidos',
       modality: 'presencial',
       benefits: `**Beca completa que incluye:**
