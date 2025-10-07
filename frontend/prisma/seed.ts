@@ -204,8 +204,9 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
 2. Assessment académico y de inglés
 3. Entrevistas personales
 4. Matching con universidades
-5. Tramitación de documentación`,
-      requirements: `**Requisitos del programa:**
+5. Tramitación de documentación
+
+**Requisitos del programa:**
 - Edad entre 16 y 18 años
 - Expediente académico notable (mínimo 7/10)
 - Nivel B2 de inglés certificado
