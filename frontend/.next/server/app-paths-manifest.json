@@ -1,7 +1,0 @@
-{
-  "/publicar/page": "app/publicar/page.js",
-  "/sobre/page": "app/sobre/page.js",
-  "/contacto/page": "app/contacto/page.js",
-  "/page": "app/page.js",
-  "/planes/page": "app/planes/page.js"
-}
