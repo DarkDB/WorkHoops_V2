@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { opportunityId, message, cvUrl, portfolioUrl } = validation.data
+    const { opportunityId, message } = validation.data
 
     // Check if opportunity exists and is open for applications
     const opportunity = await prisma.opportunity.findUnique({
