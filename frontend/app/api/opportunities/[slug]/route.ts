@@ -51,7 +51,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 
     // Only show published opportunities to public
     const session = await getServerSession(authOptions)
-    const isOwner = session?.user?.id === opportunity.createdBy
+    const isOwner = session?.user?.id === opportunity.authorId
     const isAdmin = session?.user?.role === 'admin'
 
     if (opportunity.status !== 'publicada' && !isOwner && !isAdmin) {
