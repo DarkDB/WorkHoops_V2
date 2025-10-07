@@ -239,9 +239,9 @@ export async function DELETE(request: NextRequest, { params }: Params) {
         action: 'deleted',
         entity: 'opportunity',
         entityId: existing.id,
-        metadata: {
+        metadata: JSON.stringify({
           title: existing.title,
-        },
+        }),
       },
     })
 
