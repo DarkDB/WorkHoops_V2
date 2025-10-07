@@ -222,6 +222,20 @@ export function Navbar() {
                 Oportunidades
               </Link>
               <Link
+                href="/publicar"
+                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                onClick={() => setIsOpen(false)}
+              >
+                Publicar oferta
+              </Link>
+              <Link
+                href="/talento"
+                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                onClick={() => setIsOpen(false)}
+              >
+                Talento
+              </Link>
+              <Link
                 href="/recursos"
                 className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
                 onClick={() => setIsOpen(false)}
@@ -229,11 +243,25 @@ export function Navbar() {
                 Recursos
               </Link>
               <Link
+                href="/sobre"
+                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                onClick={() => setIsOpen(false)}
+              >
+                Sobre WorkHoops
+              </Link>
+              <Link
                 href="/planes"
                 className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
                 onClick={() => setIsOpen(false)}
               >
-                Planes
+                Precios
+              </Link>
+              <Link
+                href="/contacto"
+                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                onClick={() => setIsOpen(false)}
+              >
+                Contacto
               </Link>
 
               <div className="border-t pt-4">
