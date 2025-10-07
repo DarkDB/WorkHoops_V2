@@ -1,3 +1,7 @@
 {
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/publicar/page": "app/publicar/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/talento/page": "app/talento/page.js",
+  "/sobre/page": "app/sobre/page.js"
 }
