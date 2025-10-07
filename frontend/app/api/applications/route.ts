@@ -201,10 +201,10 @@ export async function POST(request: NextRequest) {
         action: 'applied',
         entity: 'application',
         entityId: application.id,
-        metadata: {
+        metadata: JSON.stringify({
           opportunityId,
           opportunityTitle: opportunity.title,
-        },
+        }),
       },
     })
 
