@@ -181,7 +181,7 @@ Las pruebas se realizarán durante dos jornadas consecutivas donde evaluaremos:
       slug: 'beca-baloncesto-estados-unidos-universidad',
       type: 'beca',
       organizationId: organization.id,
-      status: OpportunityStatus.pendiente, // Pending approval
+      status: 'pendiente', // Pending approval
       level: OpportunityLevel.amateur,
       city: 'California',
       region: 'California',
