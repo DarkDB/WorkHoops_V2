@@ -25,8 +25,6 @@ export const opportunityCreateSchema = z.object({
 export const applicationCreateSchema = z.object({
   opportunityId: z.string().cuid("ID de oportunidad inválido"),
   message: z.string().min(10, "El mensaje debe tener al menos 10 caracteres").max(1000, "El mensaje no puede superar los 1000 caracteres"),
-  cvUrl: z.string().url("URL de CV inválida").optional(),
-  portfolioUrl: z.string().url("URL de portfolio inválida").optional(),
 })
 
 export const applicationUpdateSchema = z.object({
