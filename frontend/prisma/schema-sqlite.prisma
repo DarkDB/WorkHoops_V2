@@ -1,0 +1,221 @@
+// Simplified Prisma schema for SQLite
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  role          String    @default("jugador") // jugador, entrenador, club, admin
+  locale        String    @default("es")
+  verified      Boolean   @default(false)
+  
+  // Plan information
+  planType      String    @default("free_amateur") // free_amateur, pro_semipro, club_agencia, destacado
+  planStart     DateTime?
+  planEnd       DateTime?
+  isActive      Boolean   @default(true)
+  stripeCustomerId String?
+  stripeSubscriptionId String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  organizations Organization[]
+  opportunities Opportunity[]
+  applications  Application[]
+  favorites     Favorite[]
+  auditLogs     AuditLog[]
+  subscriptions Subscription[]
+
+  @@map("users")
+}
+
+model Organization {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  website     String?
+  logo        String?
+  verified    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  owner         User          @relation(fields: [ownerId], references: [id])
+  ownerId       String
+  opportunities Opportunity[]
+
+  @@map("organizations")
+}
+
+model Opportunity {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  
+  // Basic info
+  type        String   // empleo, prueba, torneo, clinica, beca, patrocinio
+  level       String   // amateur, semi_pro, cantera, pro
+  status      String   @default("borrador") // borrador, pendiente, publicada, cerrada
+  
+  // Location
+  city        String?
+  country     String   @default("España")
+  latitude    Float?
+  longitude   Float?
+  modality    String   @default("presencial") // presencial, online, mixta
+  
+  // Compensation & Benefits
+  remunerationType String? // monthly, annual, per_event, none
+  remunerationMin  Float?
+  remunerationMax  Float?
+  currency         String @default("EUR")
+  benefits         String?
+  
+  // Dates
+  deadline    DateTime?
+  startDate   DateTime?
+  endDate     DateTime?
+  publishedAt DateTime?
+  
+  // Tags as comma-separated string
+  tags        String?   // "base,entrenador,madrid"
+  verified    Boolean   @default(false)
+  
+  // Contact
+  contactEmail   String
+  contactPhone   String?
+  applicationUrl String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+  author         User         @relation(fields: [authorId], references: [id])
+  authorId       String
+  applications   Application[]
+  favorites      Favorite[]
+
+  @@map("opportunities")
+}
+
+model Application {
+  id        String   @id @default(cuid())
+  state     String   @default("enviada") // enviada, vista, rechazada, aceptada
+  message   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  opportunityId String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+
+  @@unique([userId, opportunityId])
+  @@map("applications")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  opportunityId String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+
+  @@unique([userId, opportunityId])
+  @@map("favorites")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String
+  action    String   // "created", "updated", "deleted", "applied", "state_changed"
+  entity    String   // "opportunity", "application", "organization"
+  entityId  String
+  metadata  String?  // JSON as string
+  createdAt DateTime @default(now())
+
+  // Relations
+  actor User @relation(fields: [actorId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String
+  stripeSubscriptionId String    @unique
+  stripePriceId        String
+  stripeCustomerId     String
+  status               String    // active, canceled, past_due, etc.
+  planType             String    // free_amateur, pro_semipro, club_agencia, destacado
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
