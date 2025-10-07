@@ -64,7 +64,12 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body className={inter.className}>
         <NextAuthProvider>
-          {children}
+          <div className="min-h-screen flex flex-col">
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
           <Toaster 
             position="top-right"
             richColors
