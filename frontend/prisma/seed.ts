@@ -113,6 +113,7 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
       publishedAt: new Date(),
       tags: 'entrenador,cantera,barcelona,masculino,u16',
       verified: true,
+      contactEmail: 'rrhh@fcbarcelona.es',
       authorId: orgUser.id
     }
   })
