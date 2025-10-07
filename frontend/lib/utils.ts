@@ -21,6 +21,52 @@ export function formatCurrency(amount: number, currency = 'EUR'): string {
   }).format(amount)
 }
 
+export function getOpportunityTypeLabel(type: string): string {
+  const labels = {
+    empleo: 'Empleo',
+    prueba: 'Prueba',
+    torneo: 'Torneo',
+    clinica: 'Clínica',
+    beca: 'Beca',
+    patrocinio: 'Patrocinio'
+  }
+  return labels[type as keyof typeof labels] || type
+}
+
+export function getOpportunityTypeColor(type: string): string {
+  const colors = {
+    empleo: 'bg-blue-100 text-blue-800',
+    prueba: 'bg-green-100 text-green-800',
+    torneo: 'bg-purple-100 text-purple-800',
+    clinica: 'bg-orange-100 text-orange-800',
+    beca: 'bg-yellow-100 text-yellow-800',
+    patrocinio: 'bg-pink-100 text-pink-800'
+  }
+  return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800'
+}
+
+export function getOpportunityLevelLabel(level: string): string {
+  const labels = {
+    amateur: 'Amateur',
+    semi_pro: 'Semi-profesional',
+    cantera: 'Cantera',
+    pro: 'Profesional'
+  }
+  return labels[level as keyof typeof labels] || level
+}
+
+export function formatRelativeTime(date: Date): string {
+  const now = new Date()
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+  
+  if (diffInSeconds < 60) return 'Hace menos de un minuto'
+  if (diffInSeconds < 3600) return `Hace ${Math.floor(diffInSeconds / 60)} minutos`
+  if (diffInSeconds < 86400) return `Hace ${Math.floor(diffInSeconds / 3600)} horas`
+  if (diffInSeconds < 2592000) return `Hace ${Math.floor(diffInSeconds / 86400)} días`
+  
+  return date.toLocaleDateString('es-ES')
+}
+
 export function formatDate(date: Date | string): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date
   return new Intl.DateTimeFormat('es-ES', {
