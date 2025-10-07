@@ -117,9 +117,9 @@ function OpportunityCard({ opportunity }: { opportunity: any }) {
         </CardTitle>
         
         <div className="text-sm text-gray-600 flex items-center space-x-2">
-          {opportunity.organization.logoUrl && (
+          {opportunity.organization.logo && (
             <img 
-              src={opportunity.organization.logoUrl}
+              src={opportunity.organization.logo}
               alt={opportunity.organization.name}
               className="w-5 h-5 rounded-full object-cover"
             />
