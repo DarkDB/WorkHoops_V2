@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: Params) {
             id: true,
             name: true,
             slug: true,
-            logoUrl: true,
+            logo: true,
             bio: true,
             verified: true,
           },
@@ -154,7 +154,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
           select: {
             name: true,
             slug: true,
-            logoUrl: true,
+            logo: true,
             verified: true,
           },
         },
