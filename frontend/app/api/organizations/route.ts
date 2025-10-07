@@ -166,10 +166,10 @@ export async function POST(request: NextRequest) {
         action: 'created',
         entity: 'organization',
         entityId: organization.id,
-        metadata: {
+        metadata: JSON.stringify({
           name: organization.name,
           slug: organization.slug,
-        },
+        }),
       },
     })
 
