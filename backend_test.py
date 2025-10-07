@@ -95,17 +95,34 @@ class BackendTester:
                 
                 try:
                     data = response.json()
-                    if 'data' in data and isinstance(data['data'], list):
-                        print_success(f"Response format is correct - found {len(data['data'])} opportunities")
+                    if 'opportunities' in data and isinstance(data['opportunities'], list):
+                        print_success(f"Response format is correct - found {len(data['opportunities'])} opportunities")
                         
                         if 'pagination' in data:
                             print_success("Pagination data present")
+                            pagination = data['pagination']
+                            if all(key in pagination for key in ['page', 'limit', 'total', 'pages']):
+                                print_success("Pagination structure is complete")
+                            else:
+                                print_warning("Pagination structure incomplete")
+                                self.test_results['warnings'] += 1
                         else:
                             print_warning("Pagination data missing")
                             self.test_results['warnings'] += 1
                             
+                        # Test opportunity structure
+                        if data['opportunities']:
+                            opp = data['opportunities'][0]
+                            required_fields = ['id', 'title', 'slug', 'description', 'type', 'level', 'status']
+                            missing_fields = [field for field in required_fields if field not in opp]
+                            if missing_fields:
+                                print_warning(f"Opportunity missing fields: {missing_fields}")
+                                self.test_results['warnings'] += 1
+                            else:
+                                print_success("Opportunity structure is complete")
+                            
                     else:
-                        print_error("Response format is incorrect - missing 'data' array")
+                        print_error("Response format is incorrect - missing 'opportunities' array")
                         self.test_results['failed'] += 1
                         self.log_error("Opportunities API", "Invalid response format")
                         
