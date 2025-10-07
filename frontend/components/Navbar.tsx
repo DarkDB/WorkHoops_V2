@@ -58,49 +58,51 @@ export function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-6">
             <Link 
               href="/oportunidades" 
-              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
             >
-              Oportunidades
+              <span>🏀</span>
+              <span>Ofertas</span>
             </Link>
             <Link 
               href="/publicar" 
-              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
             >
-              Publicar oferta
+              <span>📝</span>
+              <span>Publicar</span>
             </Link>
             <Link 
               href="/talento" 
-              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
             >
-              Talento
+              <span>⭐</span>
+              <span>Talento</span>
             </Link>
             <Link 
               href="/recursos" 
-              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
             >
-              Recursos
-            </Link>
-            <Link 
-              href="/sobre" 
-              className="text-gray-600 hover:text-workhoops-accent transition-colors"
-            >
-              Sobre WorkHoops
+              <span>📚</span>
+              <span>Recursos</span>
             </Link>
             <Link 
               href="/planes" 
-              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
             >
-              Precios
+              <span>💎</span>
+              <span>Precios</span>
             </Link>
-            <Link 
-              href="/contacto" 
-              className="text-gray-600 hover:text-workhoops-accent transition-colors"
-            >
-              Contacto
-            </Link>
+          </div>
+
+          {/* Compact Mobile/Tablet Navigation */}
+          <div className="hidden md:flex lg:hidden items-center space-x-4">
+            <Link href="/oportunidades" className="text-gray-600 hover:text-workhoops-accent">🏀</Link>
+            <Link href="/publicar" className="text-gray-600 hover:text-workhoops-accent">📝</Link>
+            <Link href="/talento" className="text-gray-600 hover:text-workhoops-accent">⭐</Link>
+            <Link href="/recursos" className="text-gray-600 hover:text-workhoops-accent">📚</Link>
+            <Link href="/planes" className="text-gray-600 hover:text-workhoops-accent">💎</Link>
 
             {/* Auth Section */}
             {status === 'loading' ? (
