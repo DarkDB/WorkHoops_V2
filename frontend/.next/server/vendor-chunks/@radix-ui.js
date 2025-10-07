@@ -331,6 +331,62 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 
 /***/ }),
 
+/***/ "(rsc)/./node_modules/@radix-ui/react-checkbox/dist/index.mjs":
+/*!**************************************************************!*\
+  !*** ./node_modules/@radix-ui/react-checkbox/dist/index.mjs ***!
+  \**************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Checkbox: () => (/* binding */ e0),
+/* harmony export */   CheckboxIndicator: () => (/* binding */ e1),
+/* harmony export */   Indicator: () => (/* binding */ e2),
+/* harmony export */   Root: () => (/* binding */ e3),
+/* harmony export */   createCheckboxScope: () => (/* binding */ e4),
+/* harmony export */   unstable_BubbleInput: () => (/* binding */ e5),
+/* harmony export */   unstable_CheckboxBubbleInput: () => (/* binding */ e6),
+/* harmony export */   unstable_CheckboxProvider: () => (/* binding */ e7),
+/* harmony export */   unstable_CheckboxTrigger: () => (/* binding */ e8),
+/* harmony export */   unstable_Provider: () => (/* binding */ e9),
+/* harmony export */   unstable_Trigger: () => (/* binding */ e10)
+/* harmony export */ });
+/* harmony import */ var next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! next/dist/build/webpack/loaders/next-flight-loader/module-proxy */ "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-loader/module-proxy.js");
+
+const proxy = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs`)
+
+// Accessing the __esModule property and exporting $$typeof are required here.
+// The __esModule getter forces the proxy target to create the default export
+// and the $$typeof value is for rendering logic to determine if the module
+// is a client boundary.
+const { __esModule, $$typeof } = proxy;
+const __default__ = proxy.default;
+
+const e0 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs#Checkbox`);
+
+const e1 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs#CheckboxIndicator`);
+
+const e2 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs#Indicator`);
+
+const e3 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs#Root`);
+
+const e4 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs#createCheckboxScope`);
+
+const e5 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs#unstable_BubbleInput`);
+
+const e6 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs#unstable_CheckboxBubbleInput`);
+
+const e7 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs#unstable_CheckboxProvider`);
+
+const e8 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs#unstable_CheckboxTrigger`);
+
+const e9 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs#unstable_Provider`);
+
+const e10 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-checkbox/dist/index.mjs#unstable_Trigger`);
+
+
+/***/ }),
+
 /***/ "(rsc)/./node_modules/@radix-ui/react-compose-refs/dist/index.mjs":
 /*!******************************************************************!*\
   !*** ./node_modules/@radix-ui/react-compose-refs/dist/index.mjs ***!
@@ -338,6 +394,157 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   composeRefs: () => (/* binding */ composeRefs),\n/* harmony export */   useComposedRefs: () => (/* binding */ useComposedRefs)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"(rsc)/./node_modules/next/dist/server/future/route-modules/app-page/vendored/rsc/react.js\");\n// packages/react/compose-refs/src/compose-refs.tsx\n\nfunction setRef(ref, value) {\n  if (typeof ref === \"function\") {\n    return ref(value);\n  } else if (ref !== null && ref !== void 0) {\n    ref.current = value;\n  }\n}\nfunction composeRefs(...refs) {\n  return (node) => {\n    let hasCleanup = false;\n    const cleanups = refs.map((ref) => {\n      const cleanup = setRef(ref, node);\n      if (!hasCleanup && typeof cleanup == \"function\") {\n        hasCleanup = true;\n      }\n      return cleanup;\n    });\n    if (hasCleanup) {\n      return () => {\n        for (let i = 0; i < cleanups.length; i++) {\n          const cleanup = cleanups[i];\n          if (typeof cleanup == \"function\") {\n            cleanup();\n          } else {\n            setRef(refs[i], null);\n          }\n        }\n      };\n    }\n  };\n}\nfunction useComposedRefs(...refs) {\n  return react__WEBPACK_IMPORTED_MODULE_0__.useCallback(composeRefs(...refs), refs);\n}\n\n//# sourceMappingURL=index.mjs.map\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHJzYykvLi9ub2RlX21vZHVsZXMvQHJhZGl4LXVpL3JlYWN0LWNvbXBvc2UtcmVmcy9kaXN0L2luZGV4Lm1qcyIsIm1hcHBpbmdzIjoiOzs7Ozs7QUFBQTtBQUMrQjtBQUMvQjtBQUNBO0FBQ0E7QUFDQSxJQUFJO0FBQ0o7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsS0FBSztBQUNMO0FBQ0E7QUFDQSx3QkFBd0IscUJBQXFCO0FBQzdDO0FBQ0E7QUFDQTtBQUNBLFlBQVk7QUFDWjtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsU0FBUyw4Q0FBaUI7QUFDMUI7QUFJRTtBQUNGIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vd29ya2hvb3BzLy4vbm9kZV9tb2R1bGVzL0ByYWRpeC11aS9yZWFjdC1jb21wb3NlLXJlZnMvZGlzdC9pbmRleC5tanM/ODlmYSJdLCJzb3VyY2VzQ29udGVudCI6WyIvLyBwYWNrYWdlcy9yZWFjdC9jb21wb3NlLXJlZnMvc3JjL2NvbXBvc2UtcmVmcy50c3hcbmltcG9ydCAqIGFzIFJlYWN0IGZyb20gXCJyZWFjdFwiO1xuZnVuY3Rpb24gc2V0UmVmKHJlZiwgdmFsdWUpIHtcbiAgaWYgKHR5cGVvZiByZWYgPT09IFwiZnVuY3Rpb25cIikge1xuICAgIHJldHVybiByZWYodmFsdWUpO1xuICB9IGVsc2UgaWYgKHJlZiAhPT0gbnVsbCAmJiByZWYgIT09IHZvaWQgMCkge1xuICAgIHJlZi5jdXJyZW50ID0gdmFsdWU7XG4gIH1cbn1cbmZ1bmN0aW9uIGNvbXBvc2VSZWZzKC4uLnJlZnMpIHtcbiAgcmV0dXJuIChub2RlKSA9PiB7XG4gICAgbGV0IGhhc0NsZWFudXAgPSBmYWxzZTtcbiAgICBjb25zdCBjbGVhbnVwcyA9IHJlZnMubWFwKChyZWYpID0+IHtcbiAgICAgIGNvbnN0IGNsZWFudXAgPSBzZXRSZWYocmVmLCBub2RlKTtcbiAgICAgIGlmICghaGFzQ2xlYW51cCAmJiB0eXBlb2YgY2xlYW51cCA9PSBcImZ1bmN0aW9uXCIpIHtcbiAgICAgICAgaGFzQ2xlYW51cCA9IHRydWU7XG4gICAgICB9XG4gICAgICByZXR1cm4gY2xlYW51cDtcbiAgICB9KTtcbiAgICBpZiAoaGFzQ2xlYW51cCkge1xuICAgICAgcmV0dXJuICgpID0+IHtcbiAgICAgICAgZm9yIChsZXQgaSA9IDA7IGkgPCBjbGVhbnVwcy5sZW5ndGg7IGkrKykge1xuICAgICAgICAgIGNvbnN0IGNsZWFudXAgPSBjbGVhbnVwc1tpXTtcbiAgICAgICAgICBpZiAodHlwZW9mIGNsZWFudXAgPT0gXCJmdW5jdGlvblwiKSB7XG4gICAgICAgICAgICBjbGVhbnVwKCk7XG4gICAgICAgICAgfSBlbHNlIHtcbiAgICAgICAgICAgIHNldFJlZihyZWZzW2ldLCBudWxsKTtcbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH07XG4gICAgfVxuICB9O1xufVxuZnVuY3Rpb24gdXNlQ29tcG9zZWRSZWZzKC4uLnJlZnMpIHtcbiAgcmV0dXJuIFJlYWN0LnVzZUNhbGxiYWNrKGNvbXBvc2VSZWZzKC4uLnJlZnMpLCByZWZzKTtcbn1cbmV4cG9ydCB7XG4gIGNvbXBvc2VSZWZzLFxuICB1c2VDb21wb3NlZFJlZnNcbn07XG4vLyMgc291cmNlTWFwcGluZ1VSTD1pbmRleC5tanMubWFwXG4iXSwibmFtZXMiOltdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///(rsc)/./node_modules/@radix-ui/react-compose-refs/dist/index.mjs\n");
+
+/***/ }),
+
+/***/ "(rsc)/./node_modules/@radix-ui/react-label/dist/index.mjs":
+/*!***********************************************************!*\
+  !*** ./node_modules/@radix-ui/react-label/dist/index.mjs ***!
+  \***********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Label: () => (/* binding */ e0),
+/* harmony export */   Root: () => (/* binding */ e1)
+/* harmony export */ });
+/* harmony import */ var next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! next/dist/build/webpack/loaders/next-flight-loader/module-proxy */ "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-loader/module-proxy.js");
+
+const proxy = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-label/dist/index.mjs`)
+
+// Accessing the __esModule property and exporting $$typeof are required here.
+// The __esModule getter forces the proxy target to create the default export
+// and the $$typeof value is for rendering logic to determine if the module
+// is a client boundary.
+const { __esModule, $$typeof } = proxy;
+const __default__ = proxy.default;
+
+const e0 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-label/dist/index.mjs#Label`);
+
+const e1 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-label/dist/index.mjs#Root`);
+
+
+/***/ }),
+
+/***/ "(rsc)/./node_modules/@radix-ui/react-select/dist/index.mjs":
+/*!************************************************************!*\
+  !*** ./node_modules/@radix-ui/react-select/dist/index.mjs ***!
+  \************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Arrow: () => (/* binding */ e0),
+/* harmony export */   Content: () => (/* binding */ e1),
+/* harmony export */   Group: () => (/* binding */ e2),
+/* harmony export */   Icon: () => (/* binding */ e3),
+/* harmony export */   Item: () => (/* binding */ e4),
+/* harmony export */   ItemIndicator: () => (/* binding */ e5),
+/* harmony export */   ItemText: () => (/* binding */ e6),
+/* harmony export */   Label: () => (/* binding */ e7),
+/* harmony export */   Portal: () => (/* binding */ e8),
+/* harmony export */   Root: () => (/* binding */ e9),
+/* harmony export */   ScrollDownButton: () => (/* binding */ e10),
+/* harmony export */   ScrollUpButton: () => (/* binding */ e11),
+/* harmony export */   Select: () => (/* binding */ e12),
+/* harmony export */   SelectArrow: () => (/* binding */ e13),
+/* harmony export */   SelectContent: () => (/* binding */ e14),
+/* harmony export */   SelectGroup: () => (/* binding */ e15),
+/* harmony export */   SelectIcon: () => (/* binding */ e16),
+/* harmony export */   SelectItem: () => (/* binding */ e17),
+/* harmony export */   SelectItemIndicator: () => (/* binding */ e18),
+/* harmony export */   SelectItemText: () => (/* binding */ e19),
+/* harmony export */   SelectLabel: () => (/* binding */ e20),
+/* harmony export */   SelectPortal: () => (/* binding */ e21),
+/* harmony export */   SelectScrollDownButton: () => (/* binding */ e22),
+/* harmony export */   SelectScrollUpButton: () => (/* binding */ e23),
+/* harmony export */   SelectSeparator: () => (/* binding */ e24),
+/* harmony export */   SelectTrigger: () => (/* binding */ e25),
+/* harmony export */   SelectValue: () => (/* binding */ e26),
+/* harmony export */   SelectViewport: () => (/* binding */ e27),
+/* harmony export */   Separator: () => (/* binding */ e28),
+/* harmony export */   Trigger: () => (/* binding */ e29),
+/* harmony export */   Value: () => (/* binding */ e30),
+/* harmony export */   Viewport: () => (/* binding */ e31),
+/* harmony export */   createSelectScope: () => (/* binding */ e32)
+/* harmony export */ });
+/* harmony import */ var next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! next/dist/build/webpack/loaders/next-flight-loader/module-proxy */ "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-loader/module-proxy.js");
+
+const proxy = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs`)
+
+// Accessing the __esModule property and exporting $$typeof are required here.
+// The __esModule getter forces the proxy target to create the default export
+// and the $$typeof value is for rendering logic to determine if the module
+// is a client boundary.
+const { __esModule, $$typeof } = proxy;
+const __default__ = proxy.default;
+
+const e0 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Arrow`);
+
+const e1 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Content`);
+
+const e2 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Group`);
+
+const e3 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Icon`);
+
+const e4 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Item`);
+
+const e5 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#ItemIndicator`);
+
+const e6 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#ItemText`);
+
+const e7 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Label`);
+
+const e8 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Portal`);
+
+const e9 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Root`);
+
+const e10 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#ScrollDownButton`);
+
+const e11 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#ScrollUpButton`);
+
+const e12 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Select`);
+
+const e13 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectArrow`);
+
+const e14 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectContent`);
+
+const e15 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectGroup`);
+
+const e16 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectIcon`);
+
+const e17 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectItem`);
+
+const e18 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectItemIndicator`);
+
+const e19 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectItemText`);
+
+const e20 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectLabel`);
+
+const e21 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectPortal`);
+
+const e22 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectScrollDownButton`);
+
+const e23 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectScrollUpButton`);
+
+const e24 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectSeparator`);
+
+const e25 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectTrigger`);
+
+const e26 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectValue`);
+
+const e27 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#SelectViewport`);
+
+const e28 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Separator`);
+
+const e29 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Trigger`);
+
+const e30 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Value`);
+
+const e31 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#Viewport`);
+
+const e32 = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`/app/frontend/node_modules/@radix-ui/react-select/dist/index.mjs#createSelectScope`);
+
 
 /***/ }),
 

@@ -1,6 +1,8 @@
 {
-  "/contacto/page": "app/contacto/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/oportunidades/page": "app/oportunidades/page.js",
+  "/publicar/page": "app/publicar/page.js",
+  "/contacto/page": "app/contacto/page.js",
   "/prensa/page": "app/prensa/page.js"
 }
