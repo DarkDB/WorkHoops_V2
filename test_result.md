@@ -242,7 +242,7 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
 ## metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: false
 
 ## test_plan:
