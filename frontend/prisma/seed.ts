@@ -165,7 +165,7 @@ Las pruebas se realizarán durante dos jornadas consecutivas donde evaluaremos:
 - Seguro deportivo actualizado`,
       deadline: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
       publishedAt: new Date(),
-      tags: ['prueba', 'femenino', 'valencia', 'senior', 'lf2'],
+      tags: 'prueba,femenino,valencia,senior,lf2',
       verified: true,
       featured: true, // This is a featured opportunity
       createdBy: orgUser.id
