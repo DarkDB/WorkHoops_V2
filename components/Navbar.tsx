@@ -72,10 +72,10 @@ export function Navbar() {
               Recursos
             </Link>
             <Link 
-              href="/precios" 
+              href="/planes" 
               className="text-gray-600 hover:text-workhoops-accent transition-colors"
             >
-              Precios
+              Planes
             </Link>
 
             {/* Auth Section */}
