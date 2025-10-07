@@ -96,7 +96,6 @@ export async function POST(request: NextRequest) {
         data: {
           status: 'publicada',
           publishedAt: new Date(),
-          featured: false,
         },
       })
 
