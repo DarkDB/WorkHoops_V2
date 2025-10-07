@@ -66,16 +66,40 @@ export function Navbar() {
               Oportunidades
             </Link>
             <Link 
+              href="/publicar" 
+              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+            >
+              Publicar oferta
+            </Link>
+            <Link 
+              href="/talento" 
+              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+            >
+              Talento
+            </Link>
+            <Link 
               href="/recursos" 
               className="text-gray-600 hover:text-workhoops-accent transition-colors"
             >
               Recursos
             </Link>
             <Link 
+              href="/sobre" 
+              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+            >
+              Sobre WorkHoops
+            </Link>
+            <Link 
               href="/planes" 
               className="text-gray-600 hover:text-workhoops-accent transition-colors"
             >
-              Planes
+              Precios
+            </Link>
+            <Link 
+              href="/contacto" 
+              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+            >
+              Contacto
             </Link>
 
             {/* Auth Section */}
