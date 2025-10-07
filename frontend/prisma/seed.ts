@@ -77,7 +77,7 @@ async function main() {
       country: 'España',
       lat: 41.3851,
       lng: 2.1734,
-      modality: Modality.presencial,
+      modality: 'presencial',
       remuneration: {
         min: 30000,
         max: 40000,
@@ -135,7 +135,7 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
       country: 'España',
       lat: 39.4699,
       lng: -0.3763,
-      modality: Modality.presencial,
+      modality: 'presencial',
       benefits: `**Lo que ofrecemos:**
 - Seguro deportivo completo
 - Material técnico de entrenamiento
@@ -186,7 +186,7 @@ Las pruebas se realizarán durante dos jornadas consecutivas donde evaluaremos:
       city: 'California',
       region: 'California',
       country: 'Estados Unidos',
-      modality: Modality.presencial,
+      modality: 'presencial',
       benefits: `**Beca completa que incluye:**
 - Matrícula universitaria cubierta al 100%
 - Alojamiento en campus universitario
