@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
     // Sanitize input
     const sanitizedData = {
       name: sanitizeInput(data.name),
-      bio: data.bio ? sanitizeInput(data.bio) : null,
+      description: data.description ? sanitizeInput(data.description) : null,
       logo: data.logoUrl || null,
     }
 
