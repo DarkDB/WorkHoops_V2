@@ -110,7 +110,7 @@ export default async function DashboardPage() {
       case 'prueba':
         return <Award className="w-4 h-4" />
       case 'torneo':
-        return <Trophy className="w-4 h-4" />
+        return <Users className="w-4 h-4" />
       case 'clinica':
         return <Users className="w-4 h-4" />
       default:
