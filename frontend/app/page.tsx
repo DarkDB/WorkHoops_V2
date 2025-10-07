@@ -24,7 +24,7 @@ async function getHomeData() {
           organization: {
             select: {
               name: true,
-              logoUrl: true,
+              logo: true,
               verified: true,
             },
           },
