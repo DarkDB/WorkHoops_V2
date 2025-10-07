@@ -242,6 +242,131 @@ class BackendTester:
             self.test_results['failed'] += 1
             self.log_error("Auth Endpoints", str(e))
 
+    def test_seed_endpoint(self):
+        """Test database seeding endpoint"""
+        print_test_header("Database Seeding")
+        
+        try:
+            # Test POST /api/seed
+            response = self.session.post(f"{API_BASE}/seed", timeout=30)
+            
+            if response.status_code == 200:
+                print_success("POST /api/seed - Success")
+                
+                try:
+                    data = response.json()
+                    if 'message' in data and 'data' in data:
+                        print_success(f"Seed response: {data['message']}")
+                        
+                        seed_data = data['data']
+                        if all(key in seed_data for key in ['users', 'organizations', 'opportunities']):
+                            print_success(f"Seeded: {seed_data['users']} users, {seed_data['organizations']} organizations, {seed_data['opportunities']} opportunities")
+                            
+                            if 'testAccounts' in seed_data:
+                                print_info(f"Test accounts created: {len(seed_data['testAccounts'])}")
+                                for account in seed_data['testAccounts']:
+                                    print_info(f"  - {account}")
+                        else:
+                            print_warning("Seed data structure incomplete")
+                            self.test_results['warnings'] += 1
+                            
+                    else:
+                        print_error("Seed response format is incorrect")
+                        self.test_results['failed'] += 1
+                        self.log_error("Database Seeding", "Invalid response format")
+                        
+                except json.JSONDecodeError:
+                    print_error("Seed response is not valid JSON")
+                    self.test_results['failed'] += 1
+                    self.log_error("Database Seeding", "Invalid JSON response")
+                    
+                self.test_results['passed'] += 1
+                
+            else:
+                print_error(f"POST /api/seed failed with status {response.status_code}")
+                print_error(f"Response: {response.text[:300]}")
+                self.test_results['failed'] += 1
+                self.log_error("Database Seeding", f"Status: {response.status_code}, Response: {response.text[:300]}")
+                
+        except Exception as e:
+            print_error(f"Database seeding test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Database Seeding", str(e))
+
+    def test_user_registration(self):
+        """Test user registration endpoint"""
+        print_test_header("User Registration")
+        
+        try:
+            # Test POST /api/auth/register
+            test_user = {
+                "name": "Test Player",
+                "email": f"testplayer{uuid.uuid4().hex[:8]}@example.com",
+                "password": "testpassword123",
+                "role": "jugador",
+                "planType": "free_amateur"
+            }
+            
+            response = self.session.post(
+                f"{API_BASE}/auth/register", 
+                json=test_user,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                print_success("POST /api/auth/register - Success")
+                
+                try:
+                    data = response.json()
+                    if 'message' in data and 'user' in data:
+                        print_success(f"Registration response: {data['message']}")
+                        
+                        user = data['user']
+                        if all(key in user for key in ['id', 'name', 'email', 'role']):
+                            print_success(f"User created: {user['name']} ({user['email']}) - Role: {user['role']}")
+                        else:
+                            print_warning("User data structure incomplete")
+                            self.test_results['warnings'] += 1
+                            
+                    else:
+                        print_error("Registration response format is incorrect")
+                        self.test_results['failed'] += 1
+                        self.log_error("User Registration", "Invalid response format")
+                        
+                except json.JSONDecodeError:
+                    print_error("Registration response is not valid JSON")
+                    self.test_results['failed'] += 1
+                    self.log_error("User Registration", "Invalid JSON response")
+                    
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 400:
+                # Check if it's a validation error or duplicate user
+                try:
+                    data = response.json()
+                    if 'message' in data:
+                        print_warning(f"Registration validation: {data['message']}")
+                        self.test_results['warnings'] += 1
+                    else:
+                        print_error("Registration failed with bad request")
+                        self.test_results['failed'] += 1
+                        self.log_error("User Registration", f"Status: 400, Response: {response.text[:200]}")
+                except:
+                    print_error("Registration failed with bad request")
+                    self.test_results['failed'] += 1
+                    self.log_error("User Registration", f"Status: 400, Response: {response.text[:200]}")
+                    
+            else:
+                print_error(f"POST /api/auth/register failed with status {response.status_code}")
+                print_error(f"Response: {response.text[:200]}")
+                self.test_results['failed'] += 1
+                self.log_error("User Registration", f"Status: {response.status_code}, Response: {response.text[:200]}")
+                
+        except Exception as e:
+            print_error(f"User registration test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("User Registration", str(e))
+
     def test_database_connectivity(self):
         """Test database connectivity through API calls"""
         print_test_header("Database Connectivity")
