@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
           name: true,
           slug: true,
           logo: true,
-          bio: true,
+          description: true,
           verified: true,
           createdAt: true,
           _count: {
