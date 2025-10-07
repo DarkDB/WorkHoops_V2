@@ -25,7 +25,7 @@ async function main() {
     create: {
       email: 'fcbarcelona@workhoops.es',
       name: 'FC Barcelona Basquet',
-      role: UserRole.org,
+      role: 'org',
       verified: true,
       locale: 'es'
     }
