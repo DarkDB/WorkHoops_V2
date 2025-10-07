@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Hash password
-    const hashedPassword = await hash(password, 12)
+    // Hash password (not storing for now in development)
+    // const hashedPassword = await hash(password, 12)
 
     // Create user
     const user = await prisma.user.create({
@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
         email,
         role,
         planType,
-        // Store password for credentials auth (in real app, you'd use NextAuth's user table)
       }
     })
 
