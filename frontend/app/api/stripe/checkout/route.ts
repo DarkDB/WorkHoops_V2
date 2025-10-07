@@ -106,10 +106,10 @@ export async function POST(request: NextRequest) {
           action: 'published_free',
           entity: 'opportunity',
           entityId: opportunityId,
-          metadata: {
+          metadata: JSON.stringify({
             planId,
             title: opportunity.title,
-          },
+          }),
         },
       })
 
