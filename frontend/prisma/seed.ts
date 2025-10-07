@@ -37,7 +37,7 @@ async function main() {
     create: {
       email: 'jugador@workhoops.es',
       name: 'Marc González',
-      role: UserRole.user,
+      role: 'user',
       verified: true,
       locale: 'es'
     }
