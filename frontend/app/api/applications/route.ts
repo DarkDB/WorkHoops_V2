@@ -177,8 +177,6 @@ export async function POST(request: NextRequest) {
         userId: session.user.id,
         opportunityId,
         message: sanitizeInput(message),
-        cvUrl,
-        portfolioUrl,
         state: 'enviada',
       },
       include: {
