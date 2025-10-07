@@ -113,10 +113,9 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
 - Conocimientos de análisis video`,
       deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
       publishedAt: new Date(),
-      tags: ['entrenador', 'cantera', 'barcelona', 'masculino', 'u16'],
+      tags: 'entrenador,cantera,barcelona,masculino,u16',
       verified: true,
-      featured: false,
-      createdBy: orgUser.id
+      authorId: orgUser.id
     }
   })
 
