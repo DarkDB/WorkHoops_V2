@@ -96,9 +96,18 @@ model User {
   emailVerified DateTime?
   name          String?
   image         String?
-  role          UserRole  @default(user)
+  role          UserRole  @default(jugador)
   locale        String    @default("es")
   verified      Boolean   @default(false)
+  
+  // Plan information
+  planType      PlanType  @default(free_amateur)
+  planStart     DateTime?
+  planEnd       DateTime?
+  isActive      Boolean   @default(true)
+  stripeCustomerId String?
+  stripeSubscriptionId String?
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -110,6 +119,7 @@ model User {
   applications  Application[]
   favorites     Favorite[]
   auditLogs     AuditLog[]
+  subscriptions Subscription[]
 
   @@map("users")
 }
