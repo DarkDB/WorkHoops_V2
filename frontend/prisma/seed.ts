@@ -154,8 +154,9 @@ Las pruebas se realizarán durante dos jornadas consecutivas donde evaluaremos:
 
 **Fecha:** A confirmar tras inscripción
 **Duración:** 2 días intensivos
-**Ubicación:** Pabellón Municipal de Valencia`,
-      requirements: `**Requisitos para participar:**
+**Ubicación:** Pabellón Municipal de Valencia
+
+**Requisitos para participar:**
 - Edad entre 18 y 28 años
 - Experiencia demostrable en liga autonómica o superior
 - Altura mínima recomendada: 1.70m
