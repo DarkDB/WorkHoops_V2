@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
           id: true,
           name: true,
           slug: true,
-          logoUrl: true,
+          logo: true,
           bio: true,
           verified: true,
           createdAt: true,
