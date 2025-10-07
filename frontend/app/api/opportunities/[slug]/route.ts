@@ -27,7 +27,7 @@ export async function GET(request: NextRequest, { params }: Params) {
             verified: true,
           },
         },
-        creator: {
+        author: {
           select: {
             id: true,
             name: true,
