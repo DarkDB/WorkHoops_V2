@@ -1,10 +1,9 @@
 import Stripe from 'stripe'
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is required')
-}
+// For development, use a placeholder key if not provided
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder'
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+export const stripe = new Stripe(stripeSecretKey, {
   apiVersion: '2024-06-20',
 })
 
