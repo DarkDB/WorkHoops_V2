@@ -77,12 +77,10 @@ async function main() {
       latitude: 41.3851,
       longitude: 2.1734,
       modality: 'presencial',
-      remuneration: {
-        min: 30000,
-        max: 40000,
-        currency: 'EUR',
-        type: 'annual'
-      },
+      remunerationType: 'annual',
+      remunerationMin: 30000,
+      remunerationMax: 40000,
+      currency: 'EUR',
       benefits: `**Beneficios incluidos:**
 - Seguro médico completo
 - Formación continua en metodologías de entrenamiento
