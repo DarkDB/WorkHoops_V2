@@ -2480,6 +2480,14 @@ html {
     grid-column: span 1 / span 1;
   }
 
+  .lg\:flex {
+    display: flex;
+  }
+
+  .lg\:hidden {
+    display: none;
+  }
+
   .lg\:h-\[500px\] {
     height: 500px;
   }
