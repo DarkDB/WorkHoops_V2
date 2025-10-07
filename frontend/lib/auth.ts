@@ -37,11 +37,22 @@ export const authOptions: NextAuthOptions = {
 
           // For now, we'll accept any password for existing users (development only!)
           // In production, you'd compare with stored hashed password
+          
+          // Map database roles to NextAuth roles
+          let mappedRole: "user" | "org" | "admin" = "user"
+          if (user.role === "admin") {
+            mappedRole = "admin"
+          } else if (user.role === "club") {
+            mappedRole = "org"
+          } else {
+            mappedRole = "user" // jugador, entrenador -> user
+          }
+          
           return {
             id: user.id,
             email: user.email,
             name: user.name,
-            role: user.role as "user" | "org" | "admin",
+            role: mappedRole,
             planType: user.planType,
           }
         } catch (error) {
