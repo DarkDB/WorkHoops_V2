@@ -451,10 +451,12 @@ class BackendTester:
             return False
             
         # Run all tests
+        self.test_database_connectivity()
+        self.test_seed_endpoint()
         self.test_opportunities_api()
         self.test_organizations_api()
+        self.test_user_registration()
         self.test_auth_endpoints()
-        self.test_database_connectivity()
         self.test_page_routes()
         
         # Print summary
