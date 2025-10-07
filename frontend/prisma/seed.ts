@@ -165,6 +165,7 @@ Las pruebas se realizarán durante dos jornadas consecutivas donde evaluaremos:
       publishedAt: new Date(),
       tags: 'prueba,femenino,valencia,senior,lf2',
       verified: true,
+      contactEmail: 'rrhh@fcbarcelona.es',
       authorId: orgUser.id
     }
   })
