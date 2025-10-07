@@ -177,11 +177,11 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         action: 'state_changed',
         entity: 'application',
         entityId: application.id,
-        metadata: {
+        metadata: JSON.stringify({
           previousState,
           newState: state,
           opportunityTitle: application.opportunity.title,
-        },
+        }),
       },
     })
 
