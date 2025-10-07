@@ -168,9 +168,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         action: 'updated',
         entity: 'opportunity',
         entityId: opportunity.id,
-        metadata: {
+        metadata: JSON.stringify({
           updatedFields: Object.keys(sanitizedData),
-        },
+        }),
       },
     })
 
