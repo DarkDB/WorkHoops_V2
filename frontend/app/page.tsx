@@ -233,7 +233,7 @@ export default async function HomePage() {
                       />
                     )}
                     <span>{opportunity.organization?.name || 'Organizador individual'}</span>
-                    {opportunity.organization.verified && (
+                    {opportunity.organization?.verified && (
                       <CheckCircle className="w-3 h-3 text-blue-500" />
                     )}
                   </div>
