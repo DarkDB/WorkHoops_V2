@@ -1,6 +1,8 @@
-import { Redis } from 'redis'
+import { createClient } from 'redis'
 
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379')
+const redis = createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379'
+})
 
 export interface RateLimitResult {
   success: boolean
