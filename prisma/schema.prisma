@@ -11,9 +11,17 @@ datasource db {
 }
 
 enum UserRole {
-  user
-  org
+  jugador
+  entrenador
+  club
   admin
+}
+
+enum PlanType {
+  free_amateur
+  pro_semipro
+  club_agencia
+  destacado
 }
 
 enum OpportunityType {
