@@ -142,12 +142,12 @@ export async function handleSuccessfulPayment(
       action: 'payment_completed',
       entity: 'opportunity',
       entityId: opportunity.id,
-      metadata: {
+      metadata: JSON.stringify({
         planId,
         sessionId: session.id,
         amount: session.amount_total,
         currency: session.currency,
-      }
+      })
     }
   })
 
