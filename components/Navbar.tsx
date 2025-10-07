@@ -205,11 +205,11 @@ export function Navbar() {
                 Recursos
               </Link>
               <Link
-                href="/precios"
+                href="/planes"
                 className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
                 onClick={() => setIsOpen(false)}
               >
-                Precios
+                Planes
               </Link>
 
               <div className="border-t pt-4">
