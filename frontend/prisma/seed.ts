@@ -129,7 +129,7 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
       type: 'prueba',
       organizationId: organization.id,
       status: 'publicada',
-      level: OpportunityLevel.semi_pro,
+      level: 'semi_pro',
       city: 'Valencia',
       region: 'Comunidad Valenciana',
       country: 'España',
