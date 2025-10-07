@@ -138,7 +138,7 @@ export async function handleSuccessfulPayment(
   // Create audit log
   await prisma.auditLog.create({
     data: {
-      actorId: opportunity.createdBy,
+      actorId: opportunity.authorId,
       action: 'payment_completed',
       entity: 'opportunity',
       entityId: opportunity.id,
