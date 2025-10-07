@@ -126,7 +126,7 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
     create: {
       title: 'Pruebas Equipo Femenino Senior',
       slug: 'pruebas-equipo-femenino-senior-valencia',
-      type: OpportunityType.prueba,
+      type: 'prueba',
       organizationId: organization.id,
       status: 'publicada',
       level: OpportunityLevel.semi_pro,
