@@ -261,10 +261,10 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
       action: 'applied',
       entity: 'application',
       entityId: application.id,
-      metadata: {
+      metadata: JSON.stringify({
         opportunityTitle: opportunity1.title,
         applicationState: application.state
-      }
+      })
     }
   })
 
