@@ -179,7 +179,7 @@ Las pruebas se realizarán durante dos jornadas consecutivas donde evaluaremos:
     create: {
       title: 'Beca Baloncesto + Estudios Estados Unidos',
       slug: 'beca-baloncesto-estados-unidos-universidad',
-      type: OpportunityType.beca,
+      type: 'beca',
       organizationId: organization.id,
       status: OpportunityStatus.pendiente, // Pending approval
       level: OpportunityLevel.amateur,
