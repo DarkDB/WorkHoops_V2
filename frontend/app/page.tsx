@@ -17,8 +17,7 @@ async function getHomeData() {
         },
         take: 6,
         orderBy: [
-          { featured: 'desc' },
-          { publishedAt: 'desc' },
+          { publishedAt: 'desc' }
         ],
         include: {
           organization: {
