@@ -276,7 +276,7 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
   console.log('\n📊 Summary:')
   console.log(`- Users: 3 (1 admin, 1 org, 1 user)`)
   console.log(`- Organizations: 1`)
-  console.log(`- Opportunities: 3 (1 published, 1 featured, 1 pending)`)
+  console.log(`- Opportunities: 3 (2 published, 1 pending)`)
   console.log(`- Applications: 1`)
   console.log(`- Audit logs: 2`)
   
