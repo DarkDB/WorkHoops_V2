@@ -71,7 +71,7 @@ async function main() {
       type: 'empleo',
       organizationId: organization.id,
       status: 'publicada',
-      level: OpportunityLevel.cantera,
+      level: 'cantera',
       city: 'Barcelona',
       region: 'Cataluña',
       country: 'España',
