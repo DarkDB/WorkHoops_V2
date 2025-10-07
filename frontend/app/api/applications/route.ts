@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
               organization: {
                 select: {
                   name: true,
-                  logoUrl: true,
+                  logo: true,
                 },
               },
             },
