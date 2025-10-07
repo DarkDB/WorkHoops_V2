@@ -36,13 +36,13 @@ async function getOpportunities(searchParams: OpportunitiesPageProps['searchPara
   if (searchParams.type) where.type = searchParams.type
   if (searchParams.level) where.level = searchParams.level
   if (searchParams.city) {
-    where.city = { contains: searchParams.city, mode: 'insensitive' }
+    where.city = { contains: searchParams.city }
   }
   if (searchParams.search) {
     where.OR = [
-      { title: { contains: searchParams.search, mode: 'insensitive' } },
-      { description: { contains: searchParams.search, mode: 'insensitive' } },
-      { tags: { hasSome: [searchParams.search] } },
+      { title: { contains: searchParams.search } },
+      { description: { contains: searchParams.search } },
+      { tags: { contains: searchParams.search } },
     ]
   }
 
