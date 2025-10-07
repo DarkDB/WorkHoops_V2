@@ -71,6 +71,7 @@ export default function RootLayout({
             </main>
             <Footer />
           </div>
+          <CookieBanner />
           <Toaster 
             position="top-right"
             richColors
