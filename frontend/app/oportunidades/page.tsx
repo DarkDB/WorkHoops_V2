@@ -60,7 +60,7 @@ async function getOpportunities(searchParams: OpportunitiesPageProps['searchPara
           organization: {
             select: {
               name: true,
-              logoUrl: true,
+              logo: true,
               verified: true,
             },
           },
