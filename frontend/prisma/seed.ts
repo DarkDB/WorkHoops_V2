@@ -13,7 +13,7 @@ async function main() {
     create: {
       email: 'admin@workhoops.es',
       name: 'WorkHoops Admin',
-      role: UserRole.admin,
+      role: 'admin',
       verified: true,
       locale: 'es'
     }
