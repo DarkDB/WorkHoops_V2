@@ -1,6 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
+// Simplified Prisma schema for SQLite
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,56 +6,6 @@ generator client {
 datasource db {
   provider = "sqlite"
   url      = "file:./dev.db"
-}
-
-enum UserRole {
-  jugador
-  entrenador
-  club
-  admin
-}
-
-enum PlanType {
-  free_amateur
-  pro_semipro
-  club_agencia
-  destacado
-}
-
-enum OpportunityType {
-  empleo
-  prueba
-  torneo
-  clinica
-  beca
-  patrocinio
-}
-
-enum OpportunityStatus {
-  borrador
-  pendiente
-  publicada
-  cerrada
-}
-
-enum OpportunityLevel {
-  amateur
-  semi_pro
-  cantera
-  pro
-}
-
-enum Modality {
-  presencial
-  online
-  mixta
-}
-
-enum ApplicationState {
-  enviada
-  vista
-  rechazada
-  aceptada
 }
 
 model Account {
@@ -90,18 +38,27 @@ model Session {
   @@map("sessions")
 }
 
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
   emailVerified DateTime?
   name          String?
   image         String?
-  role          UserRole  @default(jugador)
+  role          String    @default("jugador") // jugador, entrenador, club, admin
   locale        String    @default("es")
   verified      Boolean   @default(false)
   
   // Plan information
-  planType      PlanType  @default(free_amateur)
+  planType      String    @default("free_amateur") // free_amateur, pro_semipro, club_agencia, destacado
   planStart     DateTime?
   planEnd       DateTime?
   isActive      Boolean   @default(true)
@@ -124,109 +81,107 @@ model User {
   @@map("users")
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verificationtokens")
-}
-
 model Organization {
-  id           String    @id @default(cuid())
-  name         String
-  slug         String    @unique
-  ownerId      String
-  logoUrl      String?
-  bio          String?
-  verified     Boolean   @default(false)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  website     String?
+  logo        String?
+  verified    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   // Relations
-  owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner         User          @relation(fields: [ownerId], references: [id])
+  ownerId       String
   opportunities Opportunity[]
 
-  @@index([slug])
-  @@index([ownerId])
   @@map("organizations")
 }
 
 model Opportunity {
-  id             String            @id @default(cuid())
-  slug           String            @unique
-  title          String
-  type           OpportunityType
-  organizationId String
-  status         OpportunityStatus @default(borrador)
-  level          OpportunityLevel
-  city           String
-  region         String?
-  country        String            @default("España")
-  lat            Float?
-  lng            Float?
-  modality       Modality          @default(presencial)
-  remuneration   Json?             // { min: number, max: number, currency: string, type: 'monthly'|'annual'|'per_event' }
-  benefits       String?           // Markdown
-  description    String            // Markdown
-  requirements   String?           // Markdown
-  deadline       DateTime?
-  publishedAt    DateTime?
-  tags           String[]
-  verified       Boolean           @default(false)
-  featured       Boolean           @default(false)
-  createdBy      String
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  
+  // Basic info
+  type        String   // empleo, prueba, torneo, clinica, beca, patrocinio
+  level       String   // amateur, semi_pro, cantera, pro
+  status      String   @default("borrador") // borrador, pendiente, publicada, cerrada
+  
+  // Location
+  city        String?
+  country     String   @default("España")
+  latitude    Float?
+  longitude   Float?
+  modality    String   @default("presencial") // presencial, online, mixta
+  
+  // Compensation & Benefits
+  remunerationType String? // monthly, annual, per_event, none
+  remunerationMin  Float?
+  remunerationMax  Float?
+  currency         String @default("EUR")
+  benefits         String?
+  
+  // Dates
+  deadline    DateTime?
+  startDate   DateTime?
+  endDate     DateTime?
+  publishedAt DateTime?
+  
+  // Tags as comma-separated string
+  tags        String?   // "base,entrenador,madrid"
+  verified    Boolean   @default(false)
+  
+  // Contact
+  contactEmail   String
+  contactPhone   String?
+  applicationUrl String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  creator      User          @relation(fields: [createdBy], references: [id])
-  applications Application[]
-  favorites    Favorite[]
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+  author         User         @relation(fields: [authorId], references: [id])
+  authorId       String
+  applications   Application[]
+  favorites      Favorite[]
 
-  @@index([slug])
-  @@index([status, publishedAt])
-  @@index([type, level])
-  @@index([city, country])
-  @@index([organizationId])
-  @@index([createdBy])
   @@map("opportunities")
 }
 
 model Application {
-  id            String           @id @default(cuid())
-  userId        String
-  opportunityId String
-  state         ApplicationState @default(enviada)
-  message       String?
-  cvUrl         String?
-  portfolioUrl  String?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id        String   @id @default(cuid())
+  state     String   @default("enviada") // enviada, vista, rechazada, aceptada
+  message   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  opportunity Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  opportunityId String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
 
   @@unique([userId, opportunityId])
-  @@index([userId])
-  @@index([opportunityId])
-  @@index([state])
   @@map("applications")
 }
 
 model Favorite {
-  userId        String
-  opportunityId String
-  createdAt     DateTime @default(now())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
 
   // Relations
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  opportunity Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  opportunityId String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
 
-  @@id([userId, opportunityId])
+  @@unique([userId, opportunityId])
   @@map("favorites")
 }
 
@@ -236,15 +191,12 @@ model AuditLog {
   action    String   // "created", "updated", "deleted", "applied", "state_changed"
   entity    String   // "opportunity", "application", "organization"
   entityId  String
-  metadata  Json?    // Additional context
+  metadata  String?  // JSON as string
   createdAt DateTime @default(now())
 
   // Relations
   actor User @relation(fields: [actorId], references: [id])
 
-  @@index([actorId])
-  @@index([entity, entityId])
-  @@index([createdAt])
   @@map("audit_logs")
 }
 
@@ -255,7 +207,7 @@ model Subscription {
   stripePriceId        String
   stripeCustomerId     String
   status               String    // active, canceled, past_due, etc.
-  planType             PlanType
+  planType             String    // free_amateur, pro_semipro, club_agencia, destacado
   currentPeriodStart   DateTime
   currentPeriodEnd     DateTime
   cancelAtPeriodEnd    Boolean   @default(false)
@@ -265,7 +217,5 @@ model Subscription {
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
-  @@index([stripeSubscriptionId])
   @@map("subscriptions")
 }
