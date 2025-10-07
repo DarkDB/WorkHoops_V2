@@ -225,14 +225,14 @@ export default async function HomePage() {
                     {opportunity.title}
                   </CardTitle>
                   <div className="text-sm text-gray-600 flex items-center space-x-2">
-                    {opportunity.organization.logo && (
+                    {opportunity.organization?.logo && (
                       <img 
                         src={opportunity.organization.logo}
                         alt={opportunity.organization.name}
                         className="w-4 h-4 rounded-full"
                       />
                     )}
-                    <span>{opportunity.organization.name}</span>
+                    <span>{opportunity.organization?.name || 'Organizador individual'}</span>
                     {opportunity.organization.verified && (
                       <CheckCircle className="w-3 h-3 text-blue-500" />
                     )}
