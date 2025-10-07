@@ -273,7 +273,7 @@ export default function CookiesPage() {
                   ya que son necesarias para el funcionamiento básico del sitio.
                 </p>
               </div>
-            </div>
+            </CardContent>
           </Card>
 
           {/* Cookies de terceros */}
