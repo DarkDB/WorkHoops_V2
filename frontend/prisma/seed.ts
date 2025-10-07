@@ -73,10 +73,9 @@ async function main() {
       status: 'publicada',
       level: 'cantera',
       city: 'Barcelona',
-      region: 'Cataluña',
       country: 'España',
-      lat: 41.3851,
-      lng: 2.1734,
+      latitude: 41.3851,
+      longitude: 2.1734,
       modality: 'presencial',
       remuneration: {
         min: 30000,
