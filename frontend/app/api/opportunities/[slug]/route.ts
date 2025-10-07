@@ -104,7 +104,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     // Check permissions
     const canEdit = 
       session.user.role === 'admin' ||
-      existing.createdBy === session.user.id ||
+      existing.authorId === session.user.id ||
       existing.organization.ownerId === session.user.id
 
     if (!canEdit) {
@@ -217,7 +217,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     // Check permissions
     const canDelete = 
       session.user.role === 'admin' ||
-      existing.createdBy === session.user.id ||
+      existing.authorId === session.user.id ||
       existing.organization.ownerId === session.user.id
 
     if (!canDelete) {
