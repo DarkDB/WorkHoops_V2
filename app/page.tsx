@@ -283,9 +283,9 @@ export default async function HomePage() {
             Únete a cientos de jugadores y organizaciones que ya confían en WorkHoops
           </p>
           <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
-            <Link href="/auth/register">
+            <Link href="/planes">
               <Button size="lg" variant="secondary" className="px-8 py-4">
-                Crear cuenta gratuita
+                Ver planes y precios
               </Button>
             </Link>
             <Link href="/oportunidades">
