@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
     const sanitizedData = {
       name: sanitizeInput(data.name),
       bio: data.bio ? sanitizeInput(data.bio) : null,
-      logoUrl: data.logoUrl || null,
+      logo: data.logoUrl || null,
     }
 
     // Create organization
