@@ -196,11 +196,11 @@ model Opportunity {
 }
 
 model Application {
-  id        String   @id @default(cuid())
-  state     String   @default("enviada") // enviada, vista, rechazada, aceptada
+  id        String           @id @default(cuid())
+  state     ApplicationState @default(enviada)
   message   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
   // Relations
   opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
