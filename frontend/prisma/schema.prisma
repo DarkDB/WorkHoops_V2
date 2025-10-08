@@ -1,11 +1,57 @@
-// Simplified Prisma schema for SQLite
+// This is your Prisma schema file for PostgreSQL production
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums for PostgreSQL
+enum UserRole {
+  admin
+  jugador
+  entrenador  
+  club
+}
+
+enum OpportunityType {
+  empleo
+  prueba
+  torneo
+  clinica
+  beca
+  patrocinio
+}
+
+enum OpportunityStatus {
+  borrador
+  pendiente
+  publicada
+  cerrada
+  cancelada
+}
+
+enum OpportunityLevel {
+  amateur
+  semi_pro
+  cantera
+  pro
+}
+
+enum Modality {
+  presencial
+  online
+  mixta
+}
+
+enum ApplicationState {
+  enviada
+  en_revision
+  aceptada
+  rechazada
+  finalizada
 }
 
 model Account {
