@@ -147,52 +147,47 @@ model Organization {
 }
 
 model Opportunity {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  description String
-  
-  // Basic info
-  type        String   // empleo, prueba, torneo, clinica, beca, patrocinio
-  level       String   // amateur, semi_pro, cantera, pro
-  status      String   @default("borrador") // borrador, pendiente, publicada, cerrada
-  
+  id               String            @id @default(cuid())
+  title            String
+  slug             String            @unique
+  description      String
+  type             OpportunityType
+  status           OpportunityStatus @default(borrador)
+  level            OpportunityLevel
+
   // Location
-  city        String?
-  country     String   @default("España")
-  latitude    Float?
-  longitude   Float?
-  modality    String   @default("presencial") // presencial, online, mixta
-  
-  // Compensation & Benefits
-  remunerationType String? // monthly, annual, per_event, none
+  city      String?
+  country   String   @default("España")
+  latitude  Float?
+  longitude Float?
+  modality  Modality @default(presencial)
+
+  // Remuneration
+  remunerationType String? // hourly, monthly, annual, one_time
   remunerationMin  Float?
   remunerationMax  Float?
-  currency         String @default("EUR")
-  benefits         String?
-  
-  // Dates
+  currency         String  @default("EUR")
+
+  // Details
+  benefits    String?
   deadline    DateTime?
   startDate   DateTime?
   endDate     DateTime?
   publishedAt DateTime?
-  
-  // Tags as comma-separated string
-  tags        String?   // "base,entrenador,madrid"
-  verified    Boolean   @default(false)
-  
+  tags        String?
+  verified    Boolean @default(false)
+
   // Contact
-  contactEmail   String
-  contactPhone   String?
+  contactEmail String
+  contactPhone String?
   applicationUrl String?
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  organization   Organization? @relation(fields: [organizationId], references: [id])
   organizationId String?
-  author         User         @relation(fields: [authorId], references: [id])
+  organization   Organization? @relation(fields: [organizationId], references: [id])
   authorId       String
   applications   Application[]
   favorites      Favorite[]
