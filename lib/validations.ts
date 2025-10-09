@@ -25,8 +25,6 @@ export const opportunityCreateSchema = z.object({
 export const applicationCreateSchema = z.object({
   opportunityId: z.string().cuid("ID de oportunidad inválido"),
   message: z.string().min(10, "El mensaje debe tener al menos 10 caracteres").max(1000, "El mensaje no puede superar los 1000 caracteres"),
-  cvUrl: z.string().url("URL de CV inválida").optional(),
-  portfolioUrl: z.string().url("URL de portfolio inválida").optional(),
 })
 
 export const applicationUpdateSchema = z.object({
@@ -35,8 +33,8 @@ export const applicationUpdateSchema = z.object({
 
 export const organizationCreateSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres").max(100, "El nombre no puede superar los 100 caracteres"),
-  bio: z.string().max(500, "La biografía no puede superar los 500 caracteres").optional(),
-  logoUrl: z.string().url("URL de logo inválida").optional(),
+  description: z.string().max(500, "La descripción no puede superar los 500 caracteres").optional(),
+  logo: z.string().url("URL de logo inválida").optional(),
 })
 
 export const userUpdateSchema = z.object({

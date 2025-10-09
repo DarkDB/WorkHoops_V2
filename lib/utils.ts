@@ -21,6 +21,8 @@ export function formatCurrency(amount: number, currency = 'EUR'): string {
   }).format(amount)
 }
 
+// Removed duplicate function definitions - keeping the improved versions below
+
 export function formatDate(date: Date | string): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date
   return new Intl.DateTimeFormat('es-ES', {

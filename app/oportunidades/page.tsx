@@ -36,13 +36,13 @@ async function getOpportunities(searchParams: OpportunitiesPageProps['searchPara
   if (searchParams.type) where.type = searchParams.type
   if (searchParams.level) where.level = searchParams.level
   if (searchParams.city) {
-    where.city = { contains: searchParams.city, mode: 'insensitive' }
+    where.city = { contains: searchParams.city }
   }
   if (searchParams.search) {
     where.OR = [
-      { title: { contains: searchParams.search, mode: 'insensitive' } },
-      { description: { contains: searchParams.search, mode: 'insensitive' } },
-      { tags: { hasSome: [searchParams.search] } },
+      { title: { contains: searchParams.search } },
+      { description: { contains: searchParams.search } },
+      { tags: { contains: searchParams.search } },
     ]
   }
 
@@ -53,14 +53,13 @@ async function getOpportunities(searchParams: OpportunitiesPageProps['searchPara
         skip,
         take: limit,
         orderBy: [
-          { featured: 'desc' },
-          { publishedAt: 'desc' },
+          { publishedAt: 'desc' }
         ],
         include: {
           organization: {
             select: {
               name: true,
-              logoUrl: true,
+              logo: true,
               verified: true,
             },
           },
@@ -117,15 +116,15 @@ function OpportunityCard({ opportunity }: { opportunity: any }) {
         </CardTitle>
         
         <div className="text-sm text-gray-600 flex items-center space-x-2">
-          {opportunity.organization.logoUrl && (
+          {opportunity.organization?.logo && (
             <img 
-              src={opportunity.organization.logoUrl}
+              src={opportunity.organization.logo}
               alt={opportunity.organization.name}
               className="w-5 h-5 rounded-full object-cover"
             />
           )}
-          <span>{opportunity.organization.name}</span>
-          {opportunity.organization.verified && (
+          <span>{opportunity.organization?.name || 'Organizador individual'}</span>
+          {opportunity.organization?.verified && (
             <CheckCircle className="w-3 h-3 text-blue-500" />
           )}
         </div>

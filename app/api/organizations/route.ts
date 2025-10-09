@@ -3,7 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { organizationCreateSchema } from '@/lib/validations'
-import { generateSlug, sanitizeInput } from '@/lib/sanitize'
+import { generateSlug } from '@/lib/utils'
+import { sanitizeInput } from '@/lib/sanitize'
 import { rateLimitByIP } from '@/lib/rate-limit'
 
 // GET /api/organizations - List organizations
@@ -40,8 +41,8 @@ export async function GET(request: NextRequest) {
           id: true,
           name: true,
           slug: true,
-          logoUrl: true,
-          bio: true,
+          logo: true,
+          description: true,
           verified: true,
           createdAt: true,
           _count: {
@@ -145,8 +146,8 @@ export async function POST(request: NextRequest) {
     // Sanitize input
     const sanitizedData = {
       name: sanitizeInput(data.name),
-      bio: data.bio ? sanitizeInput(data.bio) : null,
-      logoUrl: data.logoUrl || null,
+      description: data.description ? sanitizeInput(data.description) : null,
+      logo: data.logo || null,
     }
 
     // Create organization
@@ -165,10 +166,10 @@ export async function POST(request: NextRequest) {
         action: 'created',
         entity: 'organization',
         entityId: organization.id,
-        metadata: {
+        metadata: JSON.stringify({
           name: organization.name,
           slug: organization.slug,
-        },
+        }),
       },
     })
 

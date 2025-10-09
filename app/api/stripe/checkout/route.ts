@@ -96,7 +96,6 @@ export async function POST(request: NextRequest) {
         data: {
           status: 'publicada',
           publishedAt: new Date(),
-          featured: false,
         },
       })
 
@@ -107,10 +106,10 @@ export async function POST(request: NextRequest) {
           action: 'published_free',
           entity: 'opportunity',
           entityId: opportunityId,
-          metadata: {
+          metadata: JSON.stringify({
             planId,
             title: opportunity.title,
-          },
+          }),
         },
       })
 

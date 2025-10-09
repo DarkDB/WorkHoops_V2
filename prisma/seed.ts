@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, OpportunityType, OpportunityStatus, OpportunityLevel, Modality, ApplicationState } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { hash } from 'bcryptjs'
 
 const prisma = new PrismaClient()
@@ -13,7 +13,7 @@ async function main() {
     create: {
       email: 'admin@workhoops.es',
       name: 'WorkHoops Admin',
-      role: UserRole.admin,
+      role: 'admin',
       verified: true,
       locale: 'es'
     }
@@ -25,7 +25,7 @@ async function main() {
     create: {
       email: 'fcbarcelona@workhoops.es',
       name: 'FC Barcelona Basquet',
-      role: UserRole.org,
+      role: 'org',
       verified: true,
       locale: 'es'
     }
@@ -37,7 +37,7 @@ async function main() {
     create: {
       email: 'jugador@workhoops.es',
       name: 'Marc González',
-      role: UserRole.user,
+      role: 'user',
       verified: true,
       locale: 'es'
     }
@@ -53,8 +53,8 @@ async function main() {
       name: 'FC Barcelona Basquet',
       slug: 'fc-barcelona-basquet',
       ownerId: orgUser.id,
-      logoUrl: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=200',
-      bio: 'Club de baloncesto profesional con sede en Barcelona, parte del FC Barcelona. Compitiendo en la Liga Endesa ACB.',
+      logo: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=200',
+      description: 'Club de baloncesto profesional con sede en Barcelona, parte del FC Barcelona. Compitiendo en la Liga Endesa ACB.',
       verified: true
     }
   })
@@ -68,22 +68,19 @@ async function main() {
     create: {
       title: 'Entrenador Cantera Masculina U16',
       slug: 'entrenador-cantera-masculina-u16-barcelona',
-      type: OpportunityType.empleo,
+      type: 'empleo',
       organizationId: organization.id,
-      status: OpportunityStatus.publicada,
-      level: OpportunityLevel.cantera,
+      status: 'publicada',
+      level: 'cantera',
       city: 'Barcelona',
-      region: 'Cataluña',
       country: 'España',
-      lat: 41.3851,
-      lng: 2.1734,
-      modality: Modality.presencial,
-      remuneration: {
-        min: 30000,
-        max: 40000,
-        currency: 'EUR',
-        type: 'annual'
-      },
+      latitude: 41.3851,
+      longitude: 2.1734,
+      modality: 'presencial',
+      remunerationType: 'annual',
+      remunerationMin: 30000,
+      remunerationMax: 40000,
+      currency: 'EUR',
       benefits: `**Beneficios incluidos:**
 - Seguro médico completo
 - Formación continua en metodologías de entrenamiento
@@ -99,8 +96,9 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
 - Desarrollo individual y colectivo de los jugadores
 - Participación activa en la competición de Liga Autonómica
 - Colaboración estrecha con el cuerpo técnico del club
-- Seguimiento del progreso académico de los jugadores`,
-      requirements: `**Requisitos imprescindibles:**
+- Seguimiento del progreso académico de los jugadores
+
+**Requisitos imprescindibles:**
 - Título de Entrenador Superior de Baloncesto
 - Experiencia mínima de 3 años entrenando cantera
 - Nivel de inglés conversacional
@@ -113,10 +111,10 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
 - Conocimientos de análisis video`,
       deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
       publishedAt: new Date(),
-      tags: ['entrenador', 'cantera', 'barcelona', 'masculino', 'u16'],
+      tags: 'entrenador,cantera,barcelona,masculino,u16',
       verified: true,
-      featured: false,
-      createdBy: orgUser.id
+      contactEmail: 'rrhh@fcbarcelona.es',
+      authorId: orgUser.id
     }
   })
 
@@ -126,16 +124,15 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
     create: {
       title: 'Pruebas Equipo Femenino Senior',
       slug: 'pruebas-equipo-femenino-senior-valencia',
-      type: OpportunityType.prueba,
+      type: 'prueba',
       organizationId: organization.id,
-      status: OpportunityStatus.publicada,
-      level: OpportunityLevel.semi_pro,
+      status: 'publicada',
+      level: 'semi_pro',
       city: 'Valencia',
-      region: 'Comunidad Valenciana',
       country: 'España',
-      lat: 39.4699,
-      lng: -0.3763,
-      modality: Modality.presencial,
+      latitude: 39.4699,
+      longitude: -0.3763,
+      modality: 'presencial',
       benefits: `**Lo que ofrecemos:**
 - Seguro deportivo completo
 - Material técnico de entrenamiento
@@ -157,8 +154,9 @@ Las pruebas se realizarán durante dos jornadas consecutivas donde evaluaremos:
 
 **Fecha:** A confirmar tras inscripción
 **Duración:** 2 días intensivos
-**Ubicación:** Pabellón Municipal de Valencia`,
-      requirements: `**Requisitos para participar:**
+**Ubicación:** Pabellón Municipal de Valencia
+
+**Requisitos para participar:**
 - Edad entre 18 y 28 años
 - Experiencia demostrable en liga autonómica o superior
 - Altura mínima recomendada: 1.70m
@@ -166,10 +164,10 @@ Las pruebas se realizarán durante dos jornadas consecutivas donde evaluaremos:
 - Seguro deportivo actualizado`,
       deadline: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
       publishedAt: new Date(),
-      tags: ['prueba', 'femenino', 'valencia', 'senior', 'lf2'],
+      tags: 'prueba,femenino,valencia,senior,lf2',
       verified: true,
-      featured: true, // This is a featured opportunity
-      createdBy: orgUser.id
+      contactEmail: 'rrhh@fcbarcelona.es',
+      authorId: orgUser.id
     }
   })
 
@@ -179,14 +177,12 @@ Las pruebas se realizarán durante dos jornadas consecutivas donde evaluaremos:
     create: {
       title: 'Beca Baloncesto + Estudios Estados Unidos',
       slug: 'beca-baloncesto-estados-unidos-universidad',
-      type: OpportunityType.beca,
-      organizationId: organization.id,
-      status: OpportunityStatus.pendiente, // Pending approval
-      level: OpportunityLevel.amateur,
+      type: 'beca',
+      status: 'pendiente', // Pending approval
+      level: 'amateur',
       city: 'California',
-      region: 'California',
       country: 'Estados Unidos',
-      modality: Modality.presencial,
+      modality: 'presencial',
       benefits: `**Beca completa que incluye:**
 - Matrícula universitaria cubierta al 100%
 - Alojamiento en campus universitario
@@ -207,8 +203,9 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
 2. Assessment académico y de inglés
 3. Entrevistas personales
 4. Matching con universidades
-5. Tramitación de documentación`,
-      requirements: `**Requisitos del programa:**
+5. Tramitación de documentación
+
+**Requisitos del programa:**
 - Edad entre 16 y 18 años
 - Expediente académico notable (mínimo 7/10)
 - Nivel B2 de inglés certificado
@@ -216,10 +213,10 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
 - Experiencia en competición federada
 - Disponibilidad para traslado a EEUU`,
       deadline: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
-      tags: ['beca', 'estados-unidos', 'universidad', 'ncaa', 'internacional'],
+      tags: 'beca,estados-unidos,universidad,ncaa,internacional',
       verified: false, // Not yet verified
-      featured: false,
-      createdBy: orgUser.id
+      contactEmail: 'becas@basketusa.com',
+      authorId: orgUser.id
     }
   })
 
@@ -237,10 +234,8 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
     create: {
       userId: regularUser.id,
       opportunityId: opportunity1.id,
-      state: ApplicationState.enviada,
-      message: 'Buenos días,\n\nMe dirijo a ustedes para expresar mi interés en la posición de Entrenador de Cantera Masculina U16. Con 5 años de experiencia entrenando equipos juveniles y mi titulación de Entrenador Superior, creo que puedo aportar mucho valor al desarrollo de los jóvenes talentos del club.\n\nAdjunto mi CV y estaré encantado de ampliar cualquier información en una entrevista personal.\n\nSaludos cordiales,\nMarc González',
-      cvUrl: null, // Will be populated when file upload is implemented
-      portfolioUrl: 'https://linkedin.com/in/marc-gonzalez-basketball'
+      state: 'enviada',
+      message: 'Buenos días,\n\nMe dirijo a ustedes para expresar mi interés en la posición de Entrenador de Cantera Masculina U16. Con 5 años de experiencia entrenando equipos juveniles y mi titulación de Entrenador Superior, creo que puedo aportar mucho valor al desarrollo de los jóvenes talentos del club.\n\nAdjunto mi CV y estaré encantado de ampliar cualquier información en una entrevista personal.\n\nSaludos cordiales,\nMarc González'
     }
   })
 
@@ -253,10 +248,10 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
       action: 'created',
       entity: 'opportunity',
       entityId: opportunity1.id,
-      metadata: {
+      metadata: JSON.stringify({
         title: opportunity1.title,
         type: opportunity1.type
-      }
+      })
     }
   })
 
@@ -266,10 +261,10 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
       action: 'applied',
       entity: 'application',
       entityId: application.id,
-      metadata: {
+      metadata: JSON.stringify({
         opportunityTitle: opportunity1.title,
         applicationState: application.state
-      }
+      })
     }
   })
 
@@ -279,7 +274,7 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
   console.log('\n📊 Summary:')
   console.log(`- Users: 3 (1 admin, 1 org, 1 user)`)
   console.log(`- Organizations: 1`)
-  console.log(`- Opportunities: 3 (1 published, 1 featured, 1 pending)`)
+  console.log(`- Opportunities: 3 (2 published, 1 pending)`)
   console.log(`- Applications: 1`)
   console.log(`- Audit logs: 2`)
   

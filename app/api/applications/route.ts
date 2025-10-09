@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
               organization: {
                 select: {
                   name: true,
-                  logoUrl: true,
+                  logo: true,
                 },
               },
             },
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { opportunityId, message, cvUrl, portfolioUrl } = validation.data
+    const { opportunityId, message } = validation.data
 
     // Check if opportunity exists and is open for applications
     const opportunity = await prisma.opportunity.findUnique({
@@ -177,8 +177,6 @@ export async function POST(request: NextRequest) {
         userId: session.user.id,
         opportunityId,
         message: sanitizeInput(message),
-        cvUrl,
-        portfolioUrl,
         state: 'enviada',
       },
       include: {
@@ -203,10 +201,10 @@ export async function POST(request: NextRequest) {
         action: 'applied',
         entity: 'application',
         entityId: application.id,
-        metadata: {
+        metadata: JSON.stringify({
           opportunityId,
           opportunityTitle: opportunity.title,
-        },
+        }),
       },
     })
 

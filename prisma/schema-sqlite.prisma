@@ -1,57 +1,11 @@
-// This is your Prisma schema file for PostgreSQL production
+// Simplified Prisma schema for SQLite
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-// Enums for PostgreSQL
-enum UserRole {
-  admin
-  jugador
-  entrenador  
-  club
-}
-
-enum OpportunityType {
-  empleo
-  prueba
-  torneo
-  clinica
-  beca
-  patrocinio
-}
-
-enum OpportunityStatus {
-  borrador
-  pendiente
-  publicada
-  cerrada
-  cancelada
-}
-
-enum OpportunityLevel {
-  amateur
-  semi_pro
-  cantera
-  pro
-}
-
-enum Modality {
-  presencial
-  online
-  mixta
-}
-
-enum ApplicationState {
-  enviada
-  en_revision
-  aceptada
-  rechazada
-  finalizada
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Account {
@@ -99,7 +53,7 @@ model User {
   emailVerified DateTime?
   name          String?
   image         String?
-  role          UserRole  @default(jugador)
+  role          String    @default("jugador") // jugador, entrenador, club, admin
   locale        String    @default("es")
   verified      Boolean   @default(false)
   
@@ -147,47 +101,52 @@ model Organization {
 }
 
 model Opportunity {
-  id               String            @id @default(cuid())
-  title            String
-  slug             String            @unique
-  description      String
-  type             OpportunityType
-  status           OpportunityStatus @default(borrador)
-  level            OpportunityLevel
-
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  
+  // Basic info
+  type        String   // empleo, prueba, torneo, clinica, beca, patrocinio
+  level       String   // amateur, semi_pro, cantera, pro
+  status      String   @default("borrador") // borrador, pendiente, publicada, cerrada
+  
   // Location
-  city      String?
-  country   String   @default("España")
-  latitude  Float?
-  longitude Float?
-  modality  Modality @default(presencial)
-
-  // Remuneration
-  remunerationType String? // hourly, monthly, annual, one_time
+  city        String?
+  country     String   @default("España")
+  latitude    Float?
+  longitude   Float?
+  modality    String   @default("presencial") // presencial, online, mixta
+  
+  // Compensation & Benefits
+  remunerationType String? // monthly, annual, per_event, none
   remunerationMin  Float?
   remunerationMax  Float?
-  currency         String  @default("EUR")
-
-  // Details
-  benefits    String?
+  currency         String @default("EUR")
+  benefits         String?
+  
+  // Dates
   deadline    DateTime?
   startDate   DateTime?
   endDate     DateTime?
   publishedAt DateTime?
-  tags        String?
-  verified    Boolean @default(false)
-
+  
+  // Tags as comma-separated string
+  tags        String?   // "base,entrenador,madrid"
+  verified    Boolean   @default(false)
+  
   // Contact
-  contactEmail String
-  contactPhone String?
+  contactEmail   String
+  contactPhone   String?
   applicationUrl String?
-
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+  author         User         @relation(fields: [authorId], references: [id])
   authorId       String
   applications   Application[]
   favorites      Favorite[]
@@ -196,11 +155,11 @@ model Opportunity {
 }
 
 model Application {
-  id        String           @id @default(cuid())
-  state     ApplicationState @default(enviada)
+  id        String   @id @default(cuid())
+  state     String   @default("enviada") // enviada, vista, rechazada, aceptada
   message   String?
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)

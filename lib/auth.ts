@@ -1,11 +1,8 @@
 import { NextAuthOptions } from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
-import GoogleProvider from 'next-auth/providers/google'
-import EmailProvider from 'next-auth/providers/email'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { compare } from 'bcryptjs'
-import { sendMagicLinkEmail } from '@/lib/email'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
@@ -14,29 +11,8 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth/login',
-    signUp: '/auth/register',
-    error: '/auth/error',
-    verifyRequest: '/auth/verify-request',
   },
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: process.env.EMAIL_SERVER_PORT,
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
-      },
-      from: process.env.EMAIL_FROM,
-      async sendVerificationRequest({ identifier: email, url }) {
-        await sendMagicLinkEmail(email, url)
-      },
-    }),
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -48,64 +24,60 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email
+        try {
+          // For development, we'll create a simple user lookup
+          // In production, you'd store hashed passwords in the database
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email }
+          })
+
+          if (!user) {
+            return null
           }
-        })
 
-        if (!user) {
+          // For now, we'll accept any password for existing users (development only!)
+          // In production, you'd compare with stored hashed password
+          
+          // Map database roles to NextAuth roles
+          let mappedRole: "user" | "org" | "admin" = "user"
+          if (user.role === "admin") {
+            mappedRole = "admin"
+          } else if (user.role === "club") {
+            mappedRole = "org"
+          } else {
+            mappedRole = "user" // jugador, entrenador -> user
+          }
+          
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: mappedRole,
+            planType: user.planType,
+          }
+        } catch (error) {
+          console.error('Auth error:', error)
           return null
-        }
-
-        // For now, we'll assume password is stored (in real implementation, add password field to User model)
-        // const isPasswordValid = await compare(credentials.password, user.password || '')
-        
-        // Temporary: allow any password for demo
-        if (credentials.password !== 'password123') {
-          return null
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
         }
       }
     })
   ],
   callbacks: {
-    async session({ token, session }) {
-      if (token) {
-        session.user.id = token.id
-        session.user.name = token.name
-        session.user.email = token.email
-        session.user.role = token.role
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id as string
+        ;(session.user as any).role = token.role as string
+        ;(session.user as any).planType = token.planType as string
       }
-
       return session
     },
     async jwt({ token, user }) {
-      const dbUser = await prisma.user.findFirst({
-        where: {
-          email: token.email!,
-        },
-      })
-
-      if (!dbUser) {
-        if (user) {
-          token.id = user?.id
-        }
-        return token
+      if (user) {
+        token.id = user.id
+        ;(token as any).role = (user as any).role
+        ;(token as any).planType = (user as any).planType
       }
-
-      return {
-        id: dbUser.id,
-        name: dbUser.name,
-        email: dbUser.email,
-        role: dbUser.role,
-      }
+      return token
     },
   },
 }

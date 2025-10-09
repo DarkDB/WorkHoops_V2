@@ -1,6 +1,10 @@
-import { Redis } from 'redis'
+// Simple in-memory rate limiter for development
+interface RateLimitEntry {
+  timestamp: number
+  count: number
+}
 
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379')
+const rateLimitStore = new Map<string, RateLimitEntry[]>()
 
 export interface RateLimitResult {
   success: boolean
@@ -14,53 +18,42 @@ export async function rateLimit(
   limit: number = 10,
   window: number = 60 * 1000 // 1 minute in milliseconds
 ): Promise<RateLimitResult> {
-  const key = `rate_limit:${identifier}`
   const now = Date.now()
   const windowStart = now - window
-
-  try {
-    // Remove expired entries
-    await redis.zremrangebyscore(key, '-inf', windowStart)
+  
+  // Get or create entries for this identifier
+  let entries = rateLimitStore.get(identifier) || []
+  
+  // Remove expired entries
+  entries = entries.filter(entry => entry.timestamp > windowStart)
+  
+  // Count current requests
+  const currentCount = entries.length
+  
+  if (currentCount >= limit) {
+    // Find the oldest entry to calculate reset time
+    const oldestEntry = entries[0]
+    const resetTime = oldestEntry 
+      ? new Date(oldestEntry.timestamp + window)
+      : new Date(now + window)
     
-    // Count current requests in window
-    const current = await redis.zcard(key)
-    
-    if (current >= limit) {
-      // Get the oldest entry to calculate reset time
-      const oldest = await redis.zrange(key, 0, 0, { withScores: true })
-      const resetTime = oldest.length > 0 
-        ? new Date((oldest[0].score as number) + window)
-        : new Date(now + window)
-
-      return {
-        success: false,
-        limit,
-        remaining: 0,
-        reset: resetTime,
-      }
-    }
-
-    // Add current request
-    await redis.zadd(key, { score: now, value: `${now}-${Math.random()}` })
-    
-    // Set expiration on key
-    await redis.expire(key, Math.ceil(window / 1000))
-
     return {
-      success: true,
+      success: false,
       limit,
-      remaining: Math.max(0, limit - (current + 1)),
-      reset: new Date(now + window),
+      remaining: 0,
+      reset: resetTime,
     }
-  } catch (error) {
-    console.error('Rate limiting error:', error)
-    // If Redis fails, allow the request but log the error
-    return {
-      success: true,
-      limit,
-      remaining: limit - 1,
-      reset: new Date(now + window),
-    }
+  }
+  
+  // Add current request
+  entries.push({ timestamp: now, count: 1 })
+  rateLimitStore.set(identifier, entries)
+  
+  return {
+    success: true,
+    limit,
+    remaining: Math.max(0, limit - (currentCount + 1)),
+    reset: new Date(now + window),
   }
 }
 

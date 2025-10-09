@@ -58,25 +58,51 @@ export function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-6">
             <Link 
               href="/oportunidades" 
-              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
             >
-              Oportunidades
+              <span>🏀</span>
+              <span>Ofertas</span>
+            </Link>
+            <Link 
+              href="/publicar" 
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
+            >
+              <span>📝</span>
+              <span>Publicar</span>
+            </Link>
+            <Link 
+              href="/talento" 
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
+            >
+              <span>⭐</span>
+              <span>Talento</span>
             </Link>
             <Link 
               href="/recursos" 
-              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
             >
-              Recursos
+              <span>📚</span>
+              <span>Recursos</span>
             </Link>
             <Link 
               href="/planes" 
-              className="text-gray-600 hover:text-workhoops-accent transition-colors"
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
             >
-              Planes
+              <span>💎</span>
+              <span>Precios</span>
             </Link>
+          </div>
+
+          {/* Compact Mobile/Tablet Navigation */}
+          <div className="hidden md:flex lg:hidden items-center space-x-4">
+            <Link href="/oportunidades" className="text-gray-600 hover:text-workhoops-accent">🏀</Link>
+            <Link href="/publicar" className="text-gray-600 hover:text-workhoops-accent">📝</Link>
+            <Link href="/talento" className="text-gray-600 hover:text-workhoops-accent">⭐</Link>
+            <Link href="/recursos" className="text-gray-600 hover:text-workhoops-accent">📚</Link>
+            <Link href="/planes" className="text-gray-600 hover:text-workhoops-accent">💎</Link>
 
             {/* Auth Section */}
             {status === 'loading' ? (
@@ -192,24 +218,59 @@ export function Navbar() {
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t">
               <Link
                 href="/oportunidades"
-                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
                 onClick={() => setIsOpen(false)}
               >
-                Oportunidades
+                <span>🏀</span>
+                <span>Ofertas</span>
+              </Link>
+              <Link
+                href="/publicar"
+                className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                onClick={() => setIsOpen(false)}
+              >
+                <span>📝</span>
+                <span>Publicar</span>
+              </Link>
+              <Link
+                href="/talento"
+                className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                onClick={() => setIsOpen(false)}
+              >
+                <span>⭐</span>
+                <span>Talento</span>
               </Link>
               <Link
                 href="/recursos"
-                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
                 onClick={() => setIsOpen(false)}
               >
-                Recursos
+                <span>📚</span>
+                <span>Recursos</span>
+              </Link>
+              <Link
+                href="/sobre"
+                className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                onClick={() => setIsOpen(false)}
+              >
+                <span>🎯</span>
+                <span>Sobre WorkHoops</span>
               </Link>
               <Link
                 href="/planes"
-                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
                 onClick={() => setIsOpen(false)}
               >
-                Planes
+                <span>💎</span>
+                <span>Precios</span>
+              </Link>
+              <Link
+                href="/contacto"
+                className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                onClick={() => setIsOpen(false)}
+              >
+                <span>📞</span>
+                <span>Contacto</span>
               </Link>
 
               <div className="border-t pt-4">

@@ -22,12 +22,12 @@ export async function GET(request: NextRequest, { params }: Params) {
             id: true,
             name: true,
             slug: true,
-            logoUrl: true,
-            bio: true,
+            logo: true,
+            description: true,
             verified: true,
           },
         },
-        creator: {
+        author: {
           select: {
             id: true,
             name: true,
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 
     // Only show published opportunities to public
     const session = await getServerSession(authOptions)
-    const isOwner = session?.user?.id === opportunity.createdBy
+    const isOwner = session?.user?.id === opportunity.authorId
     const isAdmin = session?.user?.role === 'admin'
 
     if (opportunity.status !== 'publicada' && !isOwner && !isAdmin) {
@@ -104,7 +104,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     // Check permissions
     const canEdit = 
       session.user.role === 'admin' ||
-      existing.createdBy === session.user.id ||
+      existing.authorId === session.user.id ||
       existing.organization.ownerId === session.user.id
 
     if (!canEdit) {
@@ -154,7 +154,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
           select: {
             name: true,
             slug: true,
-            logoUrl: true,
+            logo: true,
             verified: true,
           },
         },
@@ -168,9 +168,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         action: 'updated',
         entity: 'opportunity',
         entityId: opportunity.id,
-        metadata: {
+        metadata: JSON.stringify({
           updatedFields: Object.keys(sanitizedData),
-        },
+        }),
       },
     })
 
@@ -217,7 +217,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     // Check permissions
     const canDelete = 
       session.user.role === 'admin' ||
-      existing.createdBy === session.user.id ||
+      existing.authorId === session.user.id ||
       existing.organization.ownerId === session.user.id
 
     if (!canDelete) {
@@ -239,9 +239,9 @@ export async function DELETE(request: NextRequest, { params }: Params) {
         action: 'deleted',
         entity: 'opportunity',
         entityId: existing.id,
-        metadata: {
+        metadata: JSON.stringify({
           title: existing.title,
-        },
+        }),
       },
     })
 
