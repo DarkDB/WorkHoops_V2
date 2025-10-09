@@ -189,6 +189,7 @@ model Opportunity {
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
   authorId       String
+  author         User          @relation(fields: [authorId], references: [id])
   applications   Application[]
   favorites      Favorite[]
 
