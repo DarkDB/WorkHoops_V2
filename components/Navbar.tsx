@@ -96,8 +96,8 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Compact Mobile/Tablet Navigation */}
-          <div className="hidden md:flex lg:hidden items-center space-x-4">
+          {/* Desktop/Tablet Auth Section */}
+          <div className="hidden md:flex items-center space-x-4">
             <Link href="/oportunidades" className="text-gray-600 hover:text-workhoops-accent">🏀</Link>
             <Link href="/publicar" className="text-gray-600 hover:text-workhoops-accent">📝</Link>
             <Link href="/talento" className="text-gray-600 hover:text-workhoops-accent">⭐</Link>
