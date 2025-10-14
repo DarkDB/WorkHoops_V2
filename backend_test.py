@@ -518,6 +518,99 @@ class BackendTester:
                 self.test_results['failed'] += 1
                 self.log_error("Page Routes", f"{name} - {str(e)}")
 
+    def test_new_routes_404_fix(self):
+        """Test the new routes created to fix 404 errors"""
+        print_test_header("New Routes - 404 Fix Testing")
+        
+        # Routes to test as specified in the review request
+        routes_to_test = [
+            ("/dashboard/applications", "Dashboard Applications Page"),
+            ("/dashboard/favorites", "Dashboard Favorites Page"),
+            ("/oportunidades/jugador-base-cb-estudiantes", "Opportunity Details (slug)"),
+            ("/recursos/1", "Resource Article Details (id)"),
+            ("/legal/cookies", "Cookies Policy Page"),
+        ]
+        
+        for route, name in routes_to_test:
+            try:
+                response = self.session.get(f"{BASE_URL}{route}", timeout=15)
+                
+                if response.status_code == 200:
+                    print_success(f"{name} ({route}) - Status 200 ✓")
+                    
+                    # Check if the response contains HTML content
+                    content = response.text
+                    if '<html' in content.lower() and '</html>' in content.lower():
+                        print_success(f"  └─ Contains valid HTML content")
+                        
+                        # Check for specific content indicators
+                        if route == "/dashboard/applications":
+                            if 'aplicaciones' in content.lower() or 'applications' in content.lower():
+                                print_success(f"  └─ Contains applications-related content")
+                            else:
+                                print_warning(f"  └─ May not contain expected applications content")
+                                self.test_results['warnings'] += 1
+                                
+                        elif route == "/dashboard/favorites":
+                            if 'favoritos' in content.lower() or 'favorites' in content.lower():
+                                print_success(f"  └─ Contains favorites-related content")
+                            else:
+                                print_warning(f"  └─ May not contain expected favorites content")
+                                self.test_results['warnings'] += 1
+                                
+                        elif route.startswith("/oportunidades/"):
+                            if 'oportunidad' in content.lower() or 'opportunity' in content.lower():
+                                print_success(f"  └─ Contains opportunity-related content")
+                            else:
+                                print_warning(f"  └─ May not contain expected opportunity content")
+                                self.test_results['warnings'] += 1
+                                
+                        elif route.startswith("/recursos/"):
+                            if 'recurso' in content.lower() or 'resource' in content.lower() or 'artículo' in content.lower():
+                                print_success(f"  └─ Contains resource/article-related content")
+                            else:
+                                print_warning(f"  └─ May not contain expected resource content")
+                                self.test_results['warnings'] += 1
+                                
+                        elif route == "/legal/cookies":
+                            if 'cookies' in content.lower() or 'política' in content.lower():
+                                print_success(f"  └─ Contains cookies policy content")
+                            else:
+                                print_warning(f"  └─ May not contain expected cookies policy content")
+                                self.test_results['warnings'] += 1
+                    else:
+                        print_warning(f"  └─ Response may not be valid HTML")
+                        self.test_results['warnings'] += 1
+                    
+                    self.test_results['passed'] += 1
+                    
+                elif response.status_code == 404:
+                    print_error(f"{name} ({route}) - Still returns 404! ❌")
+                    print_error(f"  └─ The route was not properly implemented or is not accessible")
+                    self.test_results['failed'] += 1
+                    self.log_error("New Routes 404 Fix", f"{name} - Still 404")
+                    
+                elif response.status_code == 302 or response.status_code == 307:
+                    print_info(f"{name} ({route}) - Redirect (Status {response.status_code})")
+                    print_info(f"  └─ This may be expected for protected routes")
+                    self.test_results['passed'] += 1
+                    
+                elif response.status_code == 500:
+                    print_error(f"{name} ({route}) - Internal Server Error (500) ❌")
+                    print_error(f"  └─ Route exists but has runtime errors")
+                    self.test_results['failed'] += 1
+                    self.log_error("New Routes 404 Fix", f"{name} - Server Error 500")
+                    
+                else:
+                    print_error(f"{name} ({route}) - Unexpected Status {response.status_code} ❌")
+                    self.test_results['failed'] += 1
+                    self.log_error("New Routes 404 Fix", f"{name} - Status: {response.status_code}")
+                    
+            except Exception as e:
+                print_error(f"{name} ({route}) test failed: {str(e)}")
+                self.test_results['failed'] += 1
+                self.log_error("New Routes 404 Fix", f"{name} - {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests"""
         print(f"{Colors.BOLD}WorkHoops Backend API Testing{Colors.ENDC}")
