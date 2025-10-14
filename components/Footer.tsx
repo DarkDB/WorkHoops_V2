@@ -134,8 +134,8 @@ export function Footer() {
 
           {/* Legal Notice */}
           <div className="mt-6 pt-6 border-t border-gray-100">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-xs text-gray-600 leading-relaxed">
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <p className="text-xs text-gray-400 leading-relaxed">
                 <strong>Aviso legal:</strong> WorkHoops actúa como intermediario de difusión entre profesionales 
                 del baloncesto y organizaciones. Verificamos ofertas a nivel razonable mediante revisión manual, 
                 pero el organizador es el responsable final de su contenido, veracidad y cumplimiento de la 
