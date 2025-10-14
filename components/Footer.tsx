@@ -31,9 +31,9 @@ export function Footer() {
               <div className="w-8 h-8 bg-workhoops-accent rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">W</span>
               </div>
-              <span className="font-bold text-xl text-gray-900">WorkHoops</span>
+              <span className="font-bold text-xl text-white">WorkHoops</span>
             </div>
-            <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+            <p className="text-gray-300 text-sm mb-4 leading-relaxed">
               La plataforma líder para conectar talento y oportunidades en el baloncesto español. 
               Democratizando el acceso a pruebas, empleos, torneos y becas.
             </p>
