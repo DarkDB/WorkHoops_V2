@@ -119,7 +119,7 @@ export function Footer() {
         <div className="pt-8 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-gray-500">
-              © 2024 WorkHoops SL. Todos los derechos reservados.
+              © 2025 WorkHoops SL. Todos los derechos reservados.
             </div>
             
             <div className="flex flex-wrap items-center space-x-6 text-sm text-gray-500">
