@@ -13,7 +13,7 @@ const FooterSection = ({ title, children }: { title: string; children: React.Rea
 const FooterLink = ({ href, children, external = false }: { href: string; children: React.ReactNode; external?: boolean }) => (
   <Link 
     href={href}
-    className="text-gray-600 hover:text-workhoops-accent transition-colors text-sm block"
+    className="text-gray-400 hover:text-workhoops-accent transition-colors text-sm block"
     {...(external && { target: "_blank", rel: "noopener noreferrer" })}
   >
     {children}
