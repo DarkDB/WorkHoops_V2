@@ -299,6 +299,18 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
         -agent: "testing"
         -comment: "Navigation component working correctly. All page routes accessible and pricing page (/planes) link functional."
 
+  - task: "New Routes 404 Fix Testing"
+    implemented: true
+    working: true
+    file: "/app/app/dashboard/applications/page.tsx, /app/app/dashboard/favorites/page.tsx, /app/app/oportunidades/[slug]/page.tsx, /app/app/recursos/[id]/page.tsx, /app/app/legal/cookies/page.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        -working: true
+        -agent: "testing"
+        -comment: "All 5 new routes tested and working correctly: ✅ /dashboard/applications (redirects to auth - protected route working), ✅ /dashboard/favorites (redirects to auth - protected route working), ✅ /oportunidades/jugador-base-cb-estudiantes (200 with opportunity content), ✅ /recursos/1 (200 with resource content), ✅ /legal/cookies (200 with cookies policy - fixed React onClick handler). Fixed missing 'isomorphic-dompurify' dependency. No more 404 errors on these routes."
+
 ## metadata:
   created_by: "main_agent"
   version: "1.0"
