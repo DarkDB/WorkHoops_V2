@@ -98,11 +98,6 @@ export function Navbar() {
 
           {/* Desktop/Tablet Auth Section */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/oportunidades" className="text-gray-600 hover:text-workhoops-accent">🏀</Link>
-            <Link href="/publicar" className="text-gray-600 hover:text-workhoops-accent">📝</Link>
-            <Link href="/talento" className="text-gray-600 hover:text-workhoops-accent">⭐</Link>
-            <Link href="/recursos" className="text-gray-600 hover:text-workhoops-accent">📚</Link>
-            <Link href="/planes" className="text-gray-600 hover:text-workhoops-accent">💎</Link>
 
             {/* Auth Section */}
             {status === 'loading' ? (
