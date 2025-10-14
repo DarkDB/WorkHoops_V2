@@ -12,7 +12,7 @@ from datetime import datetime
 import uuid
 
 # Configuration
-BASE_URL = "https://1df6b980-674f-4d32-9056-0ae393fb008e.preview.emergentagent.com"  # Next.js frontend URL from .env
+BASE_URL = "http://localhost:3000"  # Next.js frontend URL (running locally)
 API_BASE = f"{BASE_URL}/api"
 
 class Colors:
