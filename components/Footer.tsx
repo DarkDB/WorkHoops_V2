@@ -3,7 +3,7 @@ import { Mail, MapPin, Phone, Twitter, Instagram, Linkedin, Youtube } from 'luci
 
 const FooterSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div>
-    <h3 className="font-semibold text-gray-900 mb-4">{title}</h3>
+    <h3 className="font-semibold text-white mb-4">{title}</h3>
     <div className="space-y-3">
       {children}
     </div>
