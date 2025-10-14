@@ -631,6 +631,7 @@ class BackendTester:
         self.test_user_registration()
         self.test_auth_endpoints()
         self.test_page_routes()
+        self.test_new_routes_404_fix()
         
         # Print summary
         self.print_summary()
