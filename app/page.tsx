@@ -283,7 +283,7 @@ export default async function HomePage() {
           </p>
           <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
             <Link href="/planes">
-              <Button size="lg" variant="secondary" className="px-8 py-4">
+              <Button size="lg" className="bg-white text-workhoops-accent hover:bg-gray-100 px-8 py-4">
                 Ver planes y precios
               </Button>
             </Link>
