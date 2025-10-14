@@ -38,16 +38,16 @@ export function Footer() {
               Democratizando el acceso a pruebas, empleos, torneos y becas.
             </p>
             <div className="flex space-x-4">
-              <Link href="#" className="text-gray-400 hover:text-workhoops-accent transition-colors">
+              <Link href="#" className="text-gray-500 hover:text-workhoops-accent transition-colors">
                 <Twitter className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-workhoops-accent transition-colors">
+              <Link href="#" className="text-gray-500 hover:text-workhoops-accent transition-colors">
                 <Instagram className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-workhoops-accent transition-colors">
+              <Link href="#" className="text-gray-500 hover:text-workhoops-accent transition-colors">
                 <Linkedin className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-workhoops-accent transition-colors">
+              <Link href="#" className="text-gray-500 hover:text-workhoops-accent transition-colors">
                 <Youtube className="w-5 h-5" />
               </Link>
             </div>
