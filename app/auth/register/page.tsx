@@ -50,7 +50,7 @@ const plans = [
   }
 ]
 
-export default function RegisterPage() {
+function RegisterContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
