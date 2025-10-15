@@ -67,6 +67,7 @@ async function main() {
       description: 'Club de baloncesto profesional con sede en Barcelona, parte del FC Barcelona. Compitiendo en la Liga Endesa ACB.',
       website: 'https://www.fcbarcelona.es/es/baloncesto',
       verified: true,
+      ownerId: clubUser.id,
     }
   })
 
