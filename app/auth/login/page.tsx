@@ -223,3 +223,11 @@ function LoginContent() {
     </div>
   )
 }
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
+  )
+}
