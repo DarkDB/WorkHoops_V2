@@ -1,70 +1,118 @@
-# Getting Started with Create React App
+# 🏀 WorkHoops - Plataforma de Oportunidades de Baloncesto
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Una plataforma moderna que conecta el talento del baloncesto español con oportunidades profesionales.
 
-## Available Scripts
+## ✨ Características
 
-In the project directory, you can run:
+- **🔐 Autenticación completa** con NextAuth.js  
+- **📊 Dashboard personalizado** por rol de usuario
+- **📝 Sistema de aplicaciones** para oportunidades
+- **❤️ Gestión de favoritos** y notificaciones
+- **📄 Páginas legales** (RGPD compliant)
+- **📱 Diseño responsive** con Tailwind CSS y Shadcn UI
+- **🗄️ Base de datos** con Prisma ORM
 
-### `npm start`
+## 🚀 Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend**: Next.js 14, React, TypeScript
+- **Styling**: Tailwind CSS, Shadcn UI, Radix UI  
+- **Backend**: Next.js API Routes
+- **Database**: PostgreSQL (Supabase) / SQLite (desarrollo)
+- **ORM**: Prisma
+- **Auth**: NextAuth.js
+- **Email**: Resend
+- **Payments**: Stripe
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## ⚡ Setup Rápido para Desarrollo Local
 
-### `npm test`
+```bash
+# 1. Clonar e instalar
+git clone <tu-repo>
+cd workhoops
+npm install
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# 2. Setup completo (automático)
+npm run setup
 
-### `npm run build`
+# 3. Iniciar desarrollo
+npm run dev
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+🎉 **¡Ya está!** Visita `http://localhost:3000`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 📋 Scripts Disponibles
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+| Script | Descripción |
+|--------|-------------|
+| `npm run dev` | 🔥 Servidor de desarrollo |
+| `npm run build` | 📦 Build para producción |
+| `npm run setup` | ⚙️ Setup completo (Prisma + DB + datos) |
+| `npm run db:generate` | 🔧 Generar cliente Prisma |
+| `npm run db:push` | 📤 Push esquema a BD |
+| `npm run db:seed` | 🌱 Poblar con datos de prueba |
+| `npm run db:studio` | 🎨 Abrir Prisma Studio |
 
-### `npm run eject`
+## 🔧 Configuración (Opcional)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+El proyecto funciona out-of-the-box, pero puedes personalizar creando `.env`:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```env
+# Base de datos (automático en desarrollo)
+DATABASE_URL="file:./dev.db"
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# NextAuth (generado automáticamente)
+NEXTAUTH_SECRET="workhoops-secret-key-min-32-chars-long-2024"
+NEXTAUTH_URL="http://localhost:3000"
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# App settings
+APP_URL="http://localhost:3000"
+SUPPORT_EMAIL="support@workhoops.es"
+```
 
-## Learn More
+## 🚀 Deploy en Producción
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**Status actual**: ✅ **Listo para deploy en Vercel**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+# Build funciona sin errores
+npm run build
 
-### Code Splitting
+# Ver instrucciones completas
+cat PRODUCTION_CHECKLIST.md
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Deploy en Vercel:
+1. Push a GitHub
+2. Conectar repo a Vercel  
+3. Variables de entorno (ver `DEPLOYMENT.md`)
+4. Deploy automático
 
-### Analyzing the Bundle Size
+## 🐛 Solución de Problemas
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Error de Prisma Client
+```bash
+npm run db:generate
+```
 
-### Making a Progressive Web App
+### Error de build
+```bash
+rm -rf .next node_modules
+npm install
+npm run build
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Base de datos corrupta
+```bash
+rm prisma/dev.db
+npm run setup
+```
 
-### Advanced Configuration
+## 📚 Documentación Adicional
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- **Deploy**: `DEPLOYMENT.md` 
+- **Supabase**: `SUPABASE_SETUP.md`
+- **Producción**: `PRODUCTION_CHECKLIST.md`
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**¿Problemas?** Abre un issue o consulta la documentación 📖

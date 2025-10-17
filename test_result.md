@@ -299,6 +299,18 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
         -agent: "testing"
         -comment: "Navigation component working correctly. All page routes accessible and pricing page (/planes) link functional."
 
+  - task: "New Routes 404 Fix Testing"
+    implemented: true
+    working: true
+    file: "/app/app/dashboard/applications/page.tsx, /app/app/dashboard/favorites/page.tsx, /app/app/oportunidades/[slug]/page.tsx, /app/app/recursos/[id]/page.tsx, /app/app/legal/cookies/page.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        -working: true
+        -agent: "testing"
+        -comment: "All 5 new routes tested and working correctly: ✅ /dashboard/applications (redirects to auth - protected route working), ✅ /dashboard/favorites (redirects to auth - protected route working), ✅ /oportunidades/jugador-base-cb-estudiantes (200 with opportunity content), ✅ /recursos/1 (200 with resource content), ✅ /legal/cookies (200 with cookies policy - fixed React onClick handler). Fixed missing 'isomorphic-dompurify' dependency. No more 404 errors on these routes."
+
 ## metadata:
   created_by: "main_agent"
   version: "1.0"
@@ -322,3 +334,5 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
     -message: "COMPREHENSIVE FRONTEND TESTING FOR PRODUCTION LAUNCH COMPLETED: ✅ Homepage loads perfectly with hero section, navigation, stats, and featured opportunities. ✅ RGPD cookie compliance working (banner displays, all buttons functional). ✅ All 11 core pages load successfully (/oportunidades, /planes, /dashboard, /publicar, /talento, /sobre, /contacto, /recursos, /prensa, /auth/login, /auth/register). ✅ Responsive design tested across desktop (1920x1080), tablet (768x1024), and mobile (375x667) - all working perfectly. ✅ Pricing page with 4 plans (Free, Pro €4.99/month, Club free, Destacado €49/60 days) fully functional with billing toggle. ✅ Navigation between pages working smoothly. ✅ No JavaScript console errors found. ✅ Performance good with reasonable load times. ⚠️ Authentication form testing limited due to browser automation URL detection issues, but forms are present and structured correctly. APPLICATION IS PRODUCTION-READY for launch."
     -agent: "main"
     -message: "FILE DISCREPANCY RESOLVED: Consolidated duplicate file structure by moving functional Next.js application from /app/frontend/ to /app/ root directory. Updated supervisor configuration to run from consolidated location. Fixed Prisma schema relations and switched to SQLite for development consistency. Application now runs from unified structure ensuring preview and download versions match perfectly."
+    -agent: "testing"
+    -message: "NEW ROUTES 404 FIX TESTING COMPLETED: ✅ All 5 new routes are working correctly and no longer return 404 errors. ✅ /dashboard/applications - Properly redirects to /auth/login (protected route working as expected). ✅ /dashboard/favorites - Properly redirects to /auth/login (protected route working as expected). ✅ /oportunidades/jugador-base-cb-estudiantes - Returns 200 with opportunity content. ✅ /recursos/1 - Returns 200 with resource article content. ✅ /legal/cookies - Returns 200 with cookies policy content (fixed React onClick handler issue). Fixed missing dependency 'isomorphic-dompurify' that was causing 500 errors. All routes now accessible and functional."

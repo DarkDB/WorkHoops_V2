@@ -3,7 +3,7 @@ import { Mail, MapPin, Phone, Twitter, Instagram, Linkedin, Youtube } from 'luci
 
 const FooterSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div>
-    <h3 className="font-semibold text-gray-900 mb-4">{title}</h3>
+    <h3 className="font-semibold text-white mb-4">{title}</h3>
     <div className="space-y-3">
       {children}
     </div>
@@ -13,7 +13,7 @@ const FooterSection = ({ title, children }: { title: string; children: React.Rea
 const FooterLink = ({ href, children, external = false }: { href: string; children: React.ReactNode; external?: boolean }) => (
   <Link 
     href={href}
-    className="text-gray-600 hover:text-workhoops-accent transition-colors text-sm block"
+    className="text-gray-400 hover:text-workhoops-accent transition-colors text-sm block"
     {...(external && { target: "_blank", rel: "noopener noreferrer" })}
   >
     {children}
@@ -22,7 +22,7 @@ const FooterLink = ({ href, children, external = false }: { href: string; childr
 
 export function Footer() {
   return (
-    <footer className="bg-white border-t border-gray-200">
+    <footer className="bg-[#121826] border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -31,23 +31,23 @@ export function Footer() {
               <div className="w-8 h-8 bg-workhoops-accent rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">W</span>
               </div>
-              <span className="font-bold text-xl text-gray-900">WorkHoops</span>
+              <span className="font-bold text-xl text-white">WorkHoops</span>
             </div>
-            <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+            <p className="text-gray-300 text-sm mb-4 leading-relaxed">
               La plataforma líder para conectar talento y oportunidades en el baloncesto español. 
               Democratizando el acceso a pruebas, empleos, torneos y becas.
             </p>
             <div className="flex space-x-4">
-              <Link href="#" className="text-gray-400 hover:text-workhoops-accent transition-colors">
+              <Link href="#" className="text-gray-500 hover:text-workhoops-accent transition-colors">
                 <Twitter className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-workhoops-accent transition-colors">
+              <Link href="#" className="text-gray-500 hover:text-workhoops-accent transition-colors">
                 <Instagram className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-workhoops-accent transition-colors">
+              <Link href="#" className="text-gray-500 hover:text-workhoops-accent transition-colors">
                 <Linkedin className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-workhoops-accent transition-colors">
+              <Link href="#" className="text-gray-500 hover:text-workhoops-accent transition-colors">
                 <Youtube className="w-5 h-5" />
               </Link>
             </div>
@@ -116,13 +116,13 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-gray-200">
+        <div className="pt-8 border-t border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-sm text-gray-500">
-              © 2024 WorkHoops SL. Todos los derechos reservados.
+            <div className="text-sm text-gray-400">
+              © 2025 WorkHoops SL. Todos los derechos reservados.
             </div>
             
-            <div className="flex flex-wrap items-center space-x-6 text-sm text-gray-500">
+            <div className="flex flex-wrap items-center space-x-6 text-sm text-gray-400">
               <span>🇪🇸 Español</span>
               <Link href="?lang=cat" className="hover:text-workhoops-accent">
                 Català
@@ -134,8 +134,8 @@ export function Footer() {
 
           {/* Legal Notice */}
           <div className="mt-6 pt-6 border-t border-gray-100">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-xs text-gray-600 leading-relaxed">
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <p className="text-xs text-gray-400 leading-relaxed">
                 <strong>Aviso legal:</strong> WorkHoops actúa como intermediario de difusión entre profesionales 
                 del baloncesto y organizaciones. Verificamos ofertas a nivel razonable mediante revisión manual, 
                 pero el organizador es el responsable final de su contenido, veracidad y cumplimiento de la 

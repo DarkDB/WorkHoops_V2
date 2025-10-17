@@ -223,9 +223,11 @@ export default function CookiesPage() {
                 <p className="text-gray-600 mb-4">
                   Puedes gestionar tus preferencias de cookies en cualquier momento:
                 </p>
-                <Button className="mb-4" onClick={() => alert('Aquí se abriría el panel de cookies')}>
-                  <Settings className="w-4 h-4 mr-2" />
-                  Configurar Cookies
+                <Button className="mb-4" asChild>
+                  <Link href="#" className="inline-flex items-center">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Configurar Cookies
+                  </Link>
                 </Button>
               </div>
 

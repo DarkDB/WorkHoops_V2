@@ -67,6 +67,7 @@ async function main() {
       description: 'Club de baloncesto profesional con sede en Barcelona, parte del FC Barcelona. Compitiendo en la Liga Endesa ACB.',
       website: 'https://www.fcbarcelona.es/es/baloncesto',
       verified: true,
+      ownerId: clubUser.id,
     }
   })
 
@@ -78,6 +79,7 @@ async function main() {
       slug: 'real-madrid-baloncesto',
       logo: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200',
       description: 'Club de baloncesto del Real Madrid Club de Fútbol, compitiendo en la Liga Endesa ACB y Euroliga.',
+      ownerId: clubUser.id,
       website: 'https://www.realmadrid.com/baloncesto',
       verified: true,
     }
