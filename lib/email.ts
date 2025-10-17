@@ -15,7 +15,7 @@ function getResendClient() {
 
 export async function sendMagicLinkEmail(email: string, url: string) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
       to: [email],
       subject: 'Accede a WorkHoops - Enlace mágico',
