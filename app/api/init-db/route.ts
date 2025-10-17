@@ -20,7 +20,7 @@ export async function POST() {
         email: 'admin@workhoops.es',
         name: 'Admin WorkHoops',
         role: 'admin',
-        password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewOhBkmSPEtqbYke' // hashed: admin123
+        verified: true
       }
     })
 
@@ -29,7 +29,7 @@ export async function POST() {
         email: 'jugador@ejemplo.es',
         name: 'Juan Pérez',
         role: 'jugador',
-        password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewOhBkmSPEtqbYke'
+        verified: false
       }
     })
 
