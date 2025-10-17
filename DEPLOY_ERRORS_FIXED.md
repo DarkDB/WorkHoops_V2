@@ -8,6 +8,7 @@
 3. **Type 'pro' not assignable** - Valores enum incorrectos
 4. **auditLog does not exist** - Modelo no definido en schema
 5. **Unexpected eof** - Comentarios mal cerrados
+6. **Missing Resend API key** - Inicialización durante build
 
 ---
 
