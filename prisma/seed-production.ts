@@ -164,7 +164,7 @@ El Real Madrid Baloncesto busca un entrenador asistente para el primer equipo. U
       type: 'empleo',
       organizationId: rmOrganization.id,
       status: 'publicada',
-      level: 'pro',
+      level: 'profesional',
       city: 'Madrid',
       country: 'España',
       latitude: 40.4168,
