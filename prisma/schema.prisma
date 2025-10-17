@@ -8,6 +8,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  admin
+  jugador
+  entrenador
+  club
+  agencia
+}
+
+enum OpportunityType {
+  empleo
+  prueba
+  torneo
+  clinica
+  beca
+  patrocinio
+}
+
+enum OpportunityLevel {
+  amateur
+  semi_profesional
+  profesional
+  cantera
+}
+
+enum OpportunityStatus {
+  borrador
+  pendiente
+  publicada
+  cerrada
+  suspendida
+}
+
+enum Modality {
+  presencial
+  online
+  mixta
+}
+
+enum ApplicationState {
+  enviada
+  en_revision
+  aceptada
+  rechazada
+  finalizada
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
