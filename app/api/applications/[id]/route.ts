@@ -171,6 +171,10 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     })
 
     // Create audit log
+    // TODO: Implement audit log when model is ready
+    /*
+    // TODO: Audit log
+    /*
     await prisma.auditLog.create({
       data: {
         actorId: session.user.id,
@@ -184,9 +188,10 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         }),
       },
     })
+    */
 
     // Send notification email to applicant if state changed significantly
-    if (state !== previousState && ['vista', 'rechazada', 'aceptada'].includes(state)) {
+    if (state !== previousState && ['en_revision', 'rechazada', 'aceptada'].includes(state)) {
       try {
         await sendApplicationStateChangeEmail(
           updatedApplication.user.email,

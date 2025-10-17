@@ -194,7 +194,10 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Create audit log
+    // Create audit log - TODO: Implement when model ready
+    /*
+    // TODO: Audit log
+    /*
     await prisma.auditLog.create({
       data: {
         actorId: session.user.id,
@@ -207,6 +210,7 @@ export async function POST(request: NextRequest) {
         }),
       },
     })
+    */
 
     // Send notification email to organization
     if (opportunity.organization.owner.email) {

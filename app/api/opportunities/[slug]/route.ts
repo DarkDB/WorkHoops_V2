@@ -162,6 +162,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     })
 
     // Create audit log
+    // TODO: Audit log
+    /*
     await prisma.auditLog.create({
       data: {
         actorId: session.user.id,
@@ -233,6 +235,8 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     })
 
     // Create audit log
+    // TODO: Audit log
+    /*
     await prisma.auditLog.create({
       data: {
         actorId: session.user.id,

@@ -53,12 +53,16 @@
 Settings → Environment Variables:
 
 ```env
-# REQUERIDAS MÍNIMAS
-DATABASE_URL=file:./dev.db
+# REQUERIDAS PARA POSTGRESQL
+DATABASE_URL=postgresql://postgres:Edu239108%21@db.hoorpamterxnqwilomsi.supabase.co:5432/postgres
 NEXTAUTH_SECRET=workhoops-secret-vercel-production-key-32-chars-min
 NEXTAUTH_URL=https://tu-proyecto.vercel.app
 APP_URL=https://tu-proyecto.vercel.app
 SUPPORT_EMAIL=support@workhoops.es
+
+# SUPABASE (ya tienes)
+NEXT_PUBLIC_SUPABASE_URL=https://hoorpamterxnqwilomsi.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 # OPCIONALES
 RESEND_API_KEY=re_your_key
