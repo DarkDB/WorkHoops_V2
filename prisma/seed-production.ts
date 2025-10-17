@@ -208,7 +208,7 @@ Valencia Basket organiza pruebas abiertas para la temporada 2024-2025. Buscamos 
 **Inscripción gratuita hasta el 10 de septiembre**`,
       type: 'prueba',
       status: 'publicada',
-      level: 'semi_pro',
+      level: 'semi_profesional',
       city: 'Valencia',
       country: 'España',
       latitude: 39.4699,
