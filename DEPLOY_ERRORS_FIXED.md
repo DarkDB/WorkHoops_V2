@@ -56,6 +56,20 @@ await prisma.auditLog.create({...})
 */
 ```
 
+### **5. Resend API Key - Lazy Loading**
+```typescript
+// ❌ Antes - Se ejecutaba en build
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+// ✅ Ahora - Solo en runtime
+function getResendClient() {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resend
+}
+```
+
 ---
 
 ## 🚀 **COMANDOS DE VERIFICACIÓN:**
