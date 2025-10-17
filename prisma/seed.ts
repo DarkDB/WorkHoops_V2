@@ -25,7 +25,7 @@ async function main() {
     create: {
       email: 'fcbarcelona@workhoops.es',
       name: 'FC Barcelona Basquet',
-      role: 'org',
+      role: 'club',
       verified: true,
       locale: 'es'
     }
@@ -37,7 +37,7 @@ async function main() {
     create: {
       email: 'jugador@workhoops.es',
       name: 'Marc González',
-      role: 'user',
+      role: 'jugador',
       verified: true,
       locale: 'es'
     }
@@ -127,7 +127,7 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
       type: 'prueba',
       organizationId: organization.id,
       status: 'publicada',
-      level: 'semi_pro',
+      level: 'semi_profesional',
       city: 'Valencia',
       country: 'España',
       latitude: 39.4699,
@@ -241,7 +241,8 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
 
   console.log('✅ Application created')
 
-  // Create audit log entries
+  // Create audit log entries - TODO: Add when model ready
+  /*
   await prisma.auditLog.create({
     data: {
       actorId: orgUser.id,
@@ -267,6 +268,7 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
       })
     }
   })
+  */
 
   console.log('✅ Audit logs created')
 
