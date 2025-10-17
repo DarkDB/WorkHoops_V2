@@ -127,7 +127,7 @@ Buscamos un entrenador experimentado y apasionado para dirigir nuestro equipo U1
       type: 'prueba',
       organizationId: organization.id,
       status: 'publicada',
-      level: 'semi_pro',
+      level: 'semi_profesional',
       city: 'Valencia',
       country: 'España',
       latitude: 39.4699,
