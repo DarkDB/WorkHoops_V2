@@ -131,7 +131,18 @@ git push origin main
 - ✅ **API de inicialización lista**
 - ✅ **Variables de entorno documentadas**
 
-**🚀 LISTO PARA DEPLOY SIN ERRORES**
+**🎯 LISTO PARA DEPLOY SIN ERRORES**
+
+### **Setup Local (para evitar errores de enum):**
+```bash
+# Opción A: Script automático
+./setup-local.sh
+
+# Opción B: Manual
+cp prisma/schema-sqlite.prisma prisma/schema.prisma
+yarn install
+yarn build  # Debe funcionar sin errores
+```
 
 ---
 
