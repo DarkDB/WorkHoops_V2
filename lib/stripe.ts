@@ -135,6 +135,8 @@ export async function handleSuccessfulPayment(
   })
 
   // Create audit log
+  // TODO: Implement audit log when model is ready
+  /*
   await prisma.auditLog.create({
     data: {
       actorId: opportunity.authorId,
@@ -149,6 +151,7 @@ export async function handleSuccessfulPayment(
       })
     }
   })
+  */
 
   // Send confirmation email
   if (opportunity.organization.owner.email) {
