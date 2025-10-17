@@ -8,6 +8,7 @@
 3. **Type 'pro' not assignable** - Valores enum incorrectos
 4. **auditLog does not exist** - Modelo no definido en schema
 5. **Unexpected eof** - Comentarios mal cerrados
+6. **Missing Resend API key** - Inicialización durante build
 
 ---
 
@@ -55,6 +56,20 @@ await prisma.auditLog.create({...})
 */
 ```
 
+### **5. Resend API Key - Lazy Loading**
+```typescript
+// ❌ Antes - Se ejecutaba en build
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+// ✅ Ahora - Solo en runtime
+function getResendClient() {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resend
+}
+```
+
 ---
 
 ## 🚀 **COMANDOS DE VERIFICACIÓN:**
@@ -91,7 +106,7 @@ SUPPORT_EMAIL=support@workhoops.es
 NEXT_PUBLIC_SUPABASE_URL=https://hoorpamterxnqwilomsi.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
-# Email (ya tienes)
+# Email (REQUERIDA - ya tienes)
 RESEND_API_KEY=re_CzmSmnWm_2MerkUrQ7Ka8zWwGtw9xRKDo
 ```
 

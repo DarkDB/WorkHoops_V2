@@ -1,10 +1,21 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let resend: Resend | null = null
+
+function getResendClient() {
+  if (!resend) {
+    const apiKey = process.env.RESEND_API_KEY
+    if (!apiKey) {
+      throw new Error('RESEND_API_KEY is required')
+    }
+    resend = new Resend(apiKey)
+  }
+  return resend
+}
 
 export async function sendMagicLinkEmail(email: string, url: string) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
       to: [email],
       subject: 'Accede a WorkHoops - Enlace mágico',
@@ -60,7 +71,7 @@ export async function sendApplicationNotificationEmail(
   applicationId: string
 ) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
       to: [organizationEmail],
       subject: `Nueva aplicación: ${opportunityTitle}`,
@@ -118,7 +129,7 @@ export async function sendApplicationStateChangeEmail(
   }
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
       to: [applicantEmail],
       subject: `Actualización de aplicación: ${opportunityTitle}`,
@@ -164,7 +175,7 @@ export async function sendPaymentConfirmationEmail(
   plan: string
 ) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
       to: [organizationEmail],
       subject: `Pago confirmado - ${opportunityTitle}`,
