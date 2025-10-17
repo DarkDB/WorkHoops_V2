@@ -71,7 +71,7 @@ export async function sendApplicationNotificationEmail(
   applicationId: string
 ) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
       to: [organizationEmail],
       subject: `Nueva aplicación: ${opportunityTitle}`,
@@ -129,7 +129,7 @@ export async function sendApplicationStateChangeEmail(
   }
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
       to: [applicantEmail],
       subject: `Actualización de aplicación: ${opportunityTitle}`,
@@ -175,7 +175,7 @@ export async function sendPaymentConfirmationEmail(
   plan: string
 ) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
       to: [organizationEmail],
       subject: `Pago confirmado - ${opportunityTitle}`,
