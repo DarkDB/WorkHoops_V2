@@ -173,6 +173,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     // Create audit log
     // TODO: Implement audit log when model is ready
     /*
+    // TODO: Audit log
+    /*
     await prisma.auditLog.create({
       data: {
         actorId: session.user.id,

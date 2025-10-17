@@ -100,7 +100,9 @@ export async function POST(request: NextRequest) {
       })
 
       // Create audit log
-      await prisma.auditLog.create({
+      // TODO: Audit log
+    /*
+    await prisma.auditLog.create({
         data: {
           actorId: session.user.id,
           action: 'published_free',
