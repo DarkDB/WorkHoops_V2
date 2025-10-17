@@ -1,0 +1,249 @@
+// Production Prisma schema for PostgreSQL (Vercel/Supabase)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// PostgreSQL supports enums
+enum UserRole {
+  admin
+  jugador
+  entrenador
+  club
+  agencia
+}
+
+enum OpportunityType {
+  empleo
+  prueba
+  torneo
+  clinica
+  beca
+  patrocinio
+}
+
+enum OpportunityLevel {
+  amateur
+  semi_profesional
+  profesional
+  cantera
+}
+
+enum OpportunityStatus {
+  borrador
+  pendiente
+  publicada
+  cerrada
+  suspendida
+}
+
+enum Modality {
+  presencial
+  online
+  mixta
+}
+
+enum ApplicationState {
+  enviada
+  en_revision
+  aceptada
+  rechazada
+  finalizada
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  role          UserRole  @default(jugador)
+  locale        String    @default("es")
+  verified      Boolean   @default(false)
+  
+  // Plan information
+  planType      String    @default("free_amateur") // free_amateur, pro_semipro, club_agencia, destacado
+  planStart     DateTime?
+  planEnd       DateTime?
+  isActive      Boolean   @default(true)
+  stripeCustomerId String?
+  stripeSubscriptionId String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  organizations Organization[]
+  opportunities Opportunity[]
+  applications  Application[]
+  favorites     Favorite[]
+  subscriptions EmailSubscription[]
+
+  @@map("users")
+}
+
+model Organization {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  website     String?
+  logo        String?
+  verified    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  owner         User          @relation(fields: [ownerId], references: [id])
+  ownerId       String
+  opportunities Opportunity[]
+
+  @@map("organizations")
+}
+
+model Opportunity {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  
+  // Basic info
+  type        OpportunityType
+  level       OpportunityLevel
+  status      OpportunityStatus @default(borrador)
+  
+  // Location
+  city        String?
+  country     String   @default("España")
+  latitude    Float?
+  longitude   Float?
+  modality    Modality @default(presencial)
+  
+  // Remuneration
+  remunerationType String?   // hourly, monthly, annual, project, negotiable
+  remunerationMin  Int?
+  remunerationMax  Int?
+  currency         String    @default("EUR")
+  benefits         String?   // JSON string with benefits array
+  
+  // Dates
+  deadline    DateTime?
+  startDate   DateTime?
+  endDate     DateTime?
+  publishedAt DateTime?
+  
+  // Tags and verification
+  tags        String?   // JSON string with tags array
+  verified    Boolean   @default(false)
+  
+  // Contact
+  contactEmail String
+  contactPhone String?
+  applicationUrl String?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  authorId       String
+  author         User          @relation(fields: [authorId], references: [id])
+  applications   Application[]
+  favorites      Favorite[]
+
+  @@map("opportunities")
+}
+
+model Application {
+  id        String           @id @default(cuid())
+  state     ApplicationState @default(enviada)
+  message   String?
+  metadata  String?          // JSON string with additional data
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // Relations
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, opportunityId])
+  @@map("applications")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, opportunityId])
+  @@map("favorites")
+}
+
+model EmailSubscription {
+  id        String   @id @default(cuid())
+  email     String
+  filters   String   // JSON string with search filters
+  frequency String   @default("daily") // daily, weekly, monthly
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  @@map("email_subscriptions")
+}
