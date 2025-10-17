@@ -241,7 +241,8 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
 
   console.log('✅ Application created')
 
-  // Create audit log entries
+  // Create audit log entries - TODO: Add when model ready
+  /*
   await prisma.auditLog.create({
     data: {
       actorId: orgUser.id,
@@ -267,6 +268,7 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
       })
     }
   })
+  */
 
   console.log('✅ Audit logs created')
 
