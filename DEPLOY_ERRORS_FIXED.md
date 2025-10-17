@@ -91,7 +91,7 @@ SUPPORT_EMAIL=support@workhoops.es
 NEXT_PUBLIC_SUPABASE_URL=https://hoorpamterxnqwilomsi.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
-# Email (ya tienes)
+# Email (REQUERIDA - ya tienes)
 RESEND_API_KEY=re_CzmSmnWm_2MerkUrQ7Ka8zWwGtw9xRKDo
 ```
 
