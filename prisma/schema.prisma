@@ -55,7 +55,7 @@ model User {
   emailVerified DateTime?
   name          String?
   image         String?
-  role          UserRole  @default(jugador)
+  role          String    @default("jugador") // admin, jugador, entrenador, club, agencia
   locale        String    @default("es")
   verified      Boolean   @default(false)
   
