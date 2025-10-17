@@ -1,5 +1,5 @@
 {
-  "buildCommand": "yarn build",
+  "buildCommand": "cp prisma/schema.production.prisma prisma/schema.prisma && yarn build",
   "devCommand": "yarn dev",
   "installCommand": "yarn install",
   "framework": "nextjs",
