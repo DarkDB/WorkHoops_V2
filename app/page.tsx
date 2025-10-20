@@ -9,6 +9,15 @@ import { getOpportunityTypeLabel, getOpportunityTypeColor, formatRelativeTime } 
 export const dynamic = 'force-dynamic'
 
 async function getHomeData() {
+  // During build, return mock data
+  if (process.env.NODE_ENV === 'development' || !process.env.DATABASE_URL) {
+    return {
+      featuredOpportunities: [],
+      totalOpportunities: 0,
+      totalOrganizations: 0
+    }
+  }
+
   try {
     const [featuredOpportunities, totalOpportunities, totalOrganizations] = await Promise.all([
       prisma.opportunity.findMany({
