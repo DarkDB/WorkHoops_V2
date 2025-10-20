@@ -105,6 +105,58 @@ const plans = [
 
 export default function PlanesPage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
+  const { data: session, status } = useSession()
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+
+  const handlePlanSelection = async (planId: string) => {
+    // If user is not logged in, redirect to register with plan pre-selected
+    if (status === 'unauthenticated') {
+      window.location.href = `/auth/register?plan=${planId}`
+      return
+    }
+
+    // For free plans, just redirect to register or dashboard
+    if (planId === 'free_amateur' || planId === 'club_agencia') {
+      window.location.href = status === 'authenticated' ? '/dashboard' : `/auth/register?plan=${planId}`
+      return
+    }
+
+    // For paid plans, create checkout session
+    if (planId === 'pro_semipro' || planId === 'destacado') {
+      setLoadingPlan(planId)
+      
+      try {
+        const response = await fetch('/api/stripe/create-checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            planType: planId,
+            returnUrl: window.location.origin
+          }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Error al crear sesión de pago')
+        }
+
+        // Redirect to Stripe Checkout
+        if (data.url) {
+          window.location.href = data.url
+        } else {
+          throw new Error('No se recibió URL de checkout')
+        }
+      } catch (error) {
+        toast.error('Error', {
+          description: error instanceof Error ? error.message : 'Error al procesar el pago'
+        })
+        setLoadingPlan(null)
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
