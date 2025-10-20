@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check authentication and authorization
+    // Check authentication
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -98,9 +98,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (session.user.role !== 'user') {
+    // Only non-admin users can apply
+    if (session.user.role === 'admin') {
       return NextResponse.json(
-        { error: 'Only users can apply to opportunities' },
+        { error: 'Administrators cannot apply to opportunities' },
         { status: 403 }
       )
     }
