@@ -91,13 +91,34 @@ export default async function DashboardPage() {
     switch (status) {
       case 'aceptada':
         return 'bg-green-100 text-green-800'
-      case 'vista':
+      case 'en_revision':
         return 'bg-blue-100 text-blue-800'
       case 'rechazada':
         return 'bg-red-100 text-red-800'
       default:
         return 'bg-gray-100 text-gray-800'
     }
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      enviada: 'Enviada',
+      en_revision: 'En revisión',
+      aceptada: 'Aceptada',
+      rechazada: 'Rechazada',
+      finalizada: 'Finalizada'
+    }
+    return labels[status] || status
+  }
+
+  const getPlanLabel = (planType: string) => {
+    const labels: Record<string, string> = {
+      free_amateur: 'Free Amateur',
+      pro_semipro: 'Pro Semipro',
+      club_agencia: 'Club/Agencia',
+      destacado: 'Destacado'
+    }
+    return labels[planType] || planType
   }
 
   const getTypeIcon = (type: string) => {
