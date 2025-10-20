@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import { Navbar } from '@/components/Navbar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -19,66 +20,25 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-// Mock data - en una app real vendría de la base de datos
-const mockApplications = [
-  {
-    id: '1',
-    title: 'Jugador Base - CB Estudiantes',
-    organization: 'CB Estudiantes',
-    status: 'enviada',
-    appliedAt: '2024-10-01',
-    type: 'empleo',
-    location: 'Madrid',
-    deadline: '2024-10-15'
-  },
-  {
-    id: '2', 
-    title: 'Pruebas Cantera - Real Madrid',
-    organization: 'Real Madrid Baloncesto',
-    status: 'vista',
-    appliedAt: '2024-09-28',
-    type: 'prueba',
-    location: 'Madrid',
-    deadline: '2024-10-10'
-  },
-  {
-    id: '3',
-    title: 'Torneo Verano Valencia',
-    organization: 'Valencia Basket',
-    status: 'aceptada',
-    appliedAt: '2024-09-25',
-    type: 'torneo',
-    location: 'Valencia',
-    deadline: '2024-09-30'
-  },
-  {
-    id: '4',
-    title: 'Entrenador Asistente - Joventut',
-    organization: 'Joventut Badalona',
-    status: 'rechazada',
-    appliedAt: '2024-09-20',
-    type: 'empleo',
-    location: 'Barcelona',
-    deadline: '2024-09-25'
-  },
-  {
-    id: '5',
-    title: 'Campus de Verano FCB',
-    organization: 'FC Barcelona Basket',
-    status: 'enviada',
-    appliedAt: '2024-09-15',
-    type: 'clinica',
-    location: 'Barcelona',
-    deadline: '2024-10-20'
-  }
-]
-
 export default async function ApplicationsPage() {
   const session = await getServerSession(authOptions)
   
-  if (!session) {
+  if (!session || !session.user) {
     redirect('/auth/login')
   }
+
+  // Fetch user's applications
+  const applications = await prisma.application.findMany({
+    where: { userId: session.user.id },
+    include: {
+      opportunity: {
+        include: {
+          organization: true
+        }
+      }
+    },
+    orderBy: { createdAt: 'desc' }
+  })
 
   const getStatusColor = (status: string) => {
     switch (status) {
