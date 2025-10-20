@@ -1,90 +1,221 @@
 import Stripe from 'stripe'
 
-// For development, use a placeholder key if not provided
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder'
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+
+if (!stripeSecretKey) {
+  throw new Error('STRIPE_SECRET_KEY is required')
+}
 
 export const stripe = new Stripe(stripeSecretKey, {
   apiVersion: '2024-06-20',
 })
 
-// Stripe Products and Prices (configure these in Stripe Dashboard)
-export const STRIPE_PLANS = {
-  free: {
-    name: 'Plan Gratuito',
-    priceId: null, // No payment required
+// Stripe Price IDs - Need to be created in Stripe Dashboard
+// After creating products in Stripe, update these IDs
+export const STRIPE_PRICE_IDS = {
+  pro_semipro_monthly: process.env.STRIPE_PRICE_PRO_SEMIPRO || '', // €4.99/month recurring
+  destacado_once: process.env.STRIPE_PRICE_DESTACADO || '', // €49.90 one-time for 60 days
+}
+
+// Plan configuration
+export const PLANS = {
+  free_amateur: {
+    name: 'Free Amateur',
+    stripePriceId: null,
     price: 0,
+    currency: 'EUR',
+    interval: null,
     features: [
       'Publicación básica',
       'Visibilidad 30 días',
       'Soporte por email'
-    ],
-    maxPublications: 1
+    ]
   },
-  featured: {
-    name: 'Plan Destacado',
-    priceId: process.env.STRIPE_FEATURED_PRICE_ID || 'price_featured_placeholder',
-    price: 29,
+  pro_semipro: {
+    name: 'Pro Semipro',
+    stripePriceId: STRIPE_PRICE_IDS.pro_semipro_monthly,
+    price: 4.99,
+    currency: 'EUR',
+    interval: 'month',
+    features: [
+      'Publicaciones ilimitadas',
+      'Visibilidad 60 días',
+      'Estadísticas avanzadas',
+      'Soporte prioritario'
+    ]
+  },
+  club_agencia: {
+    name: 'Club/Agencia',
+    stripePriceId: null, // Free plan
+    price: 0,
+    currency: 'EUR',
+    interval: null,
+    features: [
+      'Publicaciones ilimitadas',
+      'Gestión de equipo',
+      'Soporte dedicado'
+    ]
+  },
+  destacado: {
+    name: 'Destacado',
+    stripePriceId: STRIPE_PRICE_IDS.destacado_once,
+    price: 49.90,
+    currency: 'EUR',
+    interval: '60_days',
     features: [
       'Publicación destacada',
-      'Visibilidad 60 días', 
-      'Promoción en redes sociales',
-      'Soporte prioritario'
-    ],
-    maxPublications: 5
+      'Visibilidad prioritaria',
+      'Válido por 60 días',
+      'Promoción en redes sociales'
+    ]
   }
 }
 
-export async function createCheckoutSession(
-  planId: keyof typeof STRIPE_PLANS,
-  opportunityId: string,
-  organizationEmail: string,
+export type PlanType = keyof typeof PLANS
+
+/**
+ * Create a Stripe checkout session for subscription (Pro Semipro)
+ */
+export async function createSubscriptionCheckout(
+  userId: string,
+  userEmail: string,
+  planType: 'pro_semipro',
   successUrl: string,
   cancelUrl: string
 ): Promise<Stripe.Checkout.Session> {
-  const plan = STRIPE_PLANS[planId]
+  const plan = PLANS[planType]
   
-  if (!plan || !plan.priceId) {
-    throw new Error('Invalid plan or plan does not require payment')
+  if (!plan.stripePriceId) {
+    throw new Error('This plan does not require payment')
   }
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
+    mode: 'subscription',
     line_items: [
       {
-        price: plan.priceId,
+        price: plan.stripePriceId,
         quantity: 1,
       },
     ],
-    mode: 'payment',
-    customer_email: organizationEmail,
-    client_reference_id: opportunityId,
+    customer_email: userEmail,
+    client_reference_id: userId,
     metadata: {
-      opportunityId,
-      planId,
+      userId,
+      planType,
     },
     success_url: successUrl,
     cancel_url: cancelUrl,
-    automatic_tax: {
-      enabled: true,
+    subscription_data: {
+      metadata: {
+        userId,
+        planType,
+      },
     },
-    billing_address_collection: 'required',
   })
 
   return session
 }
 
-export async function createCustomerPortalSession(
-  customerId: string,
-  returnUrl: string
-): Promise<Stripe.BillingPortal.Session> {
-  const session = await stripe.billingPortal.sessions.create({
-    customer: customerId,
-    return_url: returnUrl,
+/**
+ * Create a Stripe checkout session for one-time payment (Destacado)
+ */
+export async function createOneTimeCheckout(
+  userId: string,
+  userEmail: string,
+  planType: 'destacado',
+  successUrl: string,
+  cancelUrl: string
+): Promise<Stripe.Checkout.Session> {
+  const plan = PLANS[planType]
+  
+  if (!plan.stripePriceId) {
+    throw new Error('This plan does not require payment')
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    mode: 'payment',
+    line_items: [
+      {
+        price: plan.stripePriceId,
+        quantity: 1,
+      },
+    ],
+    customer_email: userEmail,
+    client_reference_id: userId,
+    metadata: {
+      userId,
+      planType,
+    },
+    success_url: successUrl,
+    cancel_url: cancelUrl,
   })
 
   return session
 }
 
+/**
+ * Handle successful subscription payment
+ */
+export async function handleSubscriptionSuccess(
+  session: Stripe.Checkout.Session
+): Promise<void> {
+  const userId = session.client_reference_id
+  const planType = session.metadata?.planType
+
+  if (!userId || !planType) {
+    throw new Error('Missing user ID or plan type in session metadata')
+  }
+
+  const { prisma } = await import('@/lib/prisma')
+
+  // Update user's plan
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      planType,
+      planStart: new Date(),
+      stripeCustomerId: session.customer as string,
+      stripeSubscriptionId: session.subscription as string,
+    }
+  })
+}
+
+/**
+ * Handle successful one-time payment
+ */
+export async function handleOneTimePaymentSuccess(
+  session: Stripe.Checkout.Session
+): Promise<void> {
+  const userId = session.client_reference_id
+  const planType = session.metadata?.planType
+
+  if (!userId || !planType) {
+    throw new Error('Missing user ID or plan type in session metadata')
+  }
+
+  const { prisma } = await import('@/lib/prisma')
+
+  // Calculate plan end date (60 days from now)
+  const planEnd = new Date()
+  planEnd.setDate(planEnd.getDate() + 60)
+
+  // Update user's plan
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      planType,
+      planStart: new Date(),
+      planEnd,
+      stripeCustomerId: session.customer as string,
+    }
+  })
+}
+
+/**
+ * Construct webhook event from Stripe signature
+ */
 export function constructWebhookEvent(
   payload: string | Buffer,
   signature: string
@@ -96,80 +227,4 @@ export function constructWebhookEvent(
   }
 
   return stripe.webhooks.constructEvent(payload, signature, webhookSecret)
-}
-
-export async function handleSuccessfulPayment(
-  session: Stripe.Checkout.Session
-): Promise<void> {
-  const opportunityId = session.client_reference_id
-  const planId = session.metadata?.planId as keyof typeof STRIPE_PLANS
-
-  if (!opportunityId || !planId) {
-    throw new Error('Missing opportunity ID or plan ID in session metadata')
-  }
-
-  // Import prisma here to avoid circular dependencies
-  const { prisma } = await import('@/lib/prisma')
-  const { sendPaymentConfirmationEmail } = await import('@/lib/email')
-
-  // Update opportunity status to published and set featured if applicable
-  const updateData: any = {
-    status: 'publicada',
-    publishedAt: new Date(),
-  }
-
-  if (planId === 'featured') {
-    updateData.featured = true
-  }
-
-  const opportunity = await prisma.opportunity.update({
-    where: { id: opportunityId },
-    data: updateData,
-    include: {
-      organization: {
-        include: {
-          owner: true
-        }
-      }
-    }
-  })
-
-  // Create audit log
-  // TODO: Implement audit log when model is ready
-  /*
-  await prisma.auditLog.create({
-    data: {
-      actorId: opportunity.authorId,
-      action: 'payment_completed',
-      entity: 'opportunity',
-      entityId: opportunity.id,
-      metadata: JSON.stringify({
-        planId,
-        sessionId: session.id,
-        amount: session.amount_total,
-        currency: session.currency,
-      })
-    }
-  })
-  */
-
-  // Send confirmation email
-  if (opportunity.organization.owner.email) {
-    await sendPaymentConfirmationEmail(
-      opportunity.organization.owner.email,
-      opportunity.organization.name,
-      opportunity.title,
-      STRIPE_PLANS[planId].name
-    )
-  }
-}
-
-export function validateWebhookSignature(payload: string, signature: string): boolean {
-  try {
-    constructWebhookEvent(payload, signature)
-    return true
-  } catch (error) {
-    console.error('Webhook signature validation failed:', error)
-    return false
-  }
 }
