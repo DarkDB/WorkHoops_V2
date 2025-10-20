@@ -102,16 +102,29 @@ export default async function ApplicationsPage() {
     }
   }
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'aceptada':
-        return 'Aceptada'
-      case 'vista':
-        return 'Vista'
-      case 'rechazada':
-        return 'Rechazada'
+  const getTypeLabel = (type: string) => {
+    const labels: Record<string, string> = {
+      empleo: 'Empleo',
+      prueba: 'Prueba',
+      torneo: 'Torneo',
+      clinica: 'Clínica',
+      beca: 'Beca',
+      patrocinio: 'Patrocinio'
+    }
+    return labels[type] || type
+  }
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'empleo':
+        return <Briefcase className="w-4 h-4" />
+      case 'prueba':
+        return <Award className="w-4 h-4" />
+      case 'torneo':
+      case 'clinica':
+        return <Users className="w-4 h-4" />
       default:
-        return 'Enviada'
+        return <Briefcase className="w-4 h-4" />
     }
   }
 
@@ -142,7 +155,7 @@ export default async function ApplicationsPage() {
             </div>
             
             <div className="text-sm text-gray-500">
-              Total: {mockApplications.length} aplicaciones
+              Total: {applications.length} aplicaciones
             </div>
           </div>
         </div>
@@ -153,7 +166,7 @@ export default async function ApplicationsPage() {
             <CardContent className="p-4">
               <div className="text-center">
                 <p className="text-2xl font-bold text-gray-900">
-                  {mockApplications.filter(app => app.status === 'enviada').length}
+                  {applications.filter(app => app.state === 'enviada').length}
                 </p>
                 <p className="text-sm text-gray-600">Enviadas</p>
               </div>
@@ -164,9 +177,9 @@ export default async function ApplicationsPage() {
             <CardContent className="p-4">
               <div className="text-center">
                 <p className="text-2xl font-bold text-blue-600">
-                  {mockApplications.filter(app => app.status === 'vista').length}
+                  {applications.filter(app => app.state === 'en_revision').length}
                 </p>
-                <p className="text-sm text-gray-600">Vistas</p>
+                <p className="text-sm text-gray-600">En revisión</p>
               </div>
             </CardContent>
           </Card>
@@ -175,7 +188,7 @@ export default async function ApplicationsPage() {
             <CardContent className="p-4">
               <div className="text-center">
                 <p className="text-2xl font-bold text-green-600">
-                  {mockApplications.filter(app => app.status === 'aceptada').length}
+                  {applications.filter(app => app.state === 'aceptada').length}
                 </p>
                 <p className="text-sm text-gray-600">Aceptadas</p>
               </div>
@@ -186,7 +199,7 @@ export default async function ApplicationsPage() {
             <CardContent className="p-4">
               <div className="text-center">
                 <p className="text-2xl font-bold text-red-600">
-                  {mockApplications.filter(app => app.status === 'rechazada').length}
+                  {applications.filter(app => app.state === 'rechazada').length}
                 </p>
                 <p className="text-sm text-gray-600">Rechazadas</p>
               </div>
@@ -194,10 +207,31 @@ export default async function ApplicationsPage() {
           </Card>
         </div>
 
+        {/* Empty State */}
+        {applications.length === 0 && (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <Briefcase className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No has enviado aplicaciones aún
+              </h3>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                Explora oportunidades y aplica a las que más te interesen
+              </p>
+              <Link href="/oportunidades">
+                <Button>
+                  Explorar oportunidades
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Applications List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Todas mis aplicaciones</CardTitle>
+        {applications.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Todas mis aplicaciones</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
