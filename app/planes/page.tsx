@@ -281,17 +281,24 @@ export default function PlanesPage() {
                   </div>
 
                   <div className="pt-4">
-                    <Link href={`/auth/register?plan=${plan.id}`}>
-                      <Button 
-                        className={`w-full ${
-                          plan.popular 
-                            ? 'bg-workhoops-accent hover:bg-orange-600 text-white' 
-                            : 'bg-white border-2 border-gray-300 text-gray-900 hover:bg-gray-50'
-                        }`}
-                      >
-                        {plan.cta}
-                      </Button>
-                    </Link>
+                    <Button 
+                      onClick={() => handlePlanSelection(plan.id)}
+                      disabled={loadingPlan === plan.id}
+                      className={`w-full ${
+                        plan.popular 
+                          ? 'bg-workhoops-accent hover:bg-orange-600 text-white' 
+                          : 'bg-white border-2 border-gray-300 text-gray-900 hover:bg-gray-50'
+                      }`}
+                    >
+                      {loadingPlan === plan.id ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Procesando...
+                        </>
+                      ) : (
+                        plan.cta
+                      )}
+                    </Button>
                   </div>
 
                   <div className="text-xs text-gray-500 text-center pt-2">
