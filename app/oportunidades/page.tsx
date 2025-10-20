@@ -13,6 +13,8 @@ import {
   formatRelativeTime 
 } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
+
 interface OpportunitiesPageProps {
   searchParams: {
     type?: string
