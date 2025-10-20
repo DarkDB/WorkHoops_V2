@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/Navbar'
 import { prisma } from '@/lib/prisma'
 import { getOpportunityTypeLabel, getOpportunityTypeColor, formatRelativeTime } from '@/lib/utils'
+export const dynamic = 'force-dynamic'
 
 async function getHomeData() {
   try {
