@@ -251,14 +251,14 @@ export default async function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Tasa de respuesta</p>
-                  <p className="text-3xl font-bold text-gray-900">{userData.stats.responseRate}%</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.responseRate}%</p>
                 </div>
                 <div className="w-12 h-12 bg-workhoops-accent/10 rounded-xl flex items-center justify-center">
                   <Star className="w-6 h-6 text-workhoops-accent" />
                 </div>
               </div>
               <div className="mt-2 text-sm text-gray-500">
-                Promedio de la plataforma: 45%
+                Próximamente
               </div>
             </CardContent>
           </Card>
