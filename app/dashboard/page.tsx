@@ -200,14 +200,14 @@ export default async function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Solicitudes enviadas</p>
-                  <p className="text-3xl font-bold text-gray-900">{userData.stats.applications}</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.applications}</p>
                 </div>
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                   <Briefcase className="w-6 h-6 text-blue-600" />
                 </div>
               </div>
               <div className="mt-2 text-sm text-gray-500">
-                +2 este mes
+                Total de aplicaciones
               </div>
             </CardContent>
           </Card>
