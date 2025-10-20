@@ -232,52 +232,56 @@ export default async function ApplicationsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Todas mis aplicaciones</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {mockApplications.map((application) => (
-                <div key={application.id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-start space-x-3">
-                      <div className="mt-1">
-                        {getTypeIcon(application.type)}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 text-lg mb-1">
-                          {application.title}
-                        </h3>
-                        <p className="text-gray-600 mb-2">{application.organization}</p>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <div className="flex items-center">
-                            <MapPin className="w-3 h-3 mr-1" />
-                            {application.location}
-                          </div>
-                          <div className="flex items-center">
-                            <Calendar className="w-3 h-3 mr-1" />
-                            Aplicado el {new Date(application.appliedAt).toLocaleDateString('es-ES')}
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {applications.map((application) => (
+                  <div key={application.id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start space-x-3">
+                        <div className="mt-1">
+                          {getTypeIcon(application.opportunity.type)}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                            {application.opportunity.title}
+                          </h3>
+                          <p className="text-gray-600 mb-2">{application.opportunity.organization?.name || 'Organización'}</p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <div className="flex items-center">
+                              <MapPin className="w-3 h-3 mr-1" />
+                              {application.opportunity.city || application.opportunity.country}
+                            </div>
+                            <div className="flex items-center">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              Aplicado el {new Date(application.createdAt).toLocaleDateString('es-ES')}
+                            </div>
                           </div>
                         </div>
                       </div>
+                      
+                      <Badge className={`${getStatusColor(application.state)} flex items-center space-x-1`}>
+                        {getStatusIcon(application.state)}
+                        <span>{getStatusLabel(application.state)}</span>
+                      </Badge>
                     </div>
                     
-                    <Badge className={`${getStatusColor(application.status)} flex items-center space-x-1`}>
-                      {getStatusIcon(application.status)}
-                      <span>{getStatusText(application.status)}</span>
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500">
-                      Cierre: {new Date(application.deadline).toLocaleDateString('es-ES')}
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <Link href={`/oportunidades/${application.id}`}>
-                        <Button variant="outline" size="sm">
-                          Ver oferta
-                        </Button>
-                      </Link>
-                      {application.status === 'aceptada' && (
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm text-gray-500">
+                        {application.opportunity.deadline ? (
+                          <>Cierre: {new Date(application.opportunity.deadline).toLocaleDateString('es-ES')}</>
+                        ) : (
+                          <>Sin plazo definido</>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Link href={`/oportunidades/${application.opportunity.slug}`}>
+                          <Button variant="outline" size="sm">
+                            Ver oferta
+                          </Button>
+                        </Link>
+                        {application.state === 'aceptada' && (
                         <Button size="sm" className="bg-green-600 hover:bg-green-700">
                           Ver detalles
                         </Button>
