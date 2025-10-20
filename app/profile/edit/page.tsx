@@ -8,14 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useToast } from '@/components/ui/use-toast'
+import { toast } from 'sonner'
 import { Loader2, Save, X } from 'lucide-react'
 import Link from 'next/link'
 
 export default function EditProfilePage() {
   const router = useRouter()
   const { data: session, status } = useSession()
-  const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -54,17 +53,14 @@ export default function EditProfilePage() {
         throw new Error(data.message || 'Error al actualizar perfil')
       }
 
-      toast({
-        title: '¡Perfil actualizado!',
+      toast.success('¡Perfil actualizado!', {
         description: 'Tus cambios han sido guardados correctamente.'
       })
 
       router.push('/profile')
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Error al actualizar perfil',
-        variant: 'destructive'
+      toast.error('Error', {
+        description: error instanceof Error ? error.message : 'Error al actualizar perfil'
       })
     } finally {
       setLoading(false)
