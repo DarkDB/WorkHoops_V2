@@ -331,30 +331,39 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {userData.recommendations.map((rec) => (
-                    <div key={rec.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-center space-x-2 mb-2">
-                        {getTypeIcon(rec.type)}
-                        <h3 className="font-medium text-gray-900 text-sm">{rec.title}</h3>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-2">{rec.organization}</p>
-                      <div className="space-y-1">
-                        <div className="flex items-center text-xs text-gray-500">
-                          <MapPin className="w-3 h-3 mr-1" />
-                          {rec.location}
-                        </div>
-                        <div className="flex items-center text-xs text-orange-600">
-                          <Clock className="w-3 h-3 mr-1" />
-                          Cierra {new Date(rec.deadline).toLocaleDateString('es-ES')}
-                        </div>
-                      </div>
-                      <Link href={`/oportunidades/${rec.id}`}>
-                        <Button size="sm" className="w-full mt-3">
-                          Ver detalles
-                        </Button>
-                      </Link>
+                  {recommendations.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <Star className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                      <p className="text-sm">No hay recomendaciones disponibles</p>
                     </div>
-                  ))}
+                  ) : (
+                    recommendations.map((rec) => (
+                      <div key={rec.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-center space-x-2 mb-2">
+                          {getTypeIcon(rec.type)}
+                          <h3 className="font-medium text-gray-900 text-sm">{rec.title}</h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-2">{rec.organization?.name || 'Organización'}</p>
+                        <div className="space-y-1">
+                          <div className="flex items-center text-xs text-gray-500">
+                            <MapPin className="w-3 h-3 mr-1" />
+                            {rec.city || 'España'}
+                          </div>
+                          {rec.deadline && (
+                            <div className="flex items-center text-xs text-orange-600">
+                              <Clock className="w-3 h-3 mr-1" />
+                              Cierra {new Date(rec.deadline).toLocaleDateString('es-ES')}
+                            </div>
+                          )}
+                        </div>
+                        <Link href={`/oportunidades/${rec.slug}`}>
+                          <Button size="sm" className="w-full mt-3">
+                            Ver detalles
+                          </Button>
+                        </Link>
+                      </div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
