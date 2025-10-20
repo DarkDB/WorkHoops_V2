@@ -48,6 +48,7 @@ async function getHomeData() {
     }
   } catch (error) {
     console.error('Error fetching home data:', error)
+    // Return fallback data if DB is not available
     return {
       featuredOpportunities: [],
       stats: {
