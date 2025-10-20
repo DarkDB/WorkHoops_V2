@@ -285,14 +285,15 @@ export default async function ApplicationsPage() {
                         <Button size="sm" className="bg-green-600 hover:bg-green-700">
                           Ver detalles
                         </Button>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   )
