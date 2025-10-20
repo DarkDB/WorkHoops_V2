@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import { Navbar } from '@/components/Navbar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -19,56 +20,25 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-// Mock data - en una app real vendría de la base de datos
-const mockFavorites = [
-  {
-    id: '1',
-    title: 'Jugador Alero - Unicaja Málaga',
-    organization: 'Unicaja Málaga',
-    type: 'empleo',
-    location: 'Málaga',
-    deadline: '2024-10-20',
-    verified: true,
-    addedAt: '2024-10-05'
-  },
-  {
-    id: '2',
-    title: 'Campus de Verano Barcelona',
-    organization: 'FC Barcelona Basket',
-    type: 'clinica',
-    location: 'Barcelona',
-    deadline: '2024-11-15',
-    verified: true,
-    addedAt: '2024-10-03'
-  },
-  {
-    id: '3',
-    title: 'Pruebas Cantera Sub-18',
-    organization: 'Real Madrid Baloncesto',
-    type: 'prueba',
-    location: 'Madrid',
-    deadline: '2024-10-12',
-    verified: true,
-    addedAt: '2024-10-01'
-  },
-  {
-    id: '4',
-    title: 'Entrenador Ayudante ACB',
-    organization: 'Valencia Basket',
-    type: 'empleo',
-    location: 'Valencia',
-    deadline: '2024-10-25',
-    verified: true,
-    addedAt: '2024-09-28'
-  }
-]
-
 export default async function FavoritesPage() {
   const session = await getServerSession(authOptions)
   
-  if (!session) {
+  if (!session || !session.user) {
     redirect('/auth/login')
   }
+
+  // Fetch user's favorites from database
+  const favorites = await prisma.favorite.findMany({
+    where: { userId: session.user.id },
+    include: {
+      opportunity: {
+        include: {
+          organization: true
+        }
+      }
+    },
+    orderBy: { createdAt: 'desc' }
+  })
 
   const getTypeLabel = (type: string) => {
     switch (type) {
