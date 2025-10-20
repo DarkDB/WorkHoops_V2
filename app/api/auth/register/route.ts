@@ -34,12 +34,15 @@ export async function POST(request: NextRequest) {
     // Hash password (not storing for now in development)
     // const hashedPassword = await hash(password, 12)
 
+    // Auto-assign admin role if email matches
+    const finalRole = email === 'admin@workhoops.com' ? 'admin' : role
+    
     // Create user
     const user = await prisma.user.create({
       data: {
         name,
         email,
-        role,
+        role: finalRole,
         planType,
       }
     })
