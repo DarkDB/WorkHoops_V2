@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
-import { constructWebhookEvent, handleSuccessfulPayment } from '@/lib/stripe'
+import { constructWebhookEvent, handleSubscriptionSuccess, handleOneTimePaymentSuccess } from '@/lib/stripe'
 import Stripe from 'stripe'
 
 export async function POST(request: NextRequest) {
@@ -38,8 +38,14 @@ export async function POST(request: NextRequest) {
         
         if (session.payment_status === 'paid') {
           try {
-            await handleSuccessfulPayment(session)
-            console.log('Successfully handled payment for session:', session.id)
+            // Check if it's a subscription or one-time payment
+            if (session.mode === 'subscription') {
+              await handleSubscriptionSuccess(session)
+              console.log('Successfully handled subscription for session:', session.id)
+            } else if (session.mode === 'payment') {
+              await handleOneTimePaymentSuccess(session)
+              console.log('Successfully handled one-time payment for session:', session.id)
+            }
           } catch (error) {
             console.error('Error handling successful payment:', error)
             // Return error so Stripe retries the webhook
@@ -51,6 +57,32 @@ export async function POST(request: NextRequest) {
         }
         break
 
+      case 'customer.subscription.deleted':
+        const subscription = event.data.object as Stripe.Subscription
+        
+        try {
+          // Handle subscription cancellation
+          const { prisma } = await import('@/lib/prisma')
+          
+          const user = await prisma.user.findFirst({
+            where: { stripeSubscriptionId: subscription.id }
+          })
+
+          if (user) {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: {
+                planType: 'free_amateur',
+                stripeSubscriptionId: null,
+              }
+            })
+            console.log('Subscription cancelled for user:', user.id)
+          }
+        } catch (error) {
+          console.error('Error handling subscription cancellation:', error)
+        }
+        break
+
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object as Stripe.PaymentIntent
         console.log('PaymentIntent succeeded:', paymentIntent.id)
@@ -59,7 +91,6 @@ export async function POST(request: NextRequest) {
       case 'payment_intent.payment_failed':
         const failedPayment = event.data.object as Stripe.PaymentIntent
         console.log('PaymentIntent failed:', failedPayment.id)
-        // Could add logic to notify the user or update the opportunity status
         break
 
       default:
