@@ -234,14 +234,14 @@ export default async function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Vistas del perfil</p>
-                  <p className="text-3xl font-bold text-gray-900">{userData.stats.profileViews}</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.profileViews}</p>
                 </div>
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-green-600" />
                 </div>
               </div>
               <div className="mt-2 text-sm text-green-600">
-                +15% vs. mes pasado
+                Próximamente
               </div>
             </CardContent>
           </Card>
