@@ -44,20 +44,42 @@ export default async function ApplicationsPage() {
     switch (status) {
       case 'aceptada':
         return 'bg-green-100 text-green-800 border-green-200'
-      case 'vista':
+      case 'en_revision':
         return 'bg-blue-100 text-blue-800 border-blue-200'
       case 'rechazada':
         return 'bg-red-100 text-red-800 border-red-200'
+      case 'finalizada':
+        return 'bg-purple-100 text-purple-800 border-purple-200'
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200'
     }
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      enviada: 'Enviada',
+      en_revision: 'En revisión',
+      aceptada: 'Aceptada',
+      rechazada: 'Rechazada',
+      finalizada: 'Finalizada'
+    }
+    return labels[status] || status
   }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'aceptada':
         return <CheckCircle className="w-4 h-4" />
-      case 'vista':
+      case 'en_revision':
+        return <Eye className="w-4 h-4" />
+      case 'rechazada':
+        return <XCircle className="w-4 h-4" />
+      case 'finalizada':
+        return <CheckCircle className="w-4 h-4" />
+      default:
+        return <Clock className="w-4 h-4" />
+    }
+  }
         return <Eye className="w-4 h-4" />
       case 'rechazada':
         return <XCircle className="w-4 h-4" />
