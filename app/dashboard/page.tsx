@@ -146,7 +146,7 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                ¡Hola, {userData.profile.name}! 👋
+                ¡Hola, {user.name || 'Usuario'}! 👋
               </h1>
               <p className="text-gray-600 mt-1">
                 Aquí tienes un resumen de tu actividad en WorkHoops
@@ -155,7 +155,7 @@ export default async function DashboardPage() {
             
             <div className="flex items-center space-x-3">
               <Badge variant="outline" className="bg-orange-50 text-workhoops-accent border-workhoops-accent">
-                Plan {userData.profile.planType === 'pro_semipro' ? 'Pro' : 'Free'}
+                {getPlanLabel(user.planType)}
               </Badge>
               <Link href="/profile">
                 <Button variant="outline">
@@ -166,12 +166,12 @@ export default async function DashboardPage() {
             </div>
           </div>
           
-          {userData.profile.profileComplete < 100 && (
+          {profileComplete < 100 && (
             <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-medium text-yellow-800">
-                    Completa tu perfil ({userData.profile.profileComplete}%)
+                    Completa tu perfil ({profileComplete}%)
                   </h3>
                   <p className="text-sm text-yellow-700">
                     Un perfil completo recibe 3x más visualizaciones
@@ -186,7 +186,7 @@ export default async function DashboardPage() {
               <div className="mt-2 bg-yellow-200 rounded-full h-2">
                 <div 
                   className="bg-workhoops-accent h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${userData.profile.profileComplete}%` }}
+                  style={{ width: `${profileComplete}%` }}
                 />
               </div>
             </div>
