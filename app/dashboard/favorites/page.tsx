@@ -124,13 +124,13 @@ export default async function FavoritesPage() {
             </div>
             
             <div className="text-sm text-gray-500">
-              {mockFavorites.length} oportunidades guardadas
+              {favorites.length} oportunidades guardadas
             </div>
           </div>
         </div>
 
         {/* Empty State */}
-        {mockFavorites.length === 0 && (
+        {favorites.length === 0 && (
           <Card>
             <CardContent className="p-12 text-center">
               <Heart className="w-16 h-16 mx-auto mb-4 text-gray-300" />
