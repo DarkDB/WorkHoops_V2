@@ -150,26 +150,26 @@ export default async function FavoritesPage() {
         )}
 
         {/* Favorites List */}
-        {mockFavorites.length > 0 && (
+        {favorites.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle>Oportunidades guardadas</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockFavorites.map((favorite) => (
+                {favorites.map((favorite) => (
                   <div key={favorite.id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-start space-x-3 flex-1">
                         <div className="mt-1">
-                          {getTypeIcon(favorite.type)}
+                          {getTypeIcon(favorite.opportunity.type)}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-2">
-                            <Badge className={getTypeColor(favorite.type)}>
-                              {getTypeLabel(favorite.type)}
+                            <Badge className={getTypeColor(favorite.opportunity.type)}>
+                              {getTypeLabel(favorite.opportunity.type)}
                             </Badge>
-                            {favorite.verified && (
+                            {favorite.opportunity.verified && (
                               <Badge variant="secondary" className="bg-green-100 text-green-800">
                                 <CheckCircle className="w-3 h-3 mr-1" />
                                 Verificada
@@ -178,52 +178,59 @@ export default async function FavoritesPage() {
                           </div>
                           
                           <h3 className="font-semibold text-gray-900 text-lg mb-1">
-                            {favorite.title}
+                            {favorite.opportunity.title}
                           </h3>
-                          <p className="text-gray-600 mb-2">{favorite.organization}</p>
+                          <p className="text-gray-600 mb-2">{favorite.opportunity.organization?.name || 'Organización'}</p>
                           
                           <div className="flex items-center space-x-4 text-sm text-gray-500">
                             <div className="flex items-center">
                               <MapPin className="w-3 h-3 mr-1" />
-                              {favorite.location}
+                              {favorite.opportunity.city || favorite.opportunity.country}
                             </div>
                             <div className="flex items-center">
                               <Heart className="w-3 h-3 mr-1" />
-                              Guardado el {new Date(favorite.addedAt).toLocaleDateString('es-ES')}
+                              Guardado el {new Date(favorite.createdAt).toLocaleDateString('es-ES')}
                             </div>
                           </div>
                         </div>
                       </div>
                       
                       <div className="flex items-center space-x-2 ml-4">
-                        <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <form action={`/api/favorites`} method="DELETE">
+                          <Button type="submit" variant="ghost" size="sm" className="text-red-600 hover:bg-red-50">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </form>
                       </div>
                     </div>
                     
                     <div className="flex items-center justify-between">
                       <div className="text-sm">
-                        {daysUntilDeadline(favorite.deadline) > 0 ? (
+                        {favorite.opportunity.deadline && daysUntilDeadline(favorite.opportunity.deadline.toISOString()) > 0 ? (
                           <div className="flex items-center text-orange-600">
                             <Clock className="w-4 h-4 mr-1" />
-                            {daysUntilDeadline(favorite.deadline)} días para aplicar
+                            {daysUntilDeadline(favorite.opportunity.deadline.toISOString())} días para aplicar
                           </div>
-                        ) : (
+                        ) : favorite.opportunity.deadline ? (
                           <div className="flex items-center text-red-600">
                             <Clock className="w-4 h-4 mr-1" />
                             Plazo cerrado
+                          </div>
+                        ) : (
+                          <div className="flex items-center text-gray-600">
+                            <Clock className="w-4 h-4 mr-1" />
+                            Sin plazo definido
                           </div>
                         )}
                       </div>
                       
                       <div className="flex items-center space-x-2">
-                        <Link href={`/oportunidades/${favorite.id}`}>
+                        <Link href={`/oportunidades/${favorite.opportunity.slug}`}>
                           <Button variant="outline" size="sm">
                             Ver detalles
                           </Button>
                         </Link>
-                        {daysUntilDeadline(favorite.deadline) > 0 && (
+                        {favorite.opportunity.deadline && daysUntilDeadline(favorite.opportunity.deadline.toISOString()) > 0 && (
                           <Button size="sm">
                             Aplicar
                           </Button>
