@@ -48,21 +48,6 @@ async function getOpportunities(searchParams: OpportunitiesPageProps['searchPara
     ]
   }
 
-  // During build or without DB, return empty data
-  if (process.env.NODE_ENV === 'development' || !process.env.DATABASE_URL) {
-    return {
-      opportunities: [],
-      pagination: {
-        page,
-        limit,
-        total: 0,
-        pages: 0,
-        hasNext: false,
-        hasPrev: false
-      }
-    }
-  }
-
   try {
     const [opportunities, total] = await Promise.all([
       prisma.opportunity.findMany({
