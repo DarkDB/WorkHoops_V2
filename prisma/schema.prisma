@@ -1,11 +1,58 @@
-// Simplified Prisma schema for SQLite
+// Production Prisma schema for PostgreSQL (Vercel/Supabase)
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// PostgreSQL supports enums
+enum UserRole {
+  admin
+  jugador
+  entrenador
+  club
+  agencia
+}
+
+enum OpportunityType {
+  empleo
+  prueba
+  torneo
+  clinica
+  beca
+  patrocinio
+}
+
+enum OpportunityLevel {
+  amateur
+  semi_profesional
+  profesional
+  cantera
+}
+
+enum OpportunityStatus {
+  borrador
+  pendiente
+  publicada
+  cerrada
+  suspendida
+}
+
+enum Modality {
+  presencial
+  online
+  mixta
+}
+
+enum ApplicationState {
+  enviada
+  en_revision
+  aceptada
+  rechazada
+  finalizada
 }
 
 model Account {
@@ -53,7 +100,7 @@ model User {
   emailVerified DateTime?
   name          String?
   image         String?
-  role          String    @default("jugador") // jugador, entrenador, club, admin
+  role          UserRole  @default(jugador)
   locale        String    @default("es")
   verified      Boolean   @default(false)
   
@@ -75,8 +122,7 @@ model User {
   opportunities Opportunity[]
   applications  Application[]
   favorites     Favorite[]
-  auditLogs     AuditLog[]
-  subscriptions Subscription[]
+  subscriptions EmailSubscription[]
 
   @@map("users")
 }
@@ -107,23 +153,23 @@ model Opportunity {
   description String
   
   // Basic info
-  type        String   // empleo, prueba, torneo, clinica, beca, patrocinio
-  level       String   // amateur, semi_pro, cantera, pro
-  status      String   @default("borrador") // borrador, pendiente, publicada, cerrada
+  type        OpportunityType
+  level       OpportunityLevel
+  status      OpportunityStatus @default(borrador)
   
   // Location
   city        String?
   country     String   @default("España")
   latitude    Float?
   longitude   Float?
-  modality    String   @default("presencial") // presencial, online, mixta
+  modality    Modality @default(presencial)
   
-  // Compensation & Benefits
-  remunerationType String? // monthly, annual, per_event, none
-  remunerationMin  Float?
-  remunerationMax  Float?
-  currency         String @default("EUR")
-  benefits         String?
+  // Remuneration
+  remunerationType String?   // hourly, monthly, annual, project, negotiable
+  remunerationMin  Int?
+  remunerationMax  Int?
+  currency         String    @default("EUR")
+  benefits         String?   // JSON string with benefits array
   
   // Dates
   deadline    DateTime?
@@ -131,23 +177,23 @@ model Opportunity {
   endDate     DateTime?
   publishedAt DateTime?
   
-  // Tags as comma-separated string
-  tags        String?   // "base,entrenador,madrid"
+  // Tags and verification
+  tags        String?   // JSON string with tags array
   verified    Boolean   @default(false)
   
   // Contact
-  contactEmail   String
-  contactPhone   String?
+  contactEmail String
+  contactPhone String?
   applicationUrl String?
   
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   // Relations
-  organization   Organization? @relation(fields: [organizationId], references: [id])
   organizationId String?
-  author         User         @relation(fields: [authorId], references: [id])
+  organization   Organization? @relation(fields: [organizationId], references: [id])
   authorId       String
+  author         User          @relation(fields: [authorId], references: [id])
   applications   Application[]
   favorites      Favorite[]
 
@@ -155,17 +201,18 @@ model Opportunity {
 }
 
 model Application {
-  id        String   @id @default(cuid())
-  state     String   @default("enviada") // enviada, vista, rechazada, aceptada
+  id        String           @id @default(cuid())
+  state     ApplicationState @default(enviada)
   message   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  metadata  String?          // JSON string with additional data
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
   // Relations
-  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
-  opportunityId String
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
 
   @@unique([userId, opportunityId])
   @@map("applications")
@@ -176,46 +223,27 @@ model Favorite {
   createdAt DateTime @default(now())
 
   // Relations
-  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
-  opportunityId String
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
 
   @@unique([userId, opportunityId])
   @@map("favorites")
 }
 
-model AuditLog {
+model EmailSubscription {
   id        String   @id @default(cuid())
-  actorId   String
-  action    String   // "created", "updated", "deleted", "applied", "state_changed"
-  entity    String   // "opportunity", "application", "organization"
-  entityId  String
-  metadata  String?  // JSON as string
+  email     String
+  filters   String   // JSON string with search filters
+  frequency String   @default("daily") // daily, weekly, monthly
+  active    Boolean  @default(true)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  actor User @relation(fields: [actorId], references: [id])
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
 
-  @@map("audit_logs")
-}
-
-model Subscription {
-  id                   String    @id @default(cuid())
-  userId               String
-  stripeSubscriptionId String    @unique
-  stripePriceId        String
-  stripeCustomerId     String
-  status               String    // active, canceled, past_due, etc.
-  planType             String    // free_amateur, pro_semipro, club_agencia, destacado
-  currentPeriodStart   DateTime
-  currentPeriodEnd     DateTime
-  cancelAtPeriodEnd    Boolean   @default(false)
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("subscriptions")
+  @@map("email_subscriptions")
 }
