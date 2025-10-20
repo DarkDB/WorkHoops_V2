@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import { Navbar } from '@/components/Navbar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -19,76 +20,72 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-// Mock data - in real app this would come from database
-const mockUserData = {
-  profile: {
-    name: 'Juan García',
-    email: 'juan@email.com',
-    role: 'jugador',
-    planType: 'pro_semipro',
-    memberSince: '2024-01-15',
-    profileComplete: 75
-  },
-  stats: {
-    applications: 8,
-    favorites: 12,
-    profileViews: 45,
-    responseRate: 60
-  },
-  recentApplications: [
-    {
-      id: '1',
-      title: 'Jugador Base - CB Estudiantes',
-      organization: 'CB Estudiantes',
-      status: 'enviada',
-      appliedAt: '2024-10-01',
-      type: 'empleo'
-    },
-    {
-      id: '2', 
-      title: 'Pruebas Cantera - Real Madrid',
-      organization: 'Real Madrid Baloncesto',
-      status: 'vista',
-      appliedAt: '2024-09-28',
-      type: 'prueba'
-    },
-    {
-      id: '3',
-      title: 'Torneo Verano Valencia',
-      organization: 'Valencia Basket',
-      status: 'aceptada',
-      appliedAt: '2024-09-25',
-      type: 'torneo'
-    }
-  ],
-  recommendations: [
-    {
-      id: '1',
-      title: 'Entrenador Ayudante - Joventut',
-      organization: 'Joventut Badalona',
-      type: 'empleo',
-      location: 'Barcelona',
-      deadline: '2024-10-15'
-    },
-    {
-      id: '2',
-      title: 'Campus de Verano 2024',
-      organization: 'FC Barcelona Basket',
-      type: 'clinica',
-      location: 'Barcelona', 
-      deadline: '2024-10-20'
-    }
-  ]
-}
-
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   
-  if (!session) {
+  if (!session || !session.user) {
     redirect('/auth/login')
   }
 
-  const userData = mockUserData // In real app: fetch user data from database
+  // Fetch real user data from database
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: {
+      applications: {
+        include: {
+          opportunity: {
+            include: {
+              organization: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 3
+      },
+      favorites: {
+        include: {
+          opportunity: {
+            include: {
+              organization: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' }
+      }
+    }
+  })
+
+  if (!user) {
+    redirect('/auth/login')
+  }
+
+  // Calculate profile completion
+  const profileFields = [user.name, user.email, user.image, user.role]
+  const completedFields = profileFields.filter(field => field !== null && field !== '').length
+  const profileComplete = Math.round((completedFields / profileFields.length) * 100)
+
+  // Get statistics
+  const stats = {
+    applications: user.applications.length,
+    favorites: user.favorites.length,
+    profileViews: 0, // TODO: Implement view tracking
+    responseRate: 0 // TODO: Calculate from applications
+  }
+
+  // Get recent opportunities for recommendations
+  const recommendations = await prisma.opportunity.findMany({
+    where: {
+      status: 'publicada',
+      deadline: {
+        gte: new Date()
+      }
+    },
+    include: {
+      organization: true
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 2
+  })
 
   const getStatusColor = (status: string) => {
     switch (status) {
