@@ -283,24 +283,38 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {userData.recentApplications.map((application) => (
-                    <div key={application.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center space-x-2">
-                          {getTypeIcon(application.type)}
-                          <h3 className="font-medium text-gray-900">{application.title}</h3>
-                        </div>
-                        <Badge className={getStatusColor(application.status)}>
-                          {application.status}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-2">{application.organization}</p>
-                      <div className="flex items-center text-xs text-gray-500">
-                        <Calendar className="w-3 h-3 mr-1" />
-                        Aplicado el {new Date(application.appliedAt).toLocaleDateString('es-ES')}
-                      </div>
+                  {user.applications.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <Briefcase className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                      <p>Aún no has enviado ninguna solicitud</p>
+                      <Link href="/oportunidades">
+                        <Button variant="outline" size="sm" className="mt-4">
+                          Explorar oportunidades
+                        </Button>
+                      </Link>
                     </div>
-                  ))}
+                  ) : (
+                    user.applications.map((application) => (
+                      <div key={application.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center space-x-2">
+                            {getTypeIcon(application.opportunity.type)}
+                            <h3 className="font-medium text-gray-900">{application.opportunity.title}</h3>
+                          </div>
+                          <Badge className={getStatusColor(application.state)}>
+                            {getStatusLabel(application.state)}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-2">
+                          {application.opportunity.organization?.name || 'Organización'}
+                        </p>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <Calendar className="w-3 h-3 mr-1" />
+                          Aplicado el {new Date(application.createdAt).toLocaleDateString('es-ES')}
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
