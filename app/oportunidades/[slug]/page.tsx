@@ -25,75 +25,40 @@ import {
 import Link from 'next/link'
 import ApplyButton from './ApplyButton'
 
-// Mock data - en una app real vendría de la base de datos usando el slug
-const mockOpportunity = {
-  id: '1',
-  title: 'Jugador Base - CB Estudiantes',
-  slug: 'jugador-base-cb-estudiantes',
-  description: `
-    <h3>Descripción del puesto:</h3>
-    <p>Buscamos un jugador base con experiencia para nuestro equipo de LEB Oro. El candidato ideal debe tener:</p>
-    
-    <h4>Requisitos:</h4>
-    <ul>
-      <li>Mínimo 2 años de experiencia en competición senior</li>
-      <li>Altura entre 1.75m - 1.85m</li>
-      <li>Excelente visión de juego y capacidad de liderazgo</li>
-      <li>Disponibilidad para entrenar de lunes a viernes</li>
-      <li>Residencia en Madrid o disponibilidad para mudarse</li>
-    </ul>
-    
-    <h4>Ofrecemos:</h4>
-    <ul>
-      <li>Contrato profesional por temporada</li>
-      <li>Seguro médico completo</li>
-      <li>Alojamiento incluido</li>
-      <li>Cuerpo técnico de alto nivel</li>
-      <li>Proyección hacia categorías superiores</li>
-    </ul>
-    
-    <h4>Proceso de selección:</h4>
-    <p>Las pruebas se realizarán los días 15 y 16 de octubre en nuestras instalaciones. Es necesario traer certificado médico y equipación completa.</p>
-  `,
-  type: 'empleo',
-  status: 'publicada',
-  level: 'semi_profesional',
-  city: 'Madrid',
-  country: 'España',
-  modality: 'presencial',
-  remunerationType: 'monthly',
-  remunerationMin: 800,
-  remunerationMax: 1200,
-  currency: 'EUR',
-  deadline: '2024-10-15T23:59:59.000Z',
-  publishedAt: '2024-09-15T10:00:00.000Z',
-  contactEmail: 'cantera@cbestudiantes.com',
-  contactPhone: '+34 600 123 456',
-  applicationUrl: 'https://cbestudiantes.com/aplicar',
-  organization: {
-    id: 'org-1',
-    name: 'CB Estudiantes',
-    description: 'Club de baloncesto con más de 70 años de historia en Madrid.',
-    logo: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=100&h=100&fit=crop&crop=center',
-    verified: true,
-    website: 'https://cbestudiantes.com'
-  },
-  verified: true
-}
-
 interface PageProps {
   params: {
     slug: string
   }
 }
 
-export default function OpportunityDetailPage({ params }: PageProps) {
-  // En una app real, buscarías la oportunidad por slug en la base de datos
-  const opportunity = mockOpportunity
+export default async function OpportunityDetailPage({ params }: PageProps) {
+  const session = await getServerSession(authOptions)
+  
+  // Fetch opportunity from database
+  const opportunity = await prisma.opportunity.findUnique({
+    where: { slug: params.slug },
+    include: {
+      organization: true,
+      author: {
+        select: {
+          name: true,
+          email: true
+        }
+      },
+      applications: session?.user?.id ? {
+        where: {
+          userId: session.user.id
+        }
+      } : false
+    }
+  })
   
   if (!opportunity) {
     notFound()
   }
+
+  // Check if user has already applied
+  const hasApplied = session?.user?.id && Array.isArray(opportunity.applications) && opportunity.applications.length > 0
 
   const getTypeLabel = (type: string) => {
     switch (type) {
