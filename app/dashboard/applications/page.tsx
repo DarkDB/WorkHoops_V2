@@ -80,13 +80,6 @@ export default async function ApplicationsPage() {
         return <Clock className="w-4 h-4" />
     }
   }
-        return <Eye className="w-4 h-4" />
-      case 'rechazada':
-        return <XCircle className="w-4 h-4" />
-      default:
-        return <Clock className="w-4 h-4" />
-    }
-  }
 
   const getTypeIcon = (type: string) => {
     switch (type) {
