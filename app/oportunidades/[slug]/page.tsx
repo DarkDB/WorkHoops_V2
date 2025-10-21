@@ -1,4 +1,7 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import { Navbar } from '@/components/Navbar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -14,9 +17,13 @@ import {
   ExternalLink,
   Heart,
   Share2,
-  Euro
+  Euro,
+  Building2,
+  Mail,
+  Phone
 } from 'lucide-react'
 import Link from 'next/link'
+import ApplyButton from './ApplyButton'
 
 // Mock data - en una app real vendría de la base de datos usando el slug
 const mockOpportunity = {
