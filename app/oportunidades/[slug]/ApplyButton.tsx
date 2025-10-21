@@ -58,7 +58,8 @@ export default function ApplyButton({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          opportunityId
+          opportunityId,
+          message: '' // Optional message field
         }),
       })
 
