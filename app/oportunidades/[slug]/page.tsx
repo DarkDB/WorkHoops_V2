@@ -262,21 +262,12 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
                     {formatRemuneration()}
                   </div>
                   
-                  {daysUntilDeadline() > 0 ? (
-                    <div className="text-sm text-orange-600">
-                      <Clock className="w-4 h-4 inline mr-1" />
-                      {daysUntilDeadline()} días para aplicar
-                    </div>
-                  ) : (
-                    <div className="text-sm text-red-600">
-                      <Clock className="w-4 h-4 inline mr-1" />
-                      Plazo cerrado
-                    </div>
-                  )}
-                  
-                  <Button className="w-full" size="lg" disabled={daysUntilDeadline() <= 0}>
-                    Aplicar ahora
-                  </Button>
+                  <ApplyButton 
+                    opportunityId={opportunity.id}
+                    hasApplied={hasApplied}
+                    deadline={opportunity.deadline}
+                    applicationUrl={opportunity.applicationUrl}
+                  />
                   
                   <p className="text-xs text-gray-500">
                     Al aplicar, tu perfil será enviado directamente a la organización
