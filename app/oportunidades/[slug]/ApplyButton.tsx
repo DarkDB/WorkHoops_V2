@@ -2,14 +2,15 @@
 
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { useToast } from '@/components/ui/use-toast'
+import { toast } from 'sonner'
 import { Clock, CheckCircle } from 'lucide-react'
 
 interface ApplyButtonProps {
   opportunityId: string
   hasApplied: boolean
-  deadline: string
+  deadline: Date | null
   applicationUrl?: string | null
 }
 
@@ -20,11 +21,12 @@ export default function ApplyButton({
   applicationUrl 
 }: ApplyButtonProps) {
   const { data: session } = useSession()
-  const { toast } = useToast()
+  const router = useRouter()
   const [isApplying, setIsApplying] = useState(false)
   const [applied, setApplied] = useState(hasApplied)
 
   const daysUntilDeadline = () => {
+    if (!deadline) return 999 // No deadline means always open
     const now = new Date()
     const deadlineDate = new Date(deadline)
     const diffTime = deadlineDate.getTime() - now.getTime()
@@ -34,11 +36,8 @@ export default function ApplyButton({
 
   const handleApply = async () => {
     if (!session) {
-      toast({
-        title: "Inicia sesión",
-        description: "Debes iniciar sesión para aplicar a esta oportunidad",
-        variant: "destructive"
-      })
+      toast.error('Inicia sesión para aplicar')
+      router.push('/auth/login')
       return
     }
 
@@ -63,27 +62,26 @@ export default function ApplyButton({
         }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error('Error al aplicar')
+        throw new Error(data.error || 'Error al aplicar')
       }
 
       setApplied(true)
-      toast({
-        title: "¡Aplicación enviada!",
-        description: "Tu aplicación ha sido enviada correctamente",
+      toast.success('¡Aplicación enviada!', {
+        description: 'Tu aplicación ha sido enviada correctamente'
       })
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo enviar la aplicación. Inténtalo de nuevo.",
-        variant: "destructive"
+      toast.error('Error al aplicar', {
+        description: error instanceof Error ? error.message : 'Inténtalo de nuevo'
       })
     } finally {
       setIsApplying(false)
     }
   }
 
-  const isDeadlinePassed = daysUntilDeadline() <= 0
+  const isDeadlinePassed = deadline && daysUntilDeadline() <= 0
 
   if (applied) {
     return (
