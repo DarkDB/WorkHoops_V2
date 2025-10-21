@@ -81,20 +81,6 @@ export default async function ApplicationsPage() {
     }
   }
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'empleo':
-        return <Briefcase className="w-4 h-4" />
-      case 'prueba':
-        return <Award className="w-4 h-4" />
-      case 'torneo':
-      case 'clinica':
-        return <Users className="w-4 h-4" />
-      default:
-        return <Briefcase className="w-4 h-4" />
-    }
-  }
-
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
       empleo: 'Empleo',
