@@ -58,7 +58,7 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
   }
 
   // Check if user has already applied
-  const hasApplied = session?.user?.id && Array.isArray(opportunity.applications) && opportunity.applications.length > 0
+  const hasApplied = Boolean(session?.user?.id && Array.isArray(opportunity.applications) && opportunity.applications.length > 0)
 
   const getTypeLabel = (type: string) => {
     switch (type) {
