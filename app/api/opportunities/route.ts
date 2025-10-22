@@ -138,9 +138,11 @@ export async function POST(request: NextRequest) {
 
     if (!organization) {
       // Create a default organization
+      const orgName = session.user.name || 'Mi Organización'
       organization = await prisma.organization.create({
         data: {
-          name: session.user.name || 'Mi Organización',
+          name: orgName,
+          slug: orgName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now(),
           ownerId: session.user.id,
           description: 'Organización creada automáticamente'
         }
