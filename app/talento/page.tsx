@@ -1,3 +1,7 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, Star, Users, Trophy, Shield, CheckCircle, Upload, MapPin, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -8,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/Navbar'
+import { toast } from 'sonner'
 
 const benefits = [
   {
