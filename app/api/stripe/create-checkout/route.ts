@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const validatedData = checkoutSchema.parse(body)
-    const { planType, returnUrl } = validatedData
+    const { planType, billingCycle, returnUrl } = validatedData
 
     // Get the origin from the request or use provided returnUrl
     const origin = returnUrl || request.headers.get('origin') || process.env.APP_URL
@@ -41,7 +41,8 @@ export async function POST(request: NextRequest) {
         session.user.email,
         planType,
         successUrl,
-        cancelUrl
+        cancelUrl,
+        billingCycle || 'monthly'
       )
     } else if (planType === 'destacado') {
       checkoutSession = await createOneTimeCheckout(
