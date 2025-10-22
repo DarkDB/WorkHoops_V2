@@ -6,6 +6,7 @@ import { z } from 'zod'
 
 const checkoutSchema = z.object({
   planType: z.enum(['pro_semipro', 'destacado']),
+  billingCycle: z.enum(['monthly', 'annual']).optional(),
   returnUrl: z.string().url().optional(),
 })
 
