@@ -51,7 +51,8 @@ export default async function DashboardPage() {
           }
         },
         orderBy: { createdAt: 'desc' }
-      }
+      },
+      talentProfile: true
     }
   })
 
