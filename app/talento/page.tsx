@@ -185,35 +185,176 @@ export default function TalentoPage() {
             </CardHeader>
             
             <CardContent>
-              <div className="text-center py-12 space-y-6">
-                <Trophy className="w-16 h-16 text-workhoops-accent mx-auto" />
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-bold text-gray-900">Crea tu perfil profesional</h3>
-                  <p className="text-gray-600 max-w-md mx-auto">
-                    Regístrate para completar tu perfil deportivo y empezar a recibir oportunidades
+              <form className="space-y-6" action="/api/talent/create" method="POST">
+                {/* Información Básica */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="fullName">Nombre completo *</Label>
+                    <Input 
+                      id="fullName"
+                      name="fullName"
+                      placeholder="María García López"
+                      className="mt-1"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="birthDate">Fecha de nacimiento *</Label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Input 
+                        id="birthDate"
+                        name="birthDate"
+                        type="date"
+                        className="pl-10 mt-1"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="role">Rol principal *</Label>
+                    <Select name="role" required>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Selecciona tu rol" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roles.map((role) => (
+                          <SelectItem key={role} value={role.toLowerCase()}>
+                            {role}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="city">Ciudad *</Label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Input 
+                        id="city"
+                        name="city"
+                        placeholder="Barcelona"
+                        className="pl-10 mt-1"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Información deportiva */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-semibold">Información deportiva</h3>
+                  
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div>
+                      <Label htmlFor="position">Posición principal</Label>
+                      <Select name="position">
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Selecciona" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {positions.map((position) => (
+                            <SelectItem key={position} value={position.toLowerCase()}>
+                              {position}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="height">Altura (cm)</Label>
+                      <Input 
+                        id="height"
+                        name="height"
+                        type="number"
+                        placeholder="185"
+                        className="mt-1"
+                        min="150"
+                        max="250"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="weight">Peso (kg)</Label>
+                      <Input 
+                        id="weight"
+                        name="weight"
+                        type="number"
+                        placeholder="80"
+                        className="mt-1"
+                        min="40"
+                        max="150"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Experiencia */}
+                <div>
+                  <Label htmlFor="bio">Biografía deportiva</Label>
+                  <Textarea 
+                    id="bio"
+                    name="bio"
+                    placeholder="Cuéntanos tu trayectoria, logros y objetivos profesionales..."
+                    className="mt-1 min-h-[150px]"
+                    maxLength={500}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Máximo 500 caracteres
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                  <Link href="/auth/register?role=jugador">
-                    <Button size="lg" className="px-8">
-                      <Trophy className="w-4 h-4 mr-2" />
-                      Registrarse como jugador
-                    </Button>
-                  </Link>
-                  <Link href="/auth/register?role=entrenador">
-                    <Button size="lg" variant="outline" className="px-8">
-                      <Users className="w-4 h-4 mr-2" />
-                      Registrarse como entrenador
-                    </Button>
-                  </Link>
+
+                {/* Enlaces */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="video">Vídeo destacado (opcional)</Label>
+                    <Input 
+                      id="video"
+                      name="video"
+                      type="url"
+                      placeholder="https://youtube.com/..."
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="social">Redes sociales (opcional)</Label>
+                    <Input 
+                      id="social"
+                      name="social"
+                      type="url"
+                      placeholder="https://instagram.com/..."
+                      className="mt-1"
+                    />
+                  </div>
                 </div>
-                <p className="text-sm text-gray-500 pt-4">
-                  ¿Ya tienes cuenta?{' '}
-                  <Link href="/auth/login" className="text-workhoops-accent hover:underline font-medium">
-                    Inicia sesión aquí
-                  </Link>
-                </p>
-              </div>
+
+                <div className="flex gap-4 pt-4">
+                  <Button type="submit" size="lg" className="flex-1">
+                    <Trophy className="w-4 h-4 mr-2" />
+                    Crear perfil de talento
+                  </Button>
+                </div>
+
+                <div className="text-center text-sm text-gray-500">
+                  <p>
+                    Al crear tu perfil aceptas nuestros{' '}
+                    <Link href="/legal/terminos" className="text-workhoops-accent hover:underline">
+                      términos de uso
+                    </Link>{' '}
+                    y{' '}
+                    <Link href="/legal/privacidad" className="text-workhoops-accent hover:underline">
+                      política de privacidad
+                    </Link>
+                  </p>
+                </div>
+              </form>
             </CardContent>
           </Card>
         </div>
