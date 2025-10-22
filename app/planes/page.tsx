@@ -51,7 +51,7 @@ const plans = [
       'Estadísticas básicas de perfil',
       'Notificaciones en tiempo real'
     ],
-    cta: 'Empezar prueba gratis',
+    cta: 'Contratar plan',
     targetAudience: 'Jugadores y entrenadores que buscan visibilidad real',
     icon: <Zap className="w-6 h-6" />,
     bgColor: 'bg-orange-50',
