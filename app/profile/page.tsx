@@ -159,6 +159,73 @@ export default async function ProfilePage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Talent Profile Section */}
+            {user.talentProfile && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>Perfil de Talento</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {user.talentProfile.position && (
+                      <div>
+                        <p className="text-sm text-gray-500">Posición</p>
+                        <p className="font-medium">{user.talentProfile.position}</p>
+                      </div>
+                    )}
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      {user.talentProfile.height && (
+                        <div>
+                          <p className="text-sm text-gray-500">Altura</p>
+                          <p className="font-medium">{user.talentProfile.height} cm</p>
+                        </div>
+                      )}
+                      {user.talentProfile.weight && (
+                        <div>
+                          <p className="text-sm text-gray-500">Peso</p>
+                          <p className="font-medium">{user.talentProfile.weight} kg</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {user.talentProfile.bio && (
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">Biografía</p>
+                        <p className="text-sm text-gray-700">{user.talentProfile.bio}</p>
+                      </div>
+                    )}
+
+                    <div className="pt-4 border-t">
+                      <Link href="/talento#formulario">
+                        <Button variant="outline" size="sm">
+                          Editar perfil de talento
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {!user.talentProfile && (user.role === 'jugador' || user.role === 'entrenador') && (
+              <Card className="mt-6 bg-yellow-50 border-yellow-200">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Completa tu perfil de talento
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Crea tu perfil deportivo para ser descubierto por clubs y agencias
+                  </p>
+                  <Link href="/talento#formulario">
+                    <Button size="sm">
+                      Crear perfil de talento
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Sidebar */}
