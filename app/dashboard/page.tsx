@@ -60,25 +60,46 @@ export default async function DashboardPage() {
     redirect('/auth/login')
   }
 
-  // Calculate profile completion with more detailed logic
+  // Calculate profile completion with talent profile consideration
   const calculateProfileCompletion = () => {
     let totalFields = 0
     let completedFields = 0
     
-    // Basic fields (always count)
-    const basicFields = [
-      user.name,
-      user.email,
-      user.role
-    ]
+    // Basic user fields
+    const basicFields = [user.name, user.email, user.role]
     totalFields += basicFields.length
     completedFields += basicFields.filter(f => f !== null && f !== '').length
     
-    // Optional but recommended fields
+    // Image (bonus)
     if (user.image) completedFields += 1
     totalFields += 1
     
-    // Activity indicators (bonus points)
+    // For players and coaches, check talent profile completion
+    if (user.role === 'jugador' || user.role === 'entrenador') {
+      if (user.talentProfile) {
+        // Talent profile exists - check completeness
+        const profileFields = [
+          user.talentProfile.fullName,
+          user.talentProfile.birthDate,
+          user.talentProfile.city,
+          user.talentProfile.bio,
+        ]
+        totalFields += profileFields.length
+        completedFields += profileFields.filter(f => f !== null && f !== '').length
+        
+        // Optional but valuable fields
+        if (user.talentProfile.position) completedFields += 1
+        totalFields += 1
+        
+        if (user.talentProfile.videoUrl) completedFields += 1
+        totalFields += 1
+      } else {
+        // No talent profile - penalize heavily
+        totalFields += 6 // Expected talent profile fields
+      }
+    }
+    
+    // Activity indicators
     if (user.applications.length > 0) completedFields += 1
     totalFields += 1
     
@@ -89,6 +110,9 @@ export default async function DashboardPage() {
   }
   
   const profileComplete = calculateProfileCompletion()
+  
+  // Check if user needs to complete talent profile
+  const needsTalentProfile = (user.role === 'jugador' || user.role === 'entrenador') && !user.talentProfile
 
   // Get statistics
   const stats = {
