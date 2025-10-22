@@ -216,8 +216,8 @@ export default function TalentoPage() {
               </div>
             </CardContent>
           </Card>
-                {/* Información Básica */}
-                <div className="grid md:grid-cols-2 gap-6">
+        </div>
+      </section>
                   <div>
                     <Label htmlFor="fullName">Nombre completo *</Label>
                     <Input 
