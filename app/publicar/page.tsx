@@ -48,6 +48,112 @@ const positions = [
 ]
 
 export default function PublicarPage() {
+  const router = useRouter()
+  const { data: session, status } = useSession()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formData, setFormData] = useState({
+    title: '',
+    type: '',
+    level: '',
+    description: '',
+    city: '',
+    country: 'España',
+    positions: [] as string[],
+    deadline: '',
+    startDate: '',
+    remunerationType: 'mensual',
+    remunerationMin: '',
+    remunerationMax: '',
+    contactEmail: '',
+    contactPhone: '',
+    applicationUrl: '',
+    requirements: '',
+    benefits: ''
+  })
+
+  // Check if user is logged in
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-workhoops-accent" />
+      </div>
+    )
+  }
+
+  if (!session) {
+    router.push('/auth/login')
+    return null
+  }
+
+  const handleSubmit = async (e: React.FormEvent, featured: boolean = false) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      // If featured, redirect to Stripe payment
+      if (featured) {
+        const response = await fetch('/api/stripe/create-checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            planType: 'destacado',
+            returnUrl: window.location.origin
+          }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Error al crear sesión de pago')
+        }
+
+        // Redirect to Stripe Checkout
+        if (data.url) {
+          // Save form data to sessionStorage before redirecting
+          sessionStorage.setItem('pendingOpportunity', JSON.stringify(formData))
+          window.location.href = data.url
+        }
+        return
+      }
+
+      // Regular submission (free)
+      const response = await fetch('/api/opportunities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...formData,
+          featured: false
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al crear oportunidad')
+      }
+
+      toast.success('¡Oportunidad creada!', {
+        description: 'Tu oferta ha sido publicada exitosamente'
+      })
+
+      router.push('/dashboard')
+    } catch (error) {
+      toast.error('Error', {
+        description: error instanceof Error ? error.message : 'Error al publicar oferta'
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
