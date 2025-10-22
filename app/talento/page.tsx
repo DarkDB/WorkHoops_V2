@@ -185,7 +185,37 @@ export default function TalentoPage() {
             </CardHeader>
             
             <CardContent>
-              <form className="space-y-6">
+              <div className="text-center py-12 space-y-6">
+                <Trophy className="w-16 h-16 text-workhoops-accent mx-auto" />
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold text-gray-900">Crea tu perfil profesional</h3>
+                  <p className="text-gray-600 max-w-md mx-auto">
+                    Regístrate para completar tu perfil deportivo y empezar a recibir oportunidades
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                  <Link href="/auth/register?role=jugador">
+                    <Button size="lg" className="px-8">
+                      <Trophy className="w-4 h-4 mr-2" />
+                      Registrarse como jugador
+                    </Button>
+                  </Link>
+                  <Link href="/auth/register?role=entrenador">
+                    <Button size="lg" variant="outline" className="px-8">
+                      <Users className="w-4 h-4 mr-2" />
+                      Registrarse como entrenador
+                    </Button>
+                  </Link>
+                </div>
+                <p className="text-sm text-gray-500 pt-4">
+                  ¿Ya tienes cuenta?{' '}
+                  <Link href="/auth/login" className="text-workhoops-accent hover:underline font-medium">
+                    Inicia sesión aquí
+                  </Link>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
                 {/* Información Básica */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
