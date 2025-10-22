@@ -31,7 +31,8 @@ export default async function ProfilePage() {
       applications: true,
       favorites: true,
       opportunities: true,
-      organizations: true
+      organizations: true,
+      talentProfile: true
     }
   })
 
