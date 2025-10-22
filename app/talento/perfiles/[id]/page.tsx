@@ -28,6 +28,8 @@ interface PageProps {
 }
 
 export default async function TalentProfileDetailPage({ params }: PageProps) {
+  const session = await getServerSession(authOptions)
+  
   const profile = await prisma.talentProfile.findUnique({
     where: { id: params.id },
     include: {
@@ -45,6 +47,8 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
   if (!profile || !profile.isPublic) {
     notFound()
   }
+
+  const canContact = profile.user.planType === 'pro_semipro' || profile.user.planType === 'destacado'
 
   const calculateAge = (birthDate: Date) => {
     const today = new Date()
