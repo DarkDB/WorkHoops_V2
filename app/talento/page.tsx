@@ -228,10 +228,12 @@ export default function TalentoPage() {
           <p className="text-xl text-orange-100 mb-8">
             Únete a miles de jugadores y entrenadores que ya confían en WorkHoops
           </p>
-          <Button size="lg" variant="secondary" className="px-8 py-4">
-            <Trophy className="w-5 h-5 mr-2" />
-            Crear perfil gratis
-          </Button>
+          <Link href="/auth/register">
+            <Button size="lg" variant="secondary" className="px-8 py-4">
+              <Trophy className="w-5 h-5 mr-2" />
+              Crear perfil gratis
+            </Button>
+          </Link>
         </div>
       </section>
     </div>
