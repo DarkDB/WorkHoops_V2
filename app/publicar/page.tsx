@@ -591,28 +591,6 @@ export default function PublicarPage() {
             </CardContent>
           </Card>
         </form>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Botones de acción */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-6">
-            <Button type="submit" size="lg" className="flex-1">
-              <FileText className="w-4 h-4 mr-2" />
-              Publicar oferta gratis
-            </Button>
-            <Button type="button" size="lg" variant="outline" className="flex-1">
-              <Upload className="w-4 h-4 mr-2" />
-              Guardar borrador
-            </Button>
-          </div>
-
-          <div className="text-center text-sm text-gray-500">
-            <p>
-              WorkHoops revisará tu oferta en 24-48h. Te notificaremos por email cuando esté publicada.
-            </p>
-          </div>
-        </form>
       </div>
     </div>
   )
