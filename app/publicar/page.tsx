@@ -1,5 +1,10 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { ArrowLeft, Upload, MapPin, Users, Euro, Calendar, FileText, Shield } from 'lucide-react'
+import { ArrowLeft, Upload, MapPin, Users, Euro, Calendar, FileText, Shield, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/Navbar'
+import { toast } from 'sonner'
 
 const opportunityTypes = [
   { value: 'empleo', label: 'Empleo', description: 'Posición profesional permanente o temporal' },
