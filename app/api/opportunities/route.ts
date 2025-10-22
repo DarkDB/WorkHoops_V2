@@ -149,14 +149,6 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Calculate plan end date based on featured status
-    const planEnd = new Date()
-    if (validatedData.featured) {
-      planEnd.setDate(planEnd.getDate() + 60) // 60 days for featured
-    } else {
-      planEnd.setDate(planEnd.getDate() + 30) // 30 days for free
-    }
-
     // Create opportunity
     const opportunity = await prisma.opportunity.create({
       data: {
