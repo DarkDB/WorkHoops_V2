@@ -78,7 +78,7 @@ export default function PerfilesPage() {
     }
 
     // Filter by role
-    if (roleFilter !== 'all') {
+    if (roleFilter && roleFilter !== 'all') {
       filtered = filtered.filter(p => p.role === roleFilter)
     }
 
