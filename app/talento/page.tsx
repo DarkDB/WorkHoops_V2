@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { ArrowRight, Star, Users, Trophy, Shield, CheckCircle, Upload, MapPin, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
