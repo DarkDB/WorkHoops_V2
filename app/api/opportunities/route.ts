@@ -89,3 +89,119 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { message: 'No autorizado. Debes iniciar sesión.' },
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const validatedData = opportunityCreateSchema.parse(body)
+
+    // Get user's current opportunities count
+    const userOpportunities = await prisma.opportunity.count({
+      where: {
+        authorId: session.user.id,
+        status: { in: ['borrador', 'publicada'] }
+      }
+    })
+
+    // Check limits based on featured status
+    if (validatedData.featured) {
+      // Featured: up to 3 opportunities
+      if (userOpportunities >= 3) {
+        return NextResponse.json(
+          { message: 'Has alcanzado el límite de 3 ofertas destacadas. Elimina una oferta existente o espera a que expiren.' },
+          { status: 403 }
+        )
+      }
+    } else {
+      // Free: only 1 opportunity
+      if (userOpportunities >= 1) {
+        return NextResponse.json(
+          { message: 'Ya tienes una oferta publicada. Con el plan gratis solo puedes tener 1 oferta activa. Actualiza a pack destacado para publicar hasta 3 ofertas.' },
+          { status: 403 }
+        )
+      }
+    }
+
+    // Get or create organization for the user
+    let organization = await prisma.organization.findFirst({
+      where: { ownerId: session.user.id }
+    })
+
+    if (!organization) {
+      // Create a default organization
+      organization = await prisma.organization.create({
+        data: {
+          name: session.user.name || 'Mi Organización',
+          ownerId: session.user.id,
+          description: 'Organización creada automáticamente'
+        }
+      })
+    }
+
+    // Calculate plan end date based on featured status
+    const planEnd = new Date()
+    if (validatedData.featured) {
+      planEnd.setDate(planEnd.getDate() + 60) // 60 days for featured
+    } else {
+      planEnd.setDate(planEnd.getDate() + 30) // 30 days for free
+    }
+
+    // Create opportunity
+    const opportunity = await prisma.opportunity.create({
+      data: {
+        title: validatedData.title,
+        slug: validatedData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        type: validatedData.type,
+        level: validatedData.level,
+        description: validatedData.description,
+        city: validatedData.city,
+        country: validatedData.country,
+        deadline: validatedData.deadline ? new Date(validatedData.deadline) : null,
+        startDate: validatedData.startDate ? new Date(validatedData.startDate) : null,
+        remunerationMin: validatedData.remunerationMin ? parseInt(validatedData.remunerationMin) : null,
+        remunerationMax: validatedData.remunerationMax ? parseInt(validatedData.remunerationMax) : null,
+        remunerationType: validatedData.remunerationType,
+        contactEmail: validatedData.contactEmail,
+        contactPhone: validatedData.contactPhone || null,
+        applicationUrl: validatedData.applicationUrl || null,
+        requirements: validatedData.requirements || null,
+        benefits: validatedData.benefits || null,
+        featured: validatedData.featured,
+        status: 'publicada',
+        publishedAt: new Date(),
+        planEnd,
+        authorId: session.user.id,
+        organizationId: organization.id
+      }
+    })
+
+    return NextResponse.json({
+      success: true,
+      message: 'Oportunidad creada exitosamente',
+      opportunity
+    }, { status: 201 })
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { message: 'Datos inválidos', errors: error.errors },
+        { status: 400 }
+      )
+    }
+
+    console.error('Error creating opportunity:', error)
+    return NextResponse.json(
+      { message: 'Error al crear oportunidad' },
+      { status: 500 }
+    )
+  }
+}
