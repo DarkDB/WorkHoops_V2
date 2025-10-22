@@ -468,7 +468,9 @@ export default function PublicarPage() {
                 <div>
                   <Label htmlFor="contactPhone">Teléfono (opcional)</Label>
                   <Input 
-                    id="contactPhone" 
+                    id="contactPhone"
+                    value={formData.contactPhone}
+                    onChange={(e) => handleInputChange('contactPhone', e.target.value)}
                     type="tel"
                     placeholder="+34 600 000 000"
                     className="mt-1"
@@ -477,57 +479,118 @@ export default function PublicarPage() {
               </div>
 
               <div>
-                <Label htmlFor="website">Web o redes sociales (opcional)</Label>
+                <Label htmlFor="applicationUrl">URL externa de aplicación (opcional)</Label>
                 <Input 
-                  id="website" 
+                  id="applicationUrl"
+                  value={formData.applicationUrl}
+                  onChange={(e) => handleInputChange('applicationUrl', e.target.value)}
                   type="url"
-                  placeholder="https://www.miclub.es"
+                  placeholder="https://www.miclub.es/aplica"
                   className="mt-1"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Si prefieres que apliquen por tu web, añade el enlace aquí
+                </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Verificación y RGPD */}
-          <Card>
+          {/* Botones de Publicación */}
+          <Card className="border-workhoops-accent/30 bg-orange-50/30">
             <CardHeader>
-              <CardTitle>Verificación y consentimiento</CardTitle>
+              <CardTitle>Opciones de publicación</CardTitle>
+              <CardDescription>
+                Elige cómo quieres publicar tu oferta
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-start space-x-2">
-                <Checkbox id="verification" />
-                <div className="grid gap-1.5 leading-none">
-                  <Label htmlFor="verification" className="text-sm font-medium">
-                    Solicitar verificación de organización
-                  </Label>
-                  <p className="text-xs text-gray-500">
-                    Subir documento oficial para mostrar insignia de "Verificado" (opcional)
-                  </p>
+              <div className="grid md:grid-cols-2 gap-4">
+                {/* Publicación Gratis */}
+                <div className="border-2 rounded-lg p-6 bg-white">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-bold text-xl">Publicación Gratis</h3>
+                    <Badge variant="outline">1 oferta</Badge>
+                  </div>
+                  <ul className="space-y-2 mb-6 text-sm text-gray-600">
+                    <li className="flex items-center">
+                      <Shield className="w-4 h-4 mr-2 text-green-600" />
+                      Visibilidad estándar
+                    </li>
+                    <li className="flex items-center">
+                      <Shield className="w-4 h-4 mr-2 text-green-600" />
+                      Visible por 30 días
+                    </li>
+                    <li className="flex items-center">
+                      <Shield className="w-4 h-4 mr-2 text-green-600" />
+                      Acceso a candidatos
+                    </li>
+                  </ul>
+                  <Button 
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Publicando...' : 'Publicar Gratis'}
+                  </Button>
+                </div>
+
+                {/* Publicación Destacada */}
+                <div className="border-2 border-workhoops-accent rounded-lg p-6 bg-gradient-to-br from-orange-50 to-white relative overflow-hidden">
+                  <div className="absolute top-2 right-2">
+                    <Badge className="bg-workhoops-accent">Recomendado</Badge>
+                  </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-bold text-xl">Pack Destacado</h3>
+                    <Badge variant="outline">Hasta 3 ofertas</Badge>
+                  </div>
+                  <div className="text-3xl font-bold text-workhoops-accent mb-4">
+                    €49,90
+                    <span className="text-sm font-normal text-gray-600">/ 60 días</span>
+                  </div>
+                  <ul className="space-y-2 mb-6 text-sm text-gray-600">
+                    <li className="flex items-center">
+                      <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
+                      Visibilidad prioritaria
+                    </li>
+                    <li className="flex items-center">
+                      <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
+                      Visible por 60 días
+                    </li>
+                    <li className="flex items-center">
+                      <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
+                      Hasta 3 publicaciones
+                    </li>
+                    <li className="flex items-center">
+                      <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
+                      Badge "Destacado"
+                    </li>
+                  </ul>
+                  <Button 
+                    type="button"
+                    onClick={(e) => handleSubmit(e, true)}
+                    className="w-full bg-workhoops-accent hover:bg-orange-600"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Procesando...' : 'Destacar por €49,90'}
+                  </Button>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-2">
-                <Checkbox id="terms" required />
-                <div className="grid gap-1.5 leading-none">
-                  <Label htmlFor="terms" className="text-sm font-medium">
-                    Acepto los términos y condiciones *
-                  </Label>
-                  <p className="text-xs text-gray-500">
-                    He leído y acepto los <Link href="/legal/terminos" className="text-workhoops-accent hover:underline">términos de uso</Link> y la <Link href="/legal/privacidad" className="text-workhoops-accent hover:underline">política de privacidad</Link>
-                  </p>
-                </div>
+              <div className="text-center text-xs text-gray-500 mt-4">
+                <p>
+                  Al publicar aceptas nuestros{' '}
+                  <Link href="/legal/terminos" className="text-workhoops-accent hover:underline">
+                    términos de uso
+                  </Link>{' '}
+                  y{' '}
+                  <Link href="/legal/privacidad" className="text-workhoops-accent hover:underline">
+                    política de privacidad
+                  </Link>
+                </p>
               </div>
-
-              <div className="flex items-start space-x-2">
-                <Checkbox id="rgpd" required />
-                <div className="grid gap-1.5 leading-none">
-                  <Label htmlFor="rgpd" className="text-sm font-medium">
-                    Consentimiento RGPD *
-                  </Label>
-                  <p className="text-xs text-gray-500">
-                    Consiento el tratamiento de mis datos personales conforme a la normativa de protección de datos
-                  </p>
-                </div>
+            </CardContent>
+          </Card>
+        </form>
               </div>
             </CardContent>
           </Card>
