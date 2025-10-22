@@ -243,14 +243,15 @@ export default function TalentoPage() {
             </CardHeader>
             
             <CardContent>
-              <form className="space-y-6" action="/api/talent/create" method="POST">
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 {/* Información Básica */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="fullName">Nombre completo *</Label>
                     <Input 
                       id="fullName"
-                      name="fullName"
+                      value={formData.fullName}
+                      onChange={(e) => handleInputChange('fullName', e.target.value)}
                       placeholder="María García López"
                       className="mt-1"
                       required
@@ -263,7 +264,8 @@ export default function TalentoPage() {
                       <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                       <Input 
                         id="birthDate"
-                        name="birthDate"
+                        value={formData.birthDate}
+                        onChange={(e) => handleInputChange('birthDate', e.target.value)}
                         type="date"
                         className="pl-10 mt-1"
                         required
@@ -275,7 +277,7 @@ export default function TalentoPage() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="role">Rol principal *</Label>
-                    <Select name="role" required>
+                    <Select value={formData.role} onValueChange={(value) => handleInputChange('role', value)} required>
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="Selecciona tu rol" />
                       </SelectTrigger>
@@ -295,7 +297,8 @@ export default function TalentoPage() {
                       <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                       <Input 
                         id="city"
-                        name="city"
+                        value={formData.city}
+                        onChange={(e) => handleInputChange('city', e.target.value)}
                         placeholder="Barcelona"
                         className="pl-10 mt-1"
                         required
@@ -311,7 +314,7 @@ export default function TalentoPage() {
                   <div className="grid md:grid-cols-3 gap-6">
                     <div>
                       <Label htmlFor="position">Posición principal</Label>
-                      <Select name="position">
+                      <Select value={formData.position} onValueChange={(value) => handleInputChange('position', value)}>
                         <SelectTrigger className="mt-1">
                           <SelectValue placeholder="Selecciona" />
                         </SelectTrigger>
@@ -329,7 +332,8 @@ export default function TalentoPage() {
                       <Label htmlFor="height">Altura (cm)</Label>
                       <Input 
                         id="height"
-                        name="height"
+                        value={formData.height}
+                        onChange={(e) => handleInputChange('height', e.target.value)}
                         type="number"
                         placeholder="185"
                         className="mt-1"
@@ -342,7 +346,8 @@ export default function TalentoPage() {
                       <Label htmlFor="weight">Peso (kg)</Label>
                       <Input 
                         id="weight"
-                        name="weight"
+                        value={formData.weight}
+                        onChange={(e) => handleInputChange('weight', e.target.value)}
                         type="number"
                         placeholder="80"
                         className="mt-1"
@@ -358,7 +363,8 @@ export default function TalentoPage() {
                   <Label htmlFor="bio">Biografía deportiva</Label>
                   <Textarea 
                     id="bio"
-                    name="bio"
+                    value={formData.bio}
+                    onChange={(e) => handleInputChange('bio', e.target.value)}
                     placeholder="Cuéntanos tu trayectoria, logros y objetivos profesionales..."
                     className="mt-1 min-h-[150px]"
                     maxLength={500}
@@ -374,7 +380,8 @@ export default function TalentoPage() {
                     <Label htmlFor="video">Vídeo destacado (opcional)</Label>
                     <Input 
                       id="video"
-                      name="video"
+                      value={formData.video}
+                      onChange={(e) => handleInputChange('video', e.target.value)}
                       type="url"
                       placeholder="https://youtube.com/..."
                       className="mt-1"
@@ -385,7 +392,8 @@ export default function TalentoPage() {
                     <Label htmlFor="social">Redes sociales (opcional)</Label>
                     <Input 
                       id="social"
-                      name="social"
+                      value={formData.social}
+                      onChange={(e) => handleInputChange('social', e.target.value)}
                       type="url"
                       placeholder="https://instagram.com/..."
                       className="mt-1"
@@ -394,9 +402,9 @@ export default function TalentoPage() {
                 </div>
 
                 <div className="flex gap-4 pt-4">
-                  <Button type="submit" size="lg" className="flex-1">
+                  <Button type="submit" size="lg" className="flex-1" disabled={isSubmitting}>
                     <Trophy className="w-4 h-4 mr-2" />
-                    Crear perfil de talento
+                    {isSubmitting ? 'Creando...' : 'Crear perfil de talento'}
                   </Button>
                 </div>
 
