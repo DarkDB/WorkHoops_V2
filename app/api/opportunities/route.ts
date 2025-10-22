@@ -1,7 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
+
+const opportunityCreateSchema = z.object({
+  title: z.string().min(5, 'El título debe tener al menos 5 caracteres'),
+  type: z.string(),
+  level: z.string(),
+  description: z.string().min(50, 'La descripción debe tener al menos 50 caracteres'),
+  city: z.string(),
+  country: z.string().default('España'),
+  deadline: z.string().optional(),
+  startDate: z.string().optional(),
+  remunerationMin: z.string().optional(),
+  remunerationMax: z.string().optional(),
+  remunerationType: z.string().default('mensual'),
+  contactEmail: z.string().email('Email de contacto inválido'),
+  contactPhone: z.string().optional(),
+  applicationUrl: z.string().url().optional().or(z.literal('')),
+  requirements: z.string().optional(),
+  benefits: z.string().optional(),
+  featured: z.boolean().default(false)
+})
 
 export async function GET(request: NextRequest) {
   try {
