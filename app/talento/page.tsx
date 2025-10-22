@@ -85,16 +85,20 @@ export default function TalentoPage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="px-8 py-4 text-lg">
-                  <Trophy className="w-5 h-5 mr-2" />
-                  Crear perfil gratis
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
+                <Link href="/auth/register?role=jugador">
+                  <Button size="lg" className="px-8 py-4 text-lg w-full sm:w-auto">
+                    <Trophy className="w-5 h-5 mr-2" />
+                    Crear perfil gratis
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
                 
-                <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-2">
-                  <Users className="w-5 h-5 mr-2" />
-                  Explorar talentos
-                </Button>
+                <Link href="/oportunidades">
+                  <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-2 w-full sm:w-auto">
+                    <Users className="w-5 h-5 mr-2" />
+                    Explorar talentos
+                  </Button>
+                </Link>
               </div>
 
               <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
