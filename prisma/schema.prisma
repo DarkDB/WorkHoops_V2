@@ -247,3 +247,35 @@ model EmailSubscription {
 
   @@map("email_subscriptions")
 }
+
+model TalentProfile {
+  id          String   @id @default(cuid())
+  fullName    String
+  birthDate   DateTime
+  role        String   // jugador, entrenador, staff
+  city        String
+  country     String   @default("España")
+  
+  // Sport specific (mainly for players)
+  position    String?
+  height      Int?     // in cm
+  weight      Int?     // in kg
+  
+  // Biography and links
+  bio         String?
+  videoUrl    String?
+  socialUrl   String?
+  
+  // Profile status
+  isPublic    Boolean  @default(true)
+  verified    Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("talent_profiles")
+}
