@@ -209,6 +209,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                 <ContactButton 
                   profileId={profile.id}
                   profileUserId={profile.user.id}
+                  profileName={profile.fullName}
                   canContact={canContact}
                   isLoggedIn={!!session}
                 />
