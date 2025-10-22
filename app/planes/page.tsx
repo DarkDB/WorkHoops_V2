@@ -133,6 +133,7 @@ export default function PlanesPage() {
           },
           body: JSON.stringify({
             planType: planId,
+            billingCycle: planId === 'pro_semipro' ? billingCycle : undefined,
             returnUrl: window.location.origin
           }),
         })
