@@ -112,7 +112,7 @@ export function Navbar() {
             ) : session ? (
               <div className="flex items-center space-x-4">
                 {/* Role-specific actions */}
-                {session.user.role === 'org' && (
+                {(session.user.role === 'club' || session.user.role === 'agencia') && (
                   <Link href="/publicar">
                     <Button size="sm" className="bg-workhoops-accent hover:bg-workhoops-accent-hover">
                       <PlusCircle className="w-4 h-4 mr-2" />
