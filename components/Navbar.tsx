@@ -149,7 +149,7 @@ export function Navbar() {
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
-                    {session.user.role === 'user' && (
+                    {(session.user.role === 'jugador' || session.user.role === 'entrenador') && (
                       <DropdownMenuItem asChild>
                         <Link href="/dashboard/applications" className="cursor-pointer">
                           <FileText className="mr-2 h-4 w-4" />
@@ -157,7 +157,7 @@ export function Navbar() {
                         </Link>
                       </DropdownMenuItem>
                     )}
-                    {session.user.role === 'org' && (
+                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
                       <DropdownMenuItem asChild>
                         <Link href="/dashboard/opportunities" className="cursor-pointer">
                           <FileText className="mr-2 h-4 w-4" />
