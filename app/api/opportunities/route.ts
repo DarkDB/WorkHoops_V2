@@ -162,8 +162,8 @@ export async function POST(request: NextRequest) {
       data: {
         title: validatedData.title,
         slug: validatedData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-        type: validatedData.type,
-        level: validatedData.level,
+        type: validatedData.type as any, // Cast to enum
+        level: validatedData.level as any, // Cast to enum
         description: validatedData.description,
         city: validatedData.city,
         country: validatedData.country,
@@ -171,14 +171,14 @@ export async function POST(request: NextRequest) {
         startDate: validatedData.startDate ? new Date(validatedData.startDate) : null,
         remunerationMin: validatedData.remunerationMin ? parseInt(validatedData.remunerationMin) : null,
         remunerationMax: validatedData.remunerationMax ? parseInt(validatedData.remunerationMax) : null,
-        remunerationType: validatedData.remunerationType,
+        remunerationType: validatedData.remunerationType as any,
         contactEmail: validatedData.contactEmail,
         contactPhone: validatedData.contactPhone || null,
         applicationUrl: validatedData.applicationUrl || null,
         requirements: validatedData.requirements || null,
         benefits: validatedData.benefits || null,
         featured: validatedData.featured,
-        status: 'publicada',
+        status: 'publicada' as any,
         publishedAt: new Date(),
         planEnd,
         authorId: session.user.id,
