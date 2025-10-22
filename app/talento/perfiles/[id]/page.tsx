@@ -206,10 +206,18 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                 <p className="text-sm text-gray-600 mb-4">
                   ¿Interesado en este perfil? Contacta directamente
                 </p>
-                <Button className="w-full">
-                  <Mail className="w-4 h-4 mr-2" />
-                  Contactar
-                </Button>
+                <ContactButton 
+                  profileId={profile.id}
+                  profileUserId={profile.user.id}
+                  canContact={canContact}
+                  isLoggedIn={!!session}
+                />
+                {!canContact && (
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    <Lock className="w-3 h-3 inline mr-1" />
+                    Este usuario necesita plan Pro para recibir contactos
+                  </p>
+                )}
               </CardContent>
             </Card>
 
