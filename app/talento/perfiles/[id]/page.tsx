@@ -1,4 +1,6 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Navbar } from '@/components/Navbar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,9 +15,11 @@ import {
   CheckCircle,
   Youtube,
   Instagram,
-  Mail
+  Mail,
+  Lock
 } from 'lucide-react'
 import Link from 'next/link'
+import ContactButton from './ContactButton'
 
 interface PageProps {
   params: {
