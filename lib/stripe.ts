@@ -82,7 +82,8 @@ export async function createSubscriptionCheckout(
   userEmail: string,
   planType: 'pro_semipro',
   successUrl: string,
-  cancelUrl: string
+  cancelUrl: string,
+  billingCycle: 'monthly' | 'annual' = 'monthly'
 ): Promise<Stripe.Checkout.Session> {
   const plan = PLANS[planType]
   
@@ -90,12 +91,21 @@ export async function createSubscriptionCheckout(
     throw new Error('This plan does not require payment')
   }
 
+  // Select the correct price ID based on billing cycle
+  const priceId = billingCycle === 'annual' 
+    ? STRIPE_PRICE_IDS.pro_semipro_annual 
+    : STRIPE_PRICE_IDS.pro_semipro_monthly
+
+  if (!priceId) {
+    throw new Error(`Price ID not configured for ${billingCycle} billing`)
+  }
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     mode: 'subscription',
     line_items: [
       {
-        price: plan.stripePriceId,
+        price: priceId,
         quantity: 1,
       },
     ],
@@ -104,6 +114,7 @@ export async function createSubscriptionCheckout(
     metadata: {
       userId,
       planType,
+      billingCycle,
     },
     success_url: successUrl,
     cancel_url: cancelUrl,
@@ -111,6 +122,7 @@ export async function createSubscriptionCheckout(
       metadata: {
         userId,
         planType,
+        billingCycle,
       },
     },
   })
