@@ -58,6 +58,59 @@ const positions = [
 ]
 
 export default function TalentoPage() {
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formData, setFormData] = useState({
+    fullName: '',
+    birthDate: '',
+    role: '',
+    city: '',
+    position: '',
+    height: '',
+    weight: '',
+    bio: '',
+    video: '',
+    social: ''
+  })
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/talent/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al crear perfil')
+      }
+
+      toast.success('¡Perfil creado!', {
+        description: 'Tu perfil de talento ha sido creado exitosamente'
+      })
+
+      // Redirect to login or profile
+      router.push('/auth/login')
+    } catch (error) {
+      toast.error('Error', {
+        description: error instanceof Error ? error.message : 'Error al crear perfil'
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
