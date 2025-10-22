@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has an organization (limit one per user for now)
-    if (session.user.role === 'org') {
+    if (session.user.role === 'club' || session.user.role === 'agencia') {
       const existing = await prisma.organization.findFirst({
         where: { ownerId: session.user.id },
       })
