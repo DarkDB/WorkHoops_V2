@@ -81,6 +81,13 @@ export function Navbar() {
               <span>Talento</span>
             </Link>
             <Link 
+              href="/talento/perfiles" 
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
+            >
+              <span>👥</span>
+              <span>Perfiles</span>
+            </Link>
+            <Link 
               href="/recursos" 
               className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
             >
