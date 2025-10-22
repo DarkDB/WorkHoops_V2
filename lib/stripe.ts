@@ -14,6 +14,7 @@ export const stripe = new Stripe(stripeSecretKey, {
 // After creating products in Stripe, update these IDs
 export const STRIPE_PRICE_IDS = {
   pro_semipro_monthly: process.env.STRIPE_PRICE_PRO_SEMIPRO || '', // €4.99/month recurring
+  pro_semipro_annual: process.env.STRIPE_PRICE_PRO_SEMIPRO_ANNUAL || '', // €39/year recurring
   destacado_once: process.env.STRIPE_PRICE_DESTACADO || '', // €49.90 one-time for 60 days
 }
 
