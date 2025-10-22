@@ -123,6 +123,7 @@ model User {
   applications  Application[]
   favorites     Favorite[]
   subscriptions EmailSubscription[]
+  talentProfile TalentProfile?
 
   @@map("users")
 }
