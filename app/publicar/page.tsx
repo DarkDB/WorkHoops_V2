@@ -211,11 +211,11 @@ export default function PublicarPage() {
           </CardContent>
         </Card>
 
-        <form className="space-y-8">
+        <form className="space-y-8" onSubmit={(e) => handleSubmit(e, false)}>
           {/* Tipo de Oportunidad */}
           <Card>
             <CardHeader>
-              <CardTitle>Tipo de oportunidad</CardTitle>
+              <CardTitle>Tipo de oportunidad *</CardTitle>
               <CardDescription>
                 Selecciona la categoría que mejor describe tu oferta
               </CardDescription>
@@ -225,7 +225,12 @@ export default function PublicarPage() {
                 {opportunityTypes.map((type) => (
                   <div 
                     key={type.value}
-                    className="border-2 rounded-lg p-4 cursor-pointer hover:border-workhoops-accent hover:bg-orange-50 transition-colors"
+                    onClick={() => handleInputChange('type', type.value)}
+                    className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                      formData.type === type.value 
+                        ? 'border-workhoops-accent bg-orange-50' 
+                        : 'border-gray-200 hover:border-workhoops-accent hover:bg-orange-50'
+                    }`}
                   >
                     <h3 className="font-medium mb-2">{type.label}</h3>
                     <p className="text-sm text-gray-600">{type.description}</p>
@@ -245,7 +250,9 @@ export default function PublicarPage() {
                 <div>
                   <Label htmlFor="title">Título de la oportunidad *</Label>
                   <Input 
-                    id="title" 
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
                     placeholder="ej. Entrenador/a Base para Liga EBA"
                     className="mt-1"
                     required
@@ -253,13 +260,19 @@ export default function PublicarPage() {
                 </div>
                 
                 <div>
-                  <Label htmlFor="organization">Organización/Club *</Label>
-                  <Input 
-                    id="organization" 
-                    placeholder="ej. CB Barcelona"
-                    className="mt-1"
-                    required
-                  />
+                  <Label htmlFor="level">Nivel *</Label>
+                  <Select value={formData.level} onValueChange={(value) => handleInputChange('level', value)} required>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Selecciona nivel" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {levels.map((level) => (
+                        <SelectItem key={level.value} value={level.value}>
+                          {level.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -269,7 +282,9 @@ export default function PublicarPage() {
                   <div className="relative">
                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input 
-                      id="city" 
+                      id="city"
+                      value={formData.city}
+                      onChange={(e) => handleInputChange('city', e.target.value)}
                       placeholder="Barcelona"
                       className="pl-10 mt-1"
                       required
