@@ -340,6 +340,8 @@ export default function PublicarPage() {
                 <Label htmlFor="description">Descripción *</Label>
                 <Textarea 
                   id="description"
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
                   placeholder="Describe la oportunidad, responsabilidades, objetivos del equipo..."
                   className="mt-1 min-h-[120px]"
                   required
@@ -350,6 +352,8 @@ export default function PublicarPage() {
                 <Label htmlFor="requirements">Requisitos</Label>
                 <Textarea 
                   id="requirements"
+                  value={formData.requirements}
+                  onChange={(e) => handleInputChange('requirements', e.target.value)}
                   placeholder="Experiencia requerida, formación, disponibilidad..."
                   className="mt-1"
                 />
@@ -359,6 +363,8 @@ export default function PublicarPage() {
                 <Label htmlFor="benefits">Beneficios ofrecidos</Label>
                 <Textarea 
                   id="benefits"
+                  value={formData.benefits}
+                  onChange={(e) => handleInputChange('benefits', e.target.value)}
                   placeholder="Remuneración, material deportivo, formación, oportunidades de crecimiento..."
                   className="mt-1"
                 />
@@ -378,7 +384,9 @@ export default function PublicarPage() {
                   <div className="relative">
                     <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input 
-                      id="deadline" 
+                      id="deadline"
+                      value={formData.deadline}
+                      onChange={(e) => handleInputChange('deadline', e.target.value)}
                       type="date"
                       className="pl-10 mt-1"
                     />
@@ -390,7 +398,9 @@ export default function PublicarPage() {
                   <div className="relative">
                     <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input 
-                      id="startDate" 
+                      id="startDate"
+                      value={formData.startDate}
+                      onChange={(e) => handleInputChange('startDate', e.target.value)}
                       type="date"
                       className="pl-10 mt-1"
                     />
@@ -400,26 +410,30 @@ export default function PublicarPage() {
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="remuneration">Remuneración (opcional)</Label>
+                  <Label htmlFor="remunerationMin">Remuneración mínima (€)</Label>
                   <div className="relative">
                     <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input 
-                      id="remuneration" 
-                      placeholder="ej. 800-1200€/mes"
+                      id="remunerationMin"
+                      value={formData.remunerationMin}
+                      onChange={(e) => handleInputChange('remunerationMin', e.target.value)}
+                      type="number"
+                      placeholder="800"
                       className="pl-10 mt-1"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="spots">Número de plazas</Label>
+                  <Label htmlFor="remunerationMax">Remuneración máxima (€)</Label>
                   <div className="relative">
-                    <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input 
-                      id="spots" 
+                      id="remunerationMax"
+                      value={formData.remunerationMax}
+                      onChange={(e) => handleInputChange('remunerationMax', e.target.value)}
                       type="number"
-                      placeholder="1"
-                      min="1"
+                      placeholder="1200"
                       className="pl-10 mt-1"
                     />
                   </div>
@@ -441,7 +455,9 @@ export default function PublicarPage() {
                 <div>
                   <Label htmlFor="contactEmail">Email de contacto *</Label>
                   <Input 
-                    id="contactEmail" 
+                    id="contactEmail"
+                    value={formData.contactEmail}
+                    onChange={(e) => handleInputChange('contactEmail', e.target.value)}
                     type="email"
                     placeholder="contacto@miclub.es"
                     className="mt-1"
