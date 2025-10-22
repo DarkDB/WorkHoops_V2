@@ -59,10 +59,35 @@ export default async function DashboardPage() {
     redirect('/auth/login')
   }
 
-  // Calculate profile completion
-  const profileFields = [user.name, user.email, user.image, user.role]
-  const completedFields = profileFields.filter(field => field !== null && field !== '').length
-  const profileComplete = Math.round((completedFields / profileFields.length) * 100)
+  // Calculate profile completion with more detailed logic
+  const calculateProfileCompletion = () => {
+    let totalFields = 0
+    let completedFields = 0
+    
+    // Basic fields (always count)
+    const basicFields = [
+      user.name,
+      user.email,
+      user.role
+    ]
+    totalFields += basicFields.length
+    completedFields += basicFields.filter(f => f !== null && f !== '').length
+    
+    // Optional but recommended fields
+    if (user.image) completedFields += 1
+    totalFields += 1
+    
+    // Activity indicators (bonus points)
+    if (user.applications.length > 0) completedFields += 1
+    totalFields += 1
+    
+    if (user.favorites.length > 0) completedFields += 1
+    totalFields += 1
+    
+    return Math.round((completedFields / totalFields) * 100)
+  }
+  
+  const profileComplete = calculateProfileCompletion()
 
   // Get statistics
   const stats = {
