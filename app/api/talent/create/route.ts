@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -17,26 +19,78 @@ const talentProfileSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { message: 'No autorizado. Debes iniciar sesión para crear un perfil.' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
     const validatedData = talentProfileSchema.parse(body)
 
-    // Por ahora, simplemente guardamos en los metadatos del usuario
-    // En una implementación completa, crearías una tabla TalentProfile separada
-    
-    // Crear un usuario temporal con estos datos
-    // Esto es temporal hasta que el usuario se registre completamente
-    const tempProfile = {
-      ...validatedData,
-      createdAt: new Date().toISOString()
+    // Check if user already has a talent profile
+    const existingProfile = await prisma.talentProfile.findUnique({
+      where: { userId: session.user.id }
+    })
+
+    if (existingProfile) {
+      // Update existing profile
+      const updatedProfile = await prisma.talentProfile.update({
+        where: { userId: session.user.id },
+        data: {
+          fullName: validatedData.fullName,
+          birthDate: new Date(validatedData.birthDate),
+          role: validatedData.role,
+          city: validatedData.city,
+          position: validatedData.position || null,
+          height: validatedData.height ? parseInt(validatedData.height) : null,
+          weight: validatedData.weight ? parseInt(validatedData.weight) : null,
+          bio: validatedData.bio || null,
+          videoUrl: validatedData.video || null,
+          socialUrl: validatedData.social || null,
+        }
+      })
+
+      return NextResponse.json({
+        success: true,
+        message: 'Perfil actualizado exitosamente',
+        profile: updatedProfile
+      })
     }
 
-    // Guardar en localStorage del cliente o redirigir a registro
+    // Create new talent profile
+    const talentProfile = await prisma.talentProfile.create({
+      data: {
+        fullName: validatedData.fullName,
+        birthDate: new Date(validatedData.birthDate),
+        role: validatedData.role,
+        city: validatedData.city,
+        position: validatedData.position || null,
+        height: validatedData.height ? parseInt(validatedData.height) : null,
+        weight: validatedData.weight ? parseInt(validatedData.weight) : null,
+        bio: validatedData.bio || null,
+        videoUrl: validatedData.video || null,
+        socialUrl: validatedData.social || null,
+        userId: session.user.id
+      }
+    })
+
+    // Also update the user's name if different
+    if (session.user.name !== validatedData.fullName) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { name: validatedData.fullName }
+      })
+    }
+
     return NextResponse.json({
       success: true,
-      message: 'Perfil creado exitosamente',
-      profile: tempProfile,
-      nextStep: 'register' // Indicar que debe registrarse
-    })
+      message: 'Perfil de talento creado exitosamente',
+      profile: talentProfile
+    }, { status: 201 })
 
   } catch (error) {
     if (error instanceof z.ZodError) {
