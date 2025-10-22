@@ -176,10 +176,8 @@ export async function POST(request: NextRequest) {
         contactPhone: validatedData.contactPhone || null,
         applicationUrl: validatedData.applicationUrl || null,
         benefits: validatedData.benefits || null,
-        featured: validatedData.featured,
         status: 'publicada' as any,
         publishedAt: new Date(),
-        planEnd,
         authorId: session.user.id,
         organizationId: organization.id
       }
