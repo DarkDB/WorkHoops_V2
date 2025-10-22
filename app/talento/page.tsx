@@ -59,7 +59,9 @@ const positions = [
 
 export default function TalentoPage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [formData, setFormData] = useState({
     fullName: '',
     birthDate: '',
@@ -73,8 +75,52 @@ export default function TalentoPage() {
     social: ''
   })
 
+  // Load existing talent profile if user is logged in
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (status === 'loading') return
+      
+      if (session?.user) {
+        try {
+          const response = await fetch('/api/talent/profile')
+          if (response.ok) {
+            const data = await response.json()
+            if (data.profile) {
+              setFormData({
+                fullName: data.profile.fullName || '',
+                birthDate: data.profile.birthDate ? new Date(data.profile.birthDate).toISOString().split('T')[0] : '',
+                role: data.profile.role || '',
+                city: data.profile.city || '',
+                position: data.profile.position || '',
+                height: data.profile.height?.toString() || '',
+                weight: data.profile.weight?.toString() || '',
+                bio: data.profile.bio || '',
+                video: data.profile.videoUrl || '',
+                social: data.profile.socialUrl || ''
+              })
+            }
+          }
+        } catch (error) {
+          console.error('Error loading profile:', error)
+        }
+      }
+      setIsLoading(false)
+    }
+
+    loadProfile()
+  }, [session, status])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!session) {
+      toast.error('Inicia sesión', {
+        description: 'Debes iniciar sesión para crear un perfil de talento'
+      })
+      router.push('/auth/login')
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
@@ -96,8 +142,8 @@ export default function TalentoPage() {
         description: 'Tu perfil de talento ha sido creado exitosamente'
       })
 
-      // Redirect to login or profile
-      router.push('/auth/login')
+      // Redirect to dashboard
+      router.push('/dashboard')
     } catch (error) {
       toast.error('Error', {
         description: error instanceof Error ? error.message : 'Error al crear perfil'
