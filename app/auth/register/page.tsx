@@ -141,8 +141,9 @@ function RegisterContent() {
         setError('Cuenta creada, pero error al iniciar sesión. Intenta iniciar sesión manualmente.')
       } else {
         // Redirect based on plan type
-        if (formData.planType === 'pro_semipro') {
-          router.push('/checkout?plan=pro_semipro')
+        if (formData.planType === 'pro_semipro' || formData.planType === 'destacado') {
+          // Redirect to plans page to complete payment
+          router.push('/planes')
         } else {
           router.push('/dashboard')
         }
