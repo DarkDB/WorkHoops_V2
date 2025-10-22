@@ -297,7 +297,7 @@ export function Navbar() {
                     >
                       Dashboard
                     </Link>
-                    {session.user.role === 'org' && (
+                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
                       <Link
                         href="/publicar"
                         className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
