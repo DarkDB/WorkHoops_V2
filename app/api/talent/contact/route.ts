@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { rateLimitByUser, getRateLimitHeaders } from '@/lib/rate-limit'
 import { z } from 'zod'
 
 const contactSchema = z.object({
   profileId: z.string(),
-  profileUserId: z.string()
+  profileUserId: z.string(),
+  contactName: z.string().min(1, 'Nombre requerido'),
+  contactEmail: z.string().email('Email inválido')
 })
 
 export async function POST(request: NextRequest) {
@@ -20,8 +23,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Rate limiting: 5 contact requests per user per hour
+    const rateLimitResult = await rateLimitByUser(
+      session.user.id,
+      5,
+      60 * 60 * 1000 // 1 hour
+    )
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { 
+          message: 'Demasiadas solicitudes de contacto',
+          detail: `Has alcanzado el límite de ${rateLimitResult.limit} solicitudes por hora. Intenta de nuevo más tarde.`,
+          resetAt: rateLimitResult.reset
+        },
+        { 
+          status: 429,
+          headers: getRateLimitHeaders(rateLimitResult)
+        }
+      )
+    }
+
     const body = await request.json()
-    const { profileId, profileUserId } = contactSchema.parse(body)
+    const { profileId, profileUserId, contactName, contactEmail } = contactSchema.parse(body)
 
     // Fetch the profile to verify user has pro plan
     const profile = await prisma.talentProfile.findUnique({
@@ -52,14 +76,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // TODO: Implement email notification or in-app notification
-    // For now, just return success
-    // You could create a Notification table and store the contact request
-
-    return NextResponse.json({
-      success: true,
-      message: 'Solicitud de contacto enviada. El usuario será notificado.'
+    // TODO: Implement email notification using Resend
+    // For now, we'll just log the contact request
+    console.log('Contact request:', {
+      from: { name: contactName, email: contactEmail },
+      to: { name: profile.user.name, email: profile.user.email },
+      profileId
     })
+
+    // You could create a ContactRequest model to store these in the database
+    // await prisma.contactRequest.create({
+    //   data: {
+    //     contactName,
+    //     contactEmail,
+    //     profileId,
+    //     status: 'pending'
+    //   }
+    // })
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Solicitud de contacto enviada. El usuario será notificado.'
+      },
+      {
+        headers: getRateLimitHeaders(rateLimitResult)
+      }
+    )
 
   } catch (error) {
     if (error instanceof z.ZodError) {
