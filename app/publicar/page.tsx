@@ -81,8 +81,70 @@ export default function PublicarPage() {
   }
 
   if (!session) {
-    router.push('/auth/login')
-    return null
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <Card>
+            <CardContent className="p-12 text-center">
+              <Shield className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Regístrate para publicar
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Necesitas una cuenta de Club o Agencia para publicar ofertas
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/auth/register?role=club">
+                  <Button size="lg">
+                    Registrarse como Club
+                  </Button>
+                </Link>
+                <Link href="/auth/login">
+                  <Button variant="outline" size="lg">
+                    Iniciar sesión
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  // Check if user is club or agency
+  if (session.user.role !== 'club' && session.user.role !== 'agencia') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <Card>
+            <CardContent className="p-12 text-center">
+              <Shield className="w-16 h-16 mx-auto mb-4 text-orange-300" />
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Solo Clubs y Agencias pueden publicar
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Tu cuenta actual es de tipo "{session.user.role}". Solo los Clubs y Agencias pueden publicar ofertas.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/dashboard">
+                  <Button variant="outline">
+                    Ir al Dashboard
+                  </Button>
+                </Link>
+                <Link href="/oportunidades">
+                  <Button>
+                    Ver Oportunidades
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   const handleSubmit = async (e: React.FormEvent, featured: boolean = false) => {
