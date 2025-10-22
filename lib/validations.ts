@@ -47,7 +47,7 @@ export const signUpSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres").max(50, "El nombre no puede superar los 50 caracteres"),
   email: z.string().email("Email inválido"),
   password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
-  role: z.enum(["user", "org"]).default("user"),
+  role: z.enum(["jugador", "entrenador", "club", "agencia"]).default("jugador"),
 })
 
 export const signInSchema = z.object({
