@@ -227,12 +227,12 @@ export default async function DashboardPage() {
             </div>
           </div>
           
-          {profileComplete < 100 && (
+          {profileCompletion.percentage < 100 && (
             <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="text-sm font-medium text-yellow-800">
-                    Completa tu perfil ({profileComplete}%)
+                    Completa tu perfil ({profileCompletion.percentage}%)
                   </h3>
                   <p className="text-sm text-yellow-700">
                     {needsTalentProfile 
@@ -240,18 +240,36 @@ export default async function DashboardPage() {
                       : 'Un perfil completo recibe 3x más visualizaciones'}
                   </p>
                 </div>
-                <Link href={needsTalentProfile ? '/talento#formulario' : '/profile/edit'}>
+                <Link href={needsTalentProfile ? '/talento#formulario-talento' : '/profile/edit'}>
                   <Button size="sm" variant="outline" className="border-yellow-300 text-yellow-800 hover:bg-yellow-100">
                     {needsTalentProfile ? 'Completar perfil de talento' : 'Completar'}
                   </Button>
                 </Link>
               </div>
-              <div className="mt-2 bg-yellow-200 rounded-full h-2">
+              <div className="mb-3 bg-yellow-200 rounded-full h-2">
                 <div 
                   className="bg-workhoops-accent h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${profileComplete}%` }}
+                  style={{ width: `${profileCompletion.percentage}%` }}
                 />
               </div>
+              {profileCompletion.missing.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-yellow-200">
+                  <p className="text-xs font-medium text-yellow-800 mb-2">Pendiente de completar:</p>
+                  <ul className="space-y-1">
+                    {profileCompletion.missing.slice(0, 5).map((item, index) => (
+                      <li key={index} className="text-xs text-yellow-700 flex items-center">
+                        <span className="w-1.5 h-1.5 bg-yellow-400 rounded-full mr-2"></span>
+                        {item}
+                      </li>
+                    ))}
+                    {profileCompletion.missing.length > 5 && (
+                      <li className="text-xs text-yellow-600 italic">
+                        ...y {profileCompletion.missing.length - 5} más
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
         </div>
