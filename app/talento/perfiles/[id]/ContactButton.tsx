@@ -125,6 +125,41 @@ export default function ContactButton({
     }
   }
 
+  const handleNotifyInterest = async () => {
+    setIsContacting(true)
+    
+    try {
+      const response = await fetch('/api/talent/notify-interest', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          profileId,
+          profileUserId
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al enviar notificación')
+      }
+
+      toast.success('¡Interés registrado!', {
+        description: 'Notificaremos a este usuario que hay interés en su perfil'
+      })
+
+      setInterestDialogOpen(false)
+    } catch (error) {
+      toast.error('Error', {
+        description: error instanceof Error ? error.message : 'Error al notificar'
+      })
+    } finally {
+      setIsContacting(false)
+    }
+  }
+
   return (
     <>
       <Button 
