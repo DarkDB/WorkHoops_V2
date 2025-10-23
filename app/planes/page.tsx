@@ -203,7 +203,7 @@ export default function PlanesPage() {
                       : 'text-gray-500 hover:text-gray-900'
                   }`}
                 >
-                  Anual (2 meses gratis)
+                  Anual (4 meses gratis)
                 </button>
               </div>
             </div>
