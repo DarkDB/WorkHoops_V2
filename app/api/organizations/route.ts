@@ -1,24 +1,19 @@
+
+
+
+
+
+
+
+
+
 import { NextRequest, NextResponse } from 'next/server'
-
-export const dynamic = 'force-dynamic'
 import { getServerSession } from 'next-auth'
-
-export const dynamic = 'force-dynamic'
 import { authOptions } from '@/lib/auth'
-
-export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
-
-export const dynamic = 'force-dynamic'
 import { organizationCreateSchema } from '@/lib/validations'
-
-export const dynamic = 'force-dynamic'
 import { generateSlug } from '@/lib/utils'
-
-export const dynamic = 'force-dynamic'
 import { sanitizeInput } from '@/lib/sanitize'
-
-export const dynamic = 'force-dynamic'
 import { rateLimitByIP } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
