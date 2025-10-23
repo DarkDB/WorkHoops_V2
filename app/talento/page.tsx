@@ -225,8 +225,8 @@ export default function TalentoPage() {
             <div className="relative">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1552155906-0c65e219fb6d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwxNHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHx8fDE3NTkwODg3Nzl8MA&ixlib=rb-4.1.0&q=85"
-                  alt="Jugadores de baloncesto profesionales"
+                  src="https://images.unsplash.com/photo-1608245449230-4ac19066d2d0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwyfHxiYXNrZXRiYWxsJTIwcGxheWVyfGVufDB8fHx8MTc2MTIyOTI2Mnww&ixlib=rb-4.1.0&q=85"
+                  alt="Jugador de baloncesto mostrando talento y habilidad"
                   className="w-full h-[400px] lg:h-[500px] object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
