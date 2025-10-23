@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { profileId, profileUserId, contactName, contactEmail } = contactSchema.parse(body)
+    const { profileId, profileUserId, contactName, contactEmail, contactMessage } = contactSchema.parse(body)
 
     // Fetch the profile to verify user has pro plan
     const profile = await prisma.talentProfile.findUnique({
@@ -79,28 +79,39 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // TODO: Implement email notification using Resend
-    // For now, we'll just log the contact request
-    console.log('Contact request:', {
-      from: { name: contactName, email: contactEmail },
-      to: { name: profile.user.name, email: profile.user.email },
-      profileId
-    })
+    // Send email notification using Resend
+    try {
+      const { sendTalentContactEmail } = await import('@/lib/email')
+      const profileUrl = `${process.env.APP_URL || 'https://workhoops.es'}/talento/perfiles/${profileId}`
+      
+      await sendTalentContactEmail(
+        profile.user.email!,
+        profile.user.name || profile.fullName,
+        contactName,
+        contactEmail,
+        contactMessage,
+        profileUrl
+      )
+    } catch (emailError) {
+      console.error('Error sending contact email:', emailError)
+      // Don't fail the request if email fails, just log it
+    }
 
     // You could create a ContactRequest model to store these in the database
     // await prisma.contactRequest.create({
     //   data: {
     //     contactName,
     //     contactEmail,
+    //     contactMessage,
     //     profileId,
-    //     status: 'pending'
+    //     status: 'sent'
     //   }
     // })
 
     return NextResponse.json(
       {
         success: true,
-        message: 'Solicitud de contacto enviada. El usuario será notificado.'
+        message: 'Solicitud de contacto enviada. El usuario recibirá tu mensaje por email.'
       },
       {
         headers: getRateLimitHeaders(rateLimitResult)
