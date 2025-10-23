@@ -212,6 +212,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                   profileName={profile.fullName}
                   canContact={canContact}
                   isLoggedIn={!!session}
+                  userRole={session?.user?.role}
                 />
                 {!canContact && (
                   <p className="text-xs text-gray-500 mt-2 text-center">
