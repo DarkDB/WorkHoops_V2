@@ -74,7 +74,7 @@ export default function ContactButton({
 
   const handleContact = async () => {
     // Validate inputs
-    if (!contactData.name.trim() || !contactData.email.trim()) {
+    if (!contactData.name.trim() || !contactData.email.trim() || !contactData.message.trim()) {
       toast.error('Campos requeridos', {
         description: 'Por favor completa todos los campos'
       })
@@ -103,7 +103,8 @@ export default function ContactButton({
           profileId,
           profileUserId,
           contactName: contactData.name,
-          contactEmail: contactData.email
+          contactEmail: contactData.email,
+          contactMessage: contactData.message
         })
       })
 
@@ -114,12 +115,12 @@ export default function ContactButton({
       }
 
       toast.success('¡Solicitud enviada!', {
-        description: 'El talento recibirá tu solicitud de contacto'
+        description: 'El talento recibirá tu solicitud de contacto por email'
       })
 
       // Close dialog and reset form
       setDialogOpen(false)
-      setContactData({ name: '', email: '' })
+      setContactData({ name: '', email: '', message: '' })
     } catch (error) {
       toast.error('Error', {
         description: error instanceof Error ? error.message : 'Error al contactar'
