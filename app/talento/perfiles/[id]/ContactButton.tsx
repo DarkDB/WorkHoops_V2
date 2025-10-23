@@ -218,6 +218,18 @@ export default function ContactButton({
                 disabled={isContacting}
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="message">Mensaje</Label>
+              <textarea
+                id="message"
+                placeholder="Escribe un mensaje para el talento..."
+                value={contactData.message}
+                onChange={(e) => setContactData({ ...contactData, message: e.target.value })}
+                disabled={isContacting}
+                className="w-full min-h-[100px] px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-workhoops-accent"
+              />
+            </div>
           </div>
 
           <DialogFooter>
