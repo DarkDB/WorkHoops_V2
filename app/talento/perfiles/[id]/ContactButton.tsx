@@ -163,14 +163,14 @@ export default function ContactButton({
   return (
     <>
       <Button 
+        variant={!canContact && isLoggedIn ? "outline" : "default"}
         className="w-full"
         onClick={handleOpenDialog}
-        disabled={!canContact && isLoggedIn}
       >
         {!canContact && isLoggedIn ? (
           <>
             <Lock className="w-4 h-4 mr-2" />
-            Plan requerido
+            Disponible con Plan Pro
           </>
         ) : (
           <>
@@ -180,6 +180,7 @@ export default function ContactButton({
         )}
       </Button>
 
+      {/* Contact Dialog - When user has Pro plan */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -235,6 +236,79 @@ export default function ContactButton({
                 <>
                   <Mail className="w-4 h-4 mr-2" />
                   Enviar solicitud
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Interest Dialog - When user doesn't have Pro plan */}
+      <Dialog open={interestDialogOpen} onOpenChange={setInterestDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <Star className="w-5 h-5 text-workhoops-accent" />
+              <span>Plan Pro requerido</span>
+            </DialogTitle>
+            <DialogDescription>
+              Este talento aún no tiene Plan Pro activo. Puedes notificarle tu interés.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="bg-orange-50 rounded-lg p-4 space-y-3">
+              <h4 className="font-semibold text-gray-900">Beneficios del Plan Pro:</h4>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                  <span>Recibe solicitudes de contacto directo</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                  <span>Perfil destacado en búsquedas</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                  <span>Acceso a todas las ofertas premium</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                  <span>Estadísticas avanzadas de perfil</span>
+                </li>
+              </ul>
+            </div>
+
+            <p className="text-sm text-gray-600">
+              Puedes notificar a <strong>{profileName}</strong> que hay interés en su perfil 
+              y sugerirle activar el Plan Pro para que puedan contactarse.
+            </p>
+          </div>
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setInterestDialogOpen(false)}
+              disabled={isContacting}
+              className="w-full sm:w-auto"
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleNotifyInterest}
+              disabled={isContacting}
+              className="w-full sm:w-auto"
+            >
+              {isContacting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Notificando...
+                </>
+              ) : (
+                <>
+                  <Mail className="w-4 h-4 mr-2" />
+                  Notificar interés
                 </>
               )}
             </Button>
