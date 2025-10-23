@@ -52,7 +52,16 @@ export default async function DashboardPage() {
         },
         orderBy: { createdAt: 'desc' }
       },
-      talentProfile: true
+      talentProfile: true,
+      opportunities: {
+        include: {
+          _count: {
+            select: { applications: true }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 5
+      }
     }
   })
 
