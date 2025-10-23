@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { 
   Dialog, 
@@ -13,7 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Mail, Lock, Loader2 } from 'lucide-react'
+import { Mail, Lock, Loader2, Zap, CheckCircle, Star } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface ContactButtonProps {
@@ -22,6 +23,7 @@ interface ContactButtonProps {
   profileName: string
   canContact: boolean
   isLoggedIn: boolean
+  userRole?: string
 }
 
 export default function ContactButton({ 
