@@ -355,19 +355,15 @@ export default function PublicarPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="level">Nivel *</Label>
-                  <Select>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Selecciona el nivel" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {levels.map((level) => (
-                        <SelectItem key={level.value} value={level.value}>
-                          {level.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="country">País *</Label>
+                  <Input 
+                    id="country"
+                    value={formData.country}
+                    onChange={(e) => handleInputChange('country', e.target.value)}
+                    placeholder="España"
+                    className="mt-1"
+                    required
+                  />
                 </div>
               </div>
 
