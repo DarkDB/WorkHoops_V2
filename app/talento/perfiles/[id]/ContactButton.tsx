@@ -31,11 +31,14 @@ export default function ContactButton({
   profileUserId,
   profileName,
   canContact, 
-  isLoggedIn 
+  isLoggedIn,
+  userRole
 }: ContactButtonProps) {
   const router = useRouter()
   const [isContacting, setIsContacting] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false)
+  const [interestDialogOpen, setInterestDialogOpen] = useState(false)
   const [contactData, setContactData] = useState({
     name: '',
     email: ''
@@ -56,13 +59,12 @@ export default function ContactButton({
 
     // User doesn't have pro plan
     if (!canContact) {
-      toast.error('Usuario necesita actualizar plan', {
-        description: 'Este talento debe tener plan Pro Semipro para recibir contactos'
-      })
+      // Open upgrade dialog for clubs/agencies, or interest notification
+      setInterestDialogOpen(true)
       return
     }
 
-    // Open dialog
+    // Open contact dialog
     setDialogOpen(true)
   }
 
