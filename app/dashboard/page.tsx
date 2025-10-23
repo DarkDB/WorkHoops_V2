@@ -283,6 +283,15 @@ export default async function DashboardPage() {
           )}
         </div>
 
+        {/* Conditional Dashboard based on user role */}
+        {isClubOrAgency ? (
+          <DashboardClubAgency 
+            userName={user.name || 'Usuario'}
+            opportunities={user.opportunities}
+            totalApplications={user.opportunities.reduce((sum, opp) => sum + opp._count.applications, 0)}
+          />
+        ) : (
+          <>
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
