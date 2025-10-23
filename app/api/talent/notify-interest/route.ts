@@ -76,6 +76,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Send email notification using Resend
+    try {
+      const { sendInterestNotificationEmail } = await import('@/lib/email')
+      const profileUrl = `${process.env.APP_URL || 'https://workhoops.es'}/talento/perfiles/${profileId}`
+      
+      await sendInterestNotificationEmail(
+        profile.user.email!,
+        profile.user.name || profile.fullName,
+        session.user.name || 'Un usuario',
+        profileUrl
+      )
+    } catch (emailError) {
+      console.error('Error sending interest notification email:', emailError)
+      // Don't fail the request if email fails, just log it
+    }
+
     // TODO: Store interest notification in database
     // You could create an InterestNotification model to track these
     // await prisma.interestNotification.create({
@@ -86,18 +102,10 @@ export async function POST(request: NextRequest) {
     //   }
     // })
 
-    // TODO: Send email to the profile owner using Resend
-    // Notify them that someone is interested in their profile
-    console.log('Interest notification:', {
-      from: { id: session.user.id, name: session.user.name },
-      to: { id: profile.user.email, name: profile.user.name },
-      profileId
-    })
-
     return NextResponse.json(
       {
         success: true,
-        message: 'Notificación de interés enviada. El usuario será informado.'
+        message: 'Notificación de interés enviada. El usuario recibirá un email informándole.'
       },
       {
         headers: getRateLimitHeaders(rateLimitResult)
