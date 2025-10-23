@@ -274,6 +274,67 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              Historias de éxito
+            </h2>
+            <p className="text-lg text-gray-600">
+              Lo que dicen quienes ya usan WorkHoops
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="pt-6">
+                <div className="flex items-center mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-600 mb-4 italic">"Gracias a WorkHoops conseguí mi primera oportunidad en LEB Plata. La plataforma es clara y directa, sin intermediarios innecesarios."</p>
+                <div className="border-t pt-4">
+                  <p className="font-semibold text-gray-900">Carlos M.</p>
+                  <p className="text-sm text-gray-500">Base - CB Alcázar</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="pt-6">
+                <div className="flex items-center mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-600 mb-4 italic">"Hemos fichado a 3 jugadores excelentes a través de WorkHoops. La calidad de los perfiles es muy buena."</p>
+                <div className="border-t pt-4">
+                  <p className="font-semibold text-gray-900">Club Basket Valladolid</p>
+                  <p className="text-sm text-gray-500">Director Deportivo</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardContent className="pt-6">
+                <div className="flex items-center mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-600 mb-4 italic">"Después de 2 años sin equipo, WorkHoops me ayudó a volver a las pistas. Eternamente agradecido."</p>
+                <div className="border-t pt-4">
+                  <p className="font-semibold text-gray-900">Miguel A.</p>
+                  <p className="text-sm text-gray-500">Pívot - Melilla Baloncesto</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-16 bg-workhoops-accent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
