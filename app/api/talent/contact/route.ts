@@ -11,7 +11,8 @@ const contactSchema = z.object({
   profileId: z.string(),
   profileUserId: z.string(),
   contactName: z.string().min(1, 'Nombre requerido'),
-  contactEmail: z.string().email('Email inválido')
+  contactEmail: z.string().email('Email inválido'),
+  contactMessage: z.string().min(10, 'El mensaje debe tener al menos 10 caracteres')
 })
 
 export async function POST(request: NextRequest) {
