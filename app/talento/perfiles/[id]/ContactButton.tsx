@@ -174,7 +174,7 @@ export default function ContactButton({
         {!canContact && isLoggedIn ? (
           <>
             <Lock className="w-4 h-4 mr-2" />
-            Disponible con Plan Pro
+            {isClubOrAgency ? 'Puedes notificarle tu interés' : 'Disponible con Plan Pro'}
           </>
         ) : (
           <>
