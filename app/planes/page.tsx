@@ -38,7 +38,7 @@ const plans = [
     subtitle: 'Semi-Pro',
     price: 4.99,
     period: '/mes',
-    annualPrice: 39,
+    annualPrice: 39.92,
     description: 'Para jugadores y entrenadores serios',
     popular: true,
     features: [
