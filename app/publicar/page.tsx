@@ -181,13 +181,16 @@ export default function PublicarPage() {
       }
 
       // Regular submission (free)
+      // Prepare data without fields not in schema
+      const { positions, requirements, ...opportunityData } = formData
+      
       const response = await fetch('/api/opportunities', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          ...formData,
+          ...opportunityData,
           featured: false
         })
       })
