@@ -214,3 +214,142 @@ export async function sendPaymentConfirmationEmail(
     throw new Error('Failed to send payment confirmation email')
   }
 }
+
+export async function sendTalentContactEmail(
+  talentEmail: string,
+  talentName: string,
+  contactName: string,
+  contactEmail: string,
+  contactMessage: string,
+  profileUrl: string
+) {
+  try {
+    const { data, error } = await getResendClient().emails.send({
+      from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
+      to: [talentEmail],
+      subject: `Nueva solicitud de contacto en WorkHoops`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #FF6A00 0%, #e55a00 100%); padding: 40px 20px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">WorkHoops</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Nueva solicitud de contacto</p>
+          </div>
+          
+          <div style="padding: 40px 20px; background: white;">
+            <h2 style="color: #111111; margin: 0 0 20px 0;">Hola ${talentName}</h2>
+            <p style="color: #666; margin: 0 0 20px 0; line-height: 1.6;">
+              <strong>${contactName}</strong> está interesado en tu perfil y quiere contactarte.
+            </p>
+            
+            <div style="background: #f8f9fa; border-left: 4px solid #FF6A00; padding: 20px; margin: 20px 0; border-radius: 4px;">
+              <h3 style="color: #111111; margin: 0 0 10px 0; font-size: 16px;">Mensaje:</h3>
+              <p style="color: #666; margin: 0; line-height: 1.6; white-space: pre-wrap;">${contactMessage}</p>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; margin: 20px 0; border-radius: 4px;">
+              <p style="color: #666; margin: 0; font-size: 14px;">
+                <strong>Datos de contacto:</strong><br/>
+                Email: <a href="mailto:${contactEmail}" style="color: #FF6A00;">${contactEmail}</a>
+              </p>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${profileUrl}" style="background: #FF6A00; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                Ver mi perfil
+              </a>
+            </div>
+            
+            <p style="color: #999; font-size: 14px; margin: 30px 0 0 0; line-height: 1.6;">
+              Puedes responder directamente a ${contactName} usando el email proporcionado.
+            </p>
+          </div>
+          
+          <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
+            <p style="color: #666; font-size: 14px; margin: 0;">
+              © 2024 WorkHoops. Todos los derechos reservados.
+            </p>
+          </div>
+        </div>
+      `,
+    })
+
+    if (error) {
+      console.error('Error sending talent contact email:', error)
+      throw new Error('Failed to send talent contact email')
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error sending talent contact email:', error)
+    throw new Error('Failed to send talent contact email')
+  }
+}
+
+export async function sendInterestNotificationEmail(
+  talentEmail: string,
+  talentName: string,
+  interestedUserName: string,
+  profileUrl: string
+) {
+  try {
+    const { data, error } = await getResendClient().emails.send({
+      from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
+      to: [talentEmail],
+      subject: `Hay interés en tu perfil de WorkHoops`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #FF6A00 0%, #e55a00 100%); padding: 40px 20px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">WorkHoops</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">¡Alguien está interesado en tu perfil!</p>
+          </div>
+          
+          <div style="padding: 40px 20px; background: white;">
+            <h2 style="color: #111111; margin: 0 0 20px 0;">Hola ${talentName}</h2>
+            <p style="color: #666; margin: 0 0 20px 0; line-height: 1.6;">
+              <strong>${interestedUserName}</strong> ha mostrado interés en tu perfil pero no puede contactarte directamente porque aún no tienes el Plan Pro activo.
+            </p>
+            
+            <div style="background: #FFF7ED; border: 2px solid #FF6A00; padding: 25px; margin: 25px 0; border-radius: 8px;">
+              <h3 style="color: #FF6A00; margin: 0 0 15px 0; font-size: 18px;">🚀 Activa el Plan Pro y desbloquea:</h3>
+              <ul style="color: #666; margin: 0; padding-left: 20px; line-height: 1.8;">
+                <li>Recibe solicitudes de contacto directo</li>
+                <li>Perfil destacado en búsquedas</li>
+                <li>Acceso a todas las ofertas premium</li>
+                <li>Estadísticas avanzadas de perfil</li>
+              </ul>
+              <p style="color: #FF6A00; margin: 15px 0 0 0; font-weight: bold; font-size: 18px;">
+                Solo 4.99€/mes
+              </p>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${process.env.APP_URL}/planes" style="background: #FF6A00; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
+                Activar Plan Pro Ahora
+              </a>
+            </div>
+            
+            <p style="color: #999; font-size: 14px; margin: 30px 0 0 0; text-align: center;">
+              No pierdas oportunidades. Activa Pro y conecta con clubs y agencias.
+            </p>
+          </div>
+          
+          <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
+            <p style="color: #666; font-size: 14px; margin: 0;">
+              © 2024 WorkHoops. Todos los derechos reservados.
+            </p>
+          </div>
+        </div>
+      `,
+    })
+
+    if (error) {
+      console.error('Error sending interest notification email:', error)
+      throw new Error('Failed to send interest notification email')
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error sending interest notification email:', error)
+    throw new Error('Failed to send interest notification email')
+  }
+}
