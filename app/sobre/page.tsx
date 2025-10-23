@@ -332,6 +332,7 @@ export default function SobrePage() {
       </section>
 
       {/* Team */}
+      {/* Team */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -347,12 +348,10 @@ export default function SobrePage() {
             {team.map((member, index) => (
               <Card key={index} className="text-center">
                 <CardHeader>
-                  <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden">
-                    <img 
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
+                    {member.icon === 'user' && <Users className="w-12 h-12 text-workhoops-accent" />}
+                    {member.icon === 'users' && <Users className="w-12 h-12 text-workhoops-accent" />}
+                    {member.icon === 'zap' && <Zap className="w-12 h-12 text-workhoops-accent" />}
                   </div>
                   <CardTitle>{member.name}</CardTitle>
                   <CardDescription className="text-workhoops-accent font-medium">
@@ -368,26 +367,36 @@ export default function SobrePage() {
         </div>
       </section>
 
-      {/* Partners */}
+      {/* Testimonials */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Colaboramos con
+              Lo que dicen de nosotros
             </h2>
             <p className="text-lg text-gray-600">
-              Partners que comparten nuestra visión del baloncesto
+              Testimonios reales de nuestra comunidad
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8">
-            {partners.map((partner, index) => (
-              <div key={index} className="bg-white rounded-lg p-6 shadow-sm flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-gray-200 rounded-lg mx-auto mb-2"></div>
-                  <p className="text-sm font-medium text-gray-900">{partner.name}</p>
-                </div>
-              </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardContent className="pt-6">
+                  <div className="flex items-center mb-3">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <p className="text-gray-600 mb-4 italic">"{testimonial.text}"</p>
+                  <div className="border-t pt-4">
+                    <p className="font-semibold text-gray-900">{testimonial.name}</p>
+                    <p className="text-sm text-gray-500">{testimonial.role}</p>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
