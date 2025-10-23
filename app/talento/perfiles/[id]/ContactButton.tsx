@@ -41,8 +41,12 @@ export default function ContactButton({
   const [interestDialogOpen, setInterestDialogOpen] = useState(false)
   const [contactData, setContactData] = useState({
     name: '',
-    email: ''
+    email: '',
+    message: ''
   })
+  
+  // Check if current user is club/agency or player/coach
+  const isClubOrAgency = userRole === 'club' || userRole === 'agencia'
 
   const handleOpenDialog = () => {
     // Not logged in
