@@ -24,6 +24,13 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/login')
+      return
+    }
+    
+    // Redirect clubs/agencies to their specific profile page
+    if (session?.user?.role === 'club' || session?.user?.role === 'agencia') {
+      router.push('/profile/club/edit')
+      return
     }
     
     if (session?.user) {
