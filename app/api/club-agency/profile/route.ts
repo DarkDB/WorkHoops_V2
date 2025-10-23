@@ -103,19 +103,24 @@ export async function POST(request: NextRequest) {
 
     let profile
 
+    // Convert null values to undefined for Prisma
+    const cleanedData = Object.fromEntries(
+      Object.entries(validatedData).map(([key, value]) => [key, value === null ? undefined : value])
+    )
+
     if (existingProfile) {
       // Update existing profile
       profile = await prisma.clubAgencyProfile.update({
         where: { userId: session.user.id },
-        data: validatedData
+        data: cleanedData as any
       })
     } else {
       // Create new profile
       profile = await prisma.clubAgencyProfile.create({
         data: {
-          ...validatedData,
+          ...cleanedData,
           userId: session.user.id
-        }
+        } as any
       })
     }
 
