@@ -280,3 +280,49 @@ model TalentProfile {
   
   @@map("talent_profiles")
 }
+
+model ClubAgencyProfile {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Basic Information
+  organizationName  String
+  organizationType  String    // club, agencia, escuela, federacion
+  foundedYear       Int?
+  description       String?
+  logo              String?
+  coverImage        String?
+  
+  // Location
+  country           String    @default("España")
+  city              String
+  address           String?
+  
+  // Categories and Divisions
+  categories        String[]  // Base, Junior, Senior, Profesional
+  divisions         String[]  // LEB Oro, LEB Plata, EBA, Liga Femenina, etc.
+  
+  // Contact Information
+  contactPerson     String?
+  contactEmail      String?
+  contactPhone      String?
+  
+  // Social Media
+  website           String?
+  facebookUrl       String?
+  twitterUrl        String?
+  instagramUrl      String?
+  linkedinUrl       String?
+  
+  // Additional Info
+  facilities        String?   // Description of facilities
+  achievements      String?   // Notable achievements
+  isPublic          Boolean   @default(true)
+  verified          Boolean   @default(false)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@map("club_agency_profiles")
+}
