@@ -37,9 +37,9 @@ const stats = [
 
 const team = [
   {
-    name: 'Carlos Martínez',
+    name: 'Eduardo Jiménez',
     role: 'CEO & Fundador',
-    bio: 'Ex-jugador profesional con 15 años de experiencia en LEB y ACB',
+    bio: 'Amante del baloncesto y la tecnología, con más de 12 años en las canchas y la misión de conectar el talento con nuevas oportunidades',
     image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85&w=150'
   },
   {
