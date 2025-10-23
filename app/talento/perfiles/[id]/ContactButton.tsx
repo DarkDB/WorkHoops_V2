@@ -269,7 +269,9 @@ export default function ContactButton({
               <span>Plan Pro requerido</span>
             </DialogTitle>
             <DialogDescription>
-              Este talento aún no tiene Plan Pro activo. Puedes notificarle tu interés.
+              {isClubOrAgency 
+                ? 'Este talento aún no tiene Plan Pro activo. Puedes notificarle tu interés.'
+                : 'Activa el Plan Pro para recibir solicitudes de contacto directo de clubs y agencias.'}
             </DialogDescription>
           </DialogHeader>
 
@@ -296,10 +298,21 @@ export default function ContactButton({
               </ul>
             </div>
 
-            <p className="text-sm text-gray-600">
-              Puedes notificar a <strong>{profileName}</strong> que hay interés en su perfil 
-              y sugerirle activar el Plan Pro para que puedan contactarse.
-            </p>
+            {isClubOrAgency ? (
+              <p className="text-sm text-gray-600">
+                Puedes notificar a <strong>{profileName}</strong> que hay interés en su perfil 
+                y sugerirle activar el Plan Pro para que puedan contactarse.
+              </p>
+            ) : (
+              <div className="bg-blue-50 rounded-lg p-4">
+                <p className="text-sm text-gray-700 mb-2">
+                  <strong>Solo 4.99€/mes</strong> para desbloquear todas las funciones Pro
+                </p>
+                <p className="text-xs text-gray-600">
+                  Cancela cuando quieras. Sin compromisos.
+                </p>
+              </div>
+            )}
           </div>
 
           <DialogFooter className="flex-col sm:flex-row gap-2">
@@ -311,24 +324,34 @@ export default function ContactButton({
             >
               Cancelar
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleNotifyInterest}
-              disabled={isContacting}
-              className="w-full sm:w-auto"
-            >
-              {isContacting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Notificando...
-                </>
-              ) : (
-                <>
-                  <Mail className="w-4 h-4 mr-2" />
-                  Notificar interés
-                </>
-              )}
-            </Button>
+            
+            {isClubOrAgency ? (
+              <Button
+                variant="outline"
+                onClick={handleNotifyInterest}
+                disabled={isContacting}
+                className="w-full sm:w-auto"
+              >
+                {isContacting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Notificando...
+                  </>
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Notificar interés
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Link href="/planes" className="w-full sm:w-auto">
+                <Button className="w-full bg-workhoops-accent hover:bg-orange-600">
+                  <Zap className="w-4 h-4 mr-2" />
+                  Activar Plan Pro
+                </Button>
+              </Link>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
