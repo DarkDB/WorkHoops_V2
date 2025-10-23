@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
+
+export const dynamic = 'force-dynamic'
 import { hash } from 'bcryptjs'
+
+export const dynamic = 'force-dynamic'
 import { z } from 'zod'
+
+export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
+
+export const dynamic = 'force-dynamic'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),

@@ -1,10 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
+
+export const dynamic = 'force-dynamic'
 import { getServerSession } from 'next-auth'
+
+export const dynamic = 'force-dynamic'
 import { authOptions } from '@/lib/auth'
+
+export const dynamic = 'force-dynamic'
 import { generatePresignedUrl, validateFileType, validateFileSize } from '@/lib/s3'
+
+export const dynamic = 'force-dynamic'
 import { fileUploadSchema } from '@/lib/validations'
+
+export const dynamic = 'force-dynamic'
 import { rateLimitByIP } from '@/lib/rate-limit'
+
+export const dynamic = 'force-dynamic'
 import { z } from 'zod'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {

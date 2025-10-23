@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
+
+export const dynamic = 'force-dynamic'
 import { getServerSession } from 'next-auth/next'
+
+export const dynamic = 'force-dynamic'
 import { authOptions } from '@/lib/auth'
+
+export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
+
+export const dynamic = 'force-dynamic'
 import { z } from 'zod'
+
+export const dynamic = 'force-dynamic'
 
 const favoriteSchema = z.object({
   opportunityId: z.string().cuid(),
