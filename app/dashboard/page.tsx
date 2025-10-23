@@ -62,57 +62,68 @@ export default async function DashboardPage() {
 
   // Calculate profile completion with talent profile consideration
   const calculateProfileCompletion = () => {
+    const missingItems: string[] = []
     let totalFields = 0
     let completedFields = 0
     
     // Basic user fields
-    const basicFields = [user.name, user.email, user.role]
-    totalFields += basicFields.length
-    completedFields += basicFields.filter(f => f !== null && f !== '').length
-    
-    // Image (bonus)
-    if (user.image) completedFields += 1
+    if (!user.name) missingItems.push('Nombre completo')
     totalFields += 1
+    completedFields += user.name ? 1 : 0
+    
+    if (!user.image) missingItems.push('Foto de perfil')
+    totalFields += 1
+    completedFields += user.image ? 1 : 0
     
     // For players and coaches, check talent profile completion
     if (user.role === 'jugador' || user.role === 'entrenador') {
       if (user.talentProfile) {
         // Talent profile exists - check completeness
-        const profileFields = [
+        if (!user.talentProfile.fullName) missingItems.push('Nombre en perfil de talento')
+        if (!user.talentProfile.birthDate) missingItems.push('Fecha de nacimiento')
+        if (!user.talentProfile.city) missingItems.push('Ciudad')
+        if (!user.talentProfile.bio) missingItems.push('Biografía')
+        if (!user.talentProfile.position) missingItems.push('Posición')
+        if (!user.talentProfile.videoUrl) missingItems.push('Video destacado')
+        
+        totalFields += 6
+        completedFields += [
           user.talentProfile.fullName,
           user.talentProfile.birthDate,
           user.talentProfile.city,
           user.talentProfile.bio,
-        ]
-        totalFields += profileFields.length
-        completedFields += profileFields.filter(f => f !== null && f !== '').length
-        
-        // Optional but valuable fields
-        if (user.talentProfile.position) completedFields += 1
-        totalFields += 1
-        
-        if (user.talentProfile.videoUrl) completedFields += 1
-        totalFields += 1
+          user.talentProfile.position,
+          user.talentProfile.videoUrl,
+        ].filter(f => f !== null && f !== '').length
       } else {
-        // No talent profile - penalize heavily
-        totalFields += 6 // Expected talent profile fields
+        // No talent profile
+        missingItems.push('Crear perfil de talento completo')
+        totalFields += 6
       }
+      
+      // Activity indicators
+      if (user.applications.length === 0) missingItems.push('Aplicar a tu primera oportunidad')
+      totalFields += 1
+      completedFields += user.applications.length > 0 ? 1 : 0
+      
+      if (user.favorites.length === 0) missingItems.push('Guardar oportunidades favoritas')
+      totalFields += 1
+      completedFields += user.favorites.length > 0 ? 1 : 0
     }
     
-    // Activity indicators
-    if (user.applications.length > 0) completedFields += 1
-    totalFields += 1
-    
-    if (user.favorites.length > 0) completedFields += 1
-    totalFields += 1
-    
-    return Math.round((completedFields / totalFields) * 100)
+    return {
+      percentage: Math.round((completedFields / totalFields) * 100),
+      missing: missingItems
+    }
   }
   
-  const profileComplete = calculateProfileCompletion()
+  const profileCompletion = calculateProfileCompletion()
   
   // Check if user needs to complete talent profile
   const needsTalentProfile = (user.role === 'jugador' || user.role === 'entrenador') && !user.talentProfile
+  
+  // Check if user is club/agency
+  const isClubOrAgency = user.role === 'club' || user.role === 'agencia'
 
   // Get statistics
   const stats = {
