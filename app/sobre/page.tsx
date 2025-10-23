@@ -40,27 +40,59 @@ const team = [
     name: 'Eduardo Jiménez',
     role: 'CEO & Fundador',
     bio: 'Amante del baloncesto y la tecnología, con más de 12 años en las canchas y la misión de conectar el talento con nuevas oportunidades',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85&w=150'
+    icon: 'user'
   },
   {
-    name: 'Ana García',
+    name: 'Equipo de Operaciones',
     role: 'Head of Operations',
-    bio: 'Especialista en desarrollo deportivo y gestión de talento',
-    image: 'https://images.unsplash.com/photo-1494790108755-2616b612b6cd?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85&w=150'
+    bio: 'Especialistas en desarrollo deportivo y gestión de talento',
+    icon: 'users'
   },
   {
-    name: 'Miguel Torres',
-    role: 'CTO',
-    bio: 'Ingeniero con experiencia en plataformas de alto rendimiento',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85&w=150'
+    name: 'Equipo Técnico',
+    role: 'Technology Team',
+    bio: 'Ingenieros con experiencia en plataformas de alto rendimiento',
+    icon: 'zap'
   }
 ]
 
-const partners = [
-  { name: 'Federación Española de Baloncesto', logo: '/logos/feb.png' },
-  { name: 'Liga Endesa', logo: '/logos/endesa.png' },
-  { name: 'EuroLeague', logo: '/logos/euroleague.png' },
-  { name: 'Basketball Champions League', logo: '/logos/bcl.png' }
+const testimonials = [
+  {
+    name: 'Carlos M.',
+    role: 'Base - CB Alcázar',
+    text: 'Gracias a WorkHoops conseguí mi primera oportunidad en LEB Plata. La plataforma es clara y directa, sin intermediarios innecesarios.',
+    rating: 5
+  },
+  {
+    name: 'Laura P.',
+    role: 'Alero - Basket Ferrol',
+    text: 'Me encanta poder ver todas las ofertas en un solo lugar. Antes perdía horas buscando en diferentes sitios. Ahora aplico en minutos.',
+    rating: 5
+  },
+  {
+    name: 'Javier S.',
+    role: 'Entrenador - Baloncesto Ciudad Real',
+    text: 'Encontré un puesto de entrenador asistente perfecto para mi. El proceso fue transparente y rápido.',
+    rating: 5
+  },
+  {
+    name: 'Club Basket Valladolid',
+    role: 'Director Deportivo',
+    text: 'Hemos fichado a 3 jugadores excelentes a través de WorkHoops. La calidad de los perfiles es muy buena.',
+    rating: 5
+  },
+  {
+    name: 'Miguel A.',
+    role: 'Pívot - Melilla Baloncesto',
+    text: 'Después de 2 años sin equipo, WorkHoops me ayudó a volver a las pistas. Eternamente agradecido.',
+    rating: 5
+  },
+  {
+    name: 'Ana R.',
+    role: 'Escolta - CB Conquero',
+    text: 'Lo mejor es que puedo crear mi perfil completo con video y estadísticas. Los clubs se toman en serio las candidaturas.',
+    rating: 5
+  }
 ]
 
 export default function SobrePage() {
