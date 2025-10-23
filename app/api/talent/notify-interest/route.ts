@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma'
 import { rateLimitByUser, getRateLimitHeaders } from '@/lib/rate-limit'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+
 const notifyInterestSchema = z.object({
   profileId: z.string(),
   profileUserId: z.string()
