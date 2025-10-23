@@ -13,8 +13,6 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { applicationCreateSchema } from '@/lib/validations'
 import { sanitizeInput } from '@/lib/sanitize'
-
-export const dynamic = 'force-dynamic'
 import { rateLimitByIP } from '@/lib/rate-limit'
 import { sendApplicationNotificationEmail } from '@/lib/email'
 
