@@ -1,43 +1,8 @@
 import { redirect } from 'next/navigation'
-import EditOpportunityClient from './EditOpportunityClient'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { Navbar } from '@/components/Navbar'
+import Link from 'next/link'
 
-interface EditOpportunityPageProps {
-  params: {
-    slug: string
-  }
-}
-
-export default async function EditOpportunityPage({ params }: EditOpportunityPageProps) {
-  const session = await getServerSession(authOptions)
-
-  if (!session || !session.user) {
-    redirect('/auth/login')
-  }
-
-  if (session.user.role !== 'club' && session.user.role !== 'agencia') {
-    redirect('/dashboard')
-  }
-
-  const opportunity = await prisma.opportunity.findUnique({
-    where: { slug: params.slug }
-  })
-
-  if (!opportunity) {
-    redirect('/dashboard')
-  }
-
-  if (opportunity.authorId !== session.user.id) {
-    redirect('/dashboard')
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <EditOpportunityClient opportunity={opportunity} />
-    </div>
-  )
+export default function EditOpportunityPage() {
+  // Por ahora, redirigir al dashboard
+  // La funcionalidad de edición se puede implementar después
+  redirect('/dashboard')
 }
