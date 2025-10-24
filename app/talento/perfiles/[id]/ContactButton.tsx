@@ -271,6 +271,66 @@ export default function ContactButton({
         </DialogContent>
       </Dialog>
 
+      {/* Upgrade Dialog - For players/coaches */}
+      <Dialog open={upgradeDialogOpen} onOpenChange={setUpgradeDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <Star className="w-5 h-5 text-workhoops-accent" />
+              <span>Activa Plan Pro para ser contactado</span>
+            </DialogTitle>
+            <DialogDescription>
+              Con el Plan Pro, clubs y agencias pueden contactarte directamente
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="bg-orange-50 rounded-lg p-4 space-y-3">
+              <h4 className="font-semibold text-gray-900">Beneficios del Plan Pro:</h4>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                  <span>Recibe solicitudes de contacto directo de clubs</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                  <span>Perfil destacado en búsquedas</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                  <span>Acceso a todas las ofertas premium</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                  <span>Estadísticas avanzadas de perfil</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="text-2xl font-bold text-gray-900">4.99€<span className="text-sm font-normal text-gray-600">/mes</span></p>
+              <p className="text-xs text-gray-600 mt-1">Cancela cuando quieras</p>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setUpgradeDialogOpen(false)}
+              className="w-full sm:w-auto"
+            >
+              Ahora no
+            </Button>
+            <Link href="/planes" className="w-full sm:w-auto">
+              <Button className="w-full bg-workhoops-accent hover:bg-orange-600">
+                <Zap className="w-4 h-4 mr-2" />
+                Activar Plan Pro
+              </Button>
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Interest Dialog - When user doesn't have Pro plan */}
       <Dialog open={interestDialogOpen} onOpenChange={setInterestDialogOpen}>
         <DialogContent className="max-w-md">
