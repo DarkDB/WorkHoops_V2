@@ -174,14 +174,19 @@ export default function ContactButton({
   return (
     <>
       <Button 
-        variant={!canContact && isLoggedIn ? "outline" : "default"}
+        variant={(!canContact && isLoggedIn) || !isClubOrAgency ? "outline" : "default"}
         className="w-full"
         onClick={handleOpenDialog}
       >
-        {!canContact && isLoggedIn ? (
+        {!isClubOrAgency && isLoggedIn ? (
+          <>
+            <Zap className="w-4 h-4 mr-2" />
+            Activar Plan Pro
+          </>
+        ) : !canContact && isLoggedIn ? (
           <>
             <Lock className="w-4 h-4 mr-2" />
-            {isClubOrAgency ? 'Puedes notificarle tu interés' : 'Disponible con Plan Pro'}
+            Puedes notificarle tu interés
           </>
         ) : (
           <>
