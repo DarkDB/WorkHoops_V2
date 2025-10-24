@@ -21,7 +21,6 @@ const opportunityCreateSchema = z.object({
   contactEmail: z.string().email('Email de contacto inválido'),
   contactPhone: z.string().optional(),
   applicationUrl: z.string().url().optional().or(z.literal('')),
-  requirements: z.string().optional(),
   benefits: z.string().optional(),
   featured: z.boolean().default(false)
 })
