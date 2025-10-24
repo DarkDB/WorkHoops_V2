@@ -81,8 +81,8 @@ export async function GET(request: NextRequest, { params }: Params) {
   }
 }
 
-// PATCH /api/opportunities/[slug] - Update opportunity
-export async function PATCH(request: NextRequest, { params }: Params) {
+// PUT/PATCH /api/opportunities/[slug] - Update opportunity
+export async function PUT(request: NextRequest, { params }: Params) {
   try {
     // Check authentication and authorization
     const session = await getServerSession(authOptions)
