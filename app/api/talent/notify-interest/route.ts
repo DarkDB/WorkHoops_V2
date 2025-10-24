@@ -76,6 +76,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Store interest notification in database
+    await prisma.interestNotification.create({
+      data: {
+        profileId,
+        interestedUserId: session.user.id,
+        status: 'pending'
+      }
+    })
+
     // Send email notification using Resend
     try {
       const { sendInterestNotificationEmail } = await import('@/lib/email')
@@ -91,16 +100,6 @@ export async function POST(request: NextRequest) {
       console.error('Error sending interest notification email:', emailError)
       // Don't fail the request if email fails, just log it
     }
-
-    // TODO: Store interest notification in database
-    // You could create an InterestNotification model to track these
-    // await prisma.interestNotification.create({
-    //   data: {
-    //     profileId,
-    //     interestedUserId: session.user.id,
-    //     createdAt: new Date()
-    //   }
-    // })
 
     return NextResponse.json(
       {
