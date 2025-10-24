@@ -44,6 +44,43 @@ export default function EditProfilePage() {
     }
   }, [session, status, router])
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Por favor selecciona una imagen válida')
+      return
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('La imagen no puede superar 2MB')
+      return
+    }
+
+    setUploading(true)
+
+    try {
+      // Convert to base64
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setFormData({ ...formData, image: reader.result as string })
+        toast.success('Imagen cargada')
+        setUploading(false)
+      }
+      reader.onerror = () => {
+        toast.error('Error al cargar la imagen')
+        setUploading(false)
+      }
+      reader.readAsDataURL(file)
+    } catch (error) {
+      toast.error('Error al procesar la imagen')
+      setUploading(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
