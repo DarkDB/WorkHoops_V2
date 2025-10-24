@@ -61,9 +61,15 @@ export default function ContactButton({
       return
     }
 
+    // If user is player/coach, always show upgrade dialog
+    if (!isClubOrAgency) {
+      setUpgradeDialogOpen(true)
+      return
+    }
+
     // User doesn't have pro plan
     if (!canContact) {
-      // Open upgrade dialog for clubs/agencies, or interest notification
+      // Open interest notification dialog for clubs/agencies
       setInterestDialogOpen(true)
       return
     }
