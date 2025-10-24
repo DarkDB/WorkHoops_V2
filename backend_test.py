@@ -522,9 +522,9 @@ class BackendTester:
         """Test admin dashboard access control"""
         print_test_header("Admin Dashboard Access Control")
         
-        # Test admin page access without authentication
+        # Test admin page access without authentication (don't follow redirects)
         try:
-            response = self.session.get(f"{BASE_URL}/admin", timeout=10)
+            response = self.session.get(f"{BASE_URL}/admin", timeout=10, allow_redirects=False)
             
             if response.status_code == 302 or response.status_code == 307:
                 print_success("GET /admin - Correctly redirects non-authenticated users")
