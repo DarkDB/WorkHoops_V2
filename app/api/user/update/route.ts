@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic'
 
 const updateSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').optional(),
+  image: z.string().optional(),
 })
 
 export async function PUT(request: NextRequest) {
