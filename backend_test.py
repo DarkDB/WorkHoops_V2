@@ -874,6 +874,12 @@ class BackendTester:
         self.test_page_routes()
         self.test_new_routes_404_fix()
         
+        # NEW ADMIN FEATURES TESTING
+        self.test_admin_dashboard_access()
+        self.test_admin_opportunities_management()
+        self.test_admin_users_management()
+        self.test_opportunity_editing_endpoints()
+        
         # Print summary
         self.print_summary()
         
