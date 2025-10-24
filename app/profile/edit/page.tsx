@@ -168,6 +168,30 @@ export default function EditProfilePage() {
                 </p>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="image">Foto de perfil</Label>
+                {formData.image && (
+                  <div className="mb-3">
+                    <img 
+                      src={formData.image} 
+                      alt="Preview" 
+                      className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+                    />
+                  </div>
+                )}
+                <Input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className="cursor-pointer"
+                />
+                <p className="text-sm text-gray-500">
+                  Sube una imagen (máximo 2MB). Formatos: JPG, PNG, GIF
+                </p>
+              </div>
+
               <div className="flex items-center space-x-4 pt-4">
                 <Button type="submit" disabled={loading}>
                   {loading ? (
