@@ -378,11 +378,7 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
   run_ui: false
 
 ## test_plan:
-  current_focus:
-    - "Opportunity Editing for Club/Agency"
-    - "Admin Dashboard - Main Panel"
-    - "Admin Dashboard - Opportunities Management"
-    - "Admin Dashboard - Users/CRM Management"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
