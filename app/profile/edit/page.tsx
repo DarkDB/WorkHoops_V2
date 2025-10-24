@@ -38,7 +38,8 @@ export default function EditProfilePage() {
     if (session?.user) {
       setFormData({
         name: session.user.name || '',
-        email: session.user.email || ''
+        email: session.user.email || '',
+        image: session.user.image || ''
       })
     }
   }, [session, status, router])
