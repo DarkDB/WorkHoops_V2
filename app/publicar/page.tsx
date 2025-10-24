@@ -67,7 +67,6 @@ export default function PublicarPage() {
     contactEmail: '',
     contactPhone: '',
     applicationUrl: '',
-    requirements: '',
     benefits: ''
   })
 
