@@ -327,3 +327,16 @@ model ClubAgencyProfile {
   
   @@map("club_agency_profiles")
 }
+
+model InterestNotification {
+  id              String    @id @default(cuid())
+  profileId       String
+  profile         TalentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  interestedUserId String
+  interestedUser  User      @relation(fields: [interestedUserId], references: [id], onDelete: Cascade)
+  message         String?
+  status          String    @default("pending") // pending, viewed, dismissed
+  createdAt       DateTime  @default(now())
+  
+  @@map("interest_notifications")
+}
