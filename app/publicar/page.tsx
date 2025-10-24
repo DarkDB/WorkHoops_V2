@@ -183,21 +183,27 @@ export default function PublicarPage() {
       // Prepare data without fields not in schema
       const { positions, ...opportunityData } = formData
       
+      const payload = {
+        ...opportunityData,
+        featured: false
+      }
+      
+      console.log('Sending opportunity data:', payload)
+      
       const response = await fetch('/api/opportunities', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          ...opportunityData,
-          featured: false
-        })
+        body: JSON.stringify(payload)
       })
 
       const data = await response.json()
+      console.log('API response:', data)
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error al crear oportunidad')
+        console.error('API error:', data)
+        throw new Error(data.details ? data.details.join(', ') : data.message || 'Error al crear oportunidad')
       }
 
       toast.success('¡Oportunidad creada!', {
