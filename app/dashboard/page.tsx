@@ -384,6 +384,80 @@ export default async function DashboardPage() {
           </Card>
         </div>
 
+        {/* Interest Notifications - Only for players/coaches with talent profile */}
+        {user.talentProfile && user.talentProfile.interestNotifications && user.talentProfile.interestNotifications.length > 0 && (
+          <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center space-x-2">
+                  <Bell className="w-5 h-5 text-orange-600" />
+                  <span className="text-orange-900">Notificaciones de interés</span>
+                </CardTitle>
+                <Badge className="bg-orange-600 text-white">
+                  {user.talentProfile.interestNotifications.filter(n => n.status === 'pending').length} nuevas
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {user.talentProfile.interestNotifications.map((notification) => (
+                  <div key={notification.id} className="bg-white rounded-lg p-4 border border-orange-200">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Users className="w-4 h-4 text-orange-600" />
+                          <p className="font-medium text-gray-900">
+                            {notification.interestedUser.name || 'Un usuario'}
+                            <span className="text-sm font-normal text-gray-600 ml-2">
+                              ({notification.interestedUser.role === 'club' ? 'Club' : 'Agencia'})
+                            </span>
+                          </p>
+                        </div>
+                        <p className="text-sm text-gray-700 mb-2">
+                          Ha mostrado interés en tu perfil. Activa el Plan Pro para recibir contacto directo.
+                        </p>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {new Date(notification.createdAt).toLocaleDateString('es-ES', { 
+                            day: 'numeric', 
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                      </div>
+                      {notification.status === 'pending' && (
+                        <Badge className="bg-orange-100 text-orange-800 border-orange-300">
+                          Nuevo
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2 mt-3 pt-3 border-t border-orange-100">
+                      <Link href="/planes" className="flex-1">
+                        <Button size="sm" className="w-full bg-orange-600 hover:bg-orange-700 text-white">
+                          <Star className="w-3 h-3 mr-2" />
+                          Activar Plan Pro
+                        </Button>
+                      </Link>
+                      <form action={async () => {
+                        'use server'
+                        await prisma.interestNotification.update({
+                          where: { id: notification.id },
+                          data: { status: 'dismissed' }
+                        })
+                      }}>
+                        <Button type="submit" variant="ghost" size="sm">
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </form>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Recent Applications */}
           <div className="lg:col-span-2">
