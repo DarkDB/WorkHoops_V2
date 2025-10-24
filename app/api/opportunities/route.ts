@@ -101,6 +101,8 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
+    console.log('Received opportunity data:', JSON.stringify(body, null, 2))
+    
     const validatedData = opportunityCreateSchema.parse(body)
 
     // Get user's current opportunities count
