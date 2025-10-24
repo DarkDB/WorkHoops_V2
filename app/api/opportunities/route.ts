@@ -184,15 +184,20 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error('Validation errors:', error.errors)
       return NextResponse.json(
-        { message: 'Datos inválidos', errors: error.errors },
+        { 
+          message: 'Datos inválidos', 
+          errors: error.errors,
+          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+        },
         { status: 400 }
       )
     }
 
     console.error('Error creating opportunity:', error)
     return NextResponse.json(
-      { message: 'Error al crear oportunidad' },
+      { message: 'Error al crear oportunidad', error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
