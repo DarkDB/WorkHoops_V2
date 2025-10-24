@@ -767,7 +767,7 @@ class BackendTester:
         routes_to_test = [
             ("/dashboard/applications", "Dashboard Applications Page"),
             ("/dashboard/favorites", "Dashboard Favorites Page"),
-            ("/oportunidades/jugador-base-cb-estudiantes", "Opportunity Details (slug)"),
+            ("/oportunidades/jugador-base-cantera-fc-barcelona", "Opportunity Details (slug)"),
             ("/recursos/1", "Resource Article Details (id)"),
             ("/legal/cookies", "Cookies Policy Page"),
         ]
