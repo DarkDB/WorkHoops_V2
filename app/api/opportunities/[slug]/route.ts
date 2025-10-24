@@ -197,6 +197,12 @@ export async function PUT(request: NextRequest, { params }: Params) {
   }
 }
 
+
+// PATCH uses the same logic as PUT
+export async function PATCH(request: NextRequest, { params }: Params) {
+  return PUT(request, { params })
+}
+
 // DELETE /api/opportunities/[slug] - Delete opportunity
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
