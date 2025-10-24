@@ -182,7 +182,7 @@ export default function PublicarPage() {
 
       // Regular submission (free)
       // Prepare data without fields not in schema
-      const { positions, requirements, ...opportunityData } = formData
+      const { positions, ...opportunityData } = formData
       
       const response = await fetch('/api/opportunities', {
         method: 'POST',
