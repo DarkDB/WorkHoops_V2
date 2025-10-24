@@ -18,6 +18,7 @@ import {
 interface Opportunity {
   id: string
   title: string
+  slug: string
   type: string
   city: string
   status: string
