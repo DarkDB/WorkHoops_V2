@@ -16,9 +16,11 @@ export default function EditProfilePage() {
   const router = useRouter()
   const { data: session, status } = useSession()
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
-    email: ''
+    email: '',
+    image: ''
   })
 
   useEffect(() => {
