@@ -564,7 +564,7 @@ class BackendTester:
         
         # Test admin opportunities page access
         try:
-            response = self.session.get(f"{BASE_URL}/admin/opportunities", timeout=10)
+            response = self.session.get(f"{BASE_URL}/admin/opportunities", timeout=10, allow_redirects=False)
             
             if response.status_code == 302 or response.status_code == 307:
                 print_success("GET /admin/opportunities - Correctly redirects non-authenticated users")
