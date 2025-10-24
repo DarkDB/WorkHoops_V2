@@ -208,8 +208,10 @@ export default function DashboardClubAgency({
                           <Link href={`/oportunidades/${opportunity.slug}`}>
                             <Button variant="ghost" size="sm">Ver</Button>
                           </Link>
-                          <Link href={`/oportunidades-edit/${opportunity.id}`}>
-                            <Button variant="ghost" size="sm">Editar</Button>
+                          <Link href={`/oportunidades/${opportunity.slug}/edit`}>
+                            <Button variant="ghost" size="sm" className="text-gray-400 cursor-not-allowed" onClick={(e) => e.preventDefault()}>
+                              Editar (próximamente)
+                            </Button>
                           </Link>
                         </div>
                       </div>
