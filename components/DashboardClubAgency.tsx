@@ -200,12 +200,15 @@ export default function DashboardClubAgency({
                           <Calendar className="w-3 h-3 mr-1" />
                           Publicado el {new Date(opportunity.createdAt).toLocaleDateString('es-ES')}
                         </div>
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2">
                           <span className="text-sm font-medium text-gray-700">
                             {opportunity._count.applications} candidatos
                           </span>
-                          <Link href={`/oportunidades/${opportunity.id}`}>
+                          <Link href={`/oportunidades/${opportunity.slug}`}>
                             <Button variant="ghost" size="sm">Ver</Button>
+                          </Link>
+                          <Link href={`/oportunidades/${opportunity.id}/edit`}>
+                            <Button variant="ghost" size="sm">Editar</Button>
                           </Link>
                         </div>
                       </div>
