@@ -17,7 +17,10 @@ import {
   Clock,
   Star,
   Award,
-  Users
+  Users,
+  Bell,
+  X,
+  CheckCircle
 } from 'lucide-react'
 import Link from 'next/link'
 
