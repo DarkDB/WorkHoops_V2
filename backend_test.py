@@ -518,6 +518,247 @@ class BackendTester:
                 self.test_results['failed'] += 1
                 self.log_error("Page Routes", f"{name} - {str(e)}")
 
+    def test_admin_dashboard_access(self):
+        """Test admin dashboard access control"""
+        print_test_header("Admin Dashboard Access Control")
+        
+        # Test admin page access without authentication
+        try:
+            response = self.session.get(f"{BASE_URL}/admin", timeout=10)
+            
+            if response.status_code == 302 or response.status_code == 307:
+                print_success("GET /admin - Correctly redirects non-authenticated users")
+                
+                # Check if redirect is to login page
+                if 'location' in response.headers:
+                    location = response.headers['location']
+                    if '/auth/login' in location:
+                        print_success("  └─ Redirects to login page as expected")
+                    else:
+                        print_warning(f"  └─ Redirects to: {location}")
+                        self.test_results['warnings'] += 1
+                else:
+                    print_warning("  └─ No location header in redirect")
+                    self.test_results['warnings'] += 1
+                    
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 200:
+                print_error("GET /admin - Should redirect non-authenticated users but returned 200")
+                self.test_results['failed'] += 1
+                self.log_error("Admin Dashboard Access", "No authentication protection")
+                
+            else:
+                print_error(f"GET /admin - Unexpected status {response.status_code}")
+                self.test_results['failed'] += 1
+                self.log_error("Admin Dashboard Access", f"Status: {response.status_code}")
+                
+        except Exception as e:
+            print_error(f"Admin dashboard access test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Admin Dashboard Access", str(e))
+
+    def test_admin_opportunities_management(self):
+        """Test admin opportunities management endpoints"""
+        print_test_header("Admin Opportunities Management")
+        
+        # Test admin opportunities page access
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/opportunities", timeout=10)
+            
+            if response.status_code == 302 or response.status_code == 307:
+                print_success("GET /admin/opportunities - Correctly redirects non-authenticated users")
+                self.test_results['passed'] += 1
+            elif response.status_code == 200:
+                print_error("GET /admin/opportunities - Should redirect non-authenticated users")
+                self.test_results['failed'] += 1
+                self.log_error("Admin Opportunities Management", "No authentication protection")
+            else:
+                print_error(f"GET /admin/opportunities - Status {response.status_code}")
+                self.test_results['failed'] += 1
+                self.log_error("Admin Opportunities Management", f"Status: {response.status_code}")
+                
+        except Exception as e:
+            print_error(f"Admin opportunities page test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Admin Opportunities Management", str(e))
+        
+        # Test admin API endpoint without authentication
+        try:
+            test_opportunity_id = "test-opportunity-id"
+            response = self.session.patch(
+                f"{API_BASE}/admin/opportunities/{test_opportunity_id}",
+                json={"status": "publicada"},
+                timeout=10
+            )
+            
+            if response.status_code == 401:
+                print_success("PATCH /api/admin/opportunities/[id] - Correctly requires authentication")
+                
+                try:
+                    data = response.json()
+                    if 'error' in data and 'Authentication required' in data['error']:
+                        print_success("  └─ Authentication error message is correct")
+                    else:
+                        print_warning("  └─ Authentication error message format unexpected")
+                        self.test_results['warnings'] += 1
+                        
+                except json.JSONDecodeError:
+                    print_warning("  └─ Authentication error response is not valid JSON")
+                    self.test_results['warnings'] += 1
+                    
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 403:
+                print_success("PATCH /api/admin/opportunities/[id] - Correctly requires admin role")
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 404:
+                print_info("PATCH /api/admin/opportunities/[id] - Opportunity not found (expected for test ID)")
+                self.test_results['passed'] += 1
+                
+            else:
+                print_error(f"PATCH /api/admin/opportunities/[id] - Unexpected status {response.status_code}")
+                print_error(f"Response: {response.text[:200]}")
+                self.test_results['failed'] += 1
+                self.log_error("Admin Opportunities Management", f"API Status: {response.status_code}")
+                
+        except Exception as e:
+            print_error(f"Admin opportunities API test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Admin Opportunities Management", str(e))
+
+    def test_admin_users_management(self):
+        """Test admin users management page"""
+        print_test_header("Admin Users Management")
+        
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/users", timeout=10)
+            
+            if response.status_code == 302 or response.status_code == 307:
+                print_success("GET /admin/users - Correctly redirects non-authenticated users")
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 200:
+                print_error("GET /admin/users - Should redirect non-authenticated users")
+                self.test_results['failed'] += 1
+                self.log_error("Admin Users Management", "No authentication protection")
+                
+            else:
+                print_error(f"GET /admin/users - Status {response.status_code}")
+                self.test_results['failed'] += 1
+                self.log_error("Admin Users Management", f"Status: {response.status_code}")
+                
+        except Exception as e:
+            print_error(f"Admin users management test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Admin Users Management", str(e))
+
+    def test_opportunity_editing_endpoints(self):
+        """Test opportunity editing endpoints"""
+        print_test_header("Opportunity Editing Endpoints")
+        
+        # Test GET opportunity by slug
+        test_slug = "test-opportunity-slug"
+        
+        try:
+            response = self.session.get(f"{API_BASE}/opportunities/{test_slug}", timeout=10)
+            
+            if response.status_code == 404:
+                print_success("GET /api/opportunities/[slug] - Correctly returns 404 for non-existent opportunity")
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 200:
+                print_info("GET /api/opportunities/[slug] - Found existing opportunity")
+                
+                try:
+                    data = response.json()
+                    required_fields = ['id', 'title', 'slug', 'description', 'status']
+                    missing_fields = [field for field in required_fields if field not in data]
+                    
+                    if missing_fields:
+                        print_warning(f"  └─ Opportunity missing fields: {missing_fields}")
+                        self.test_results['warnings'] += 1
+                    else:
+                        print_success("  └─ Opportunity structure is complete")
+                        
+                except json.JSONDecodeError:
+                    print_error("  └─ Response is not valid JSON")
+                    self.test_results['failed'] += 1
+                    self.log_error("Opportunity Editing", "Invalid JSON response")
+                    
+                self.test_results['passed'] += 1
+                
+            else:
+                print_error(f"GET /api/opportunities/[slug] - Status {response.status_code}")
+                self.test_results['failed'] += 1
+                self.log_error("Opportunity Editing", f"GET Status: {response.status_code}")
+                
+        except Exception as e:
+            print_error(f"GET opportunity test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Opportunity Editing", f"GET - {str(e)}")
+        
+        # Test PUT opportunity without authentication
+        try:
+            response = self.session.put(
+                f"{API_BASE}/opportunities/{test_slug}",
+                json={"title": "Updated Test Opportunity"},
+                timeout=10
+            )
+            
+            if response.status_code == 401:
+                print_success("PUT /api/opportunities/[slug] - Correctly requires authentication")
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 403:
+                print_success("PUT /api/opportunities/[slug] - Correctly requires proper authorization")
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 404:
+                print_info("PUT /api/opportunities/[slug] - Opportunity not found (expected for test slug)")
+                self.test_results['passed'] += 1
+                
+            else:
+                print_error(f"PUT /api/opportunities/[slug] - Unexpected status {response.status_code}")
+                self.test_results['failed'] += 1
+                self.log_error("Opportunity Editing", f"PUT Status: {response.status_code}")
+                
+        except Exception as e:
+            print_error(f"PUT opportunity test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Opportunity Editing", f"PUT - {str(e)}")
+        
+        # Test PATCH opportunity without authentication
+        try:
+            response = self.session.patch(
+                f"{API_BASE}/opportunities/{test_slug}",
+                json={"title": "Patched Test Opportunity"},
+                timeout=10
+            )
+            
+            if response.status_code == 401:
+                print_success("PATCH /api/opportunities/[slug] - Correctly requires authentication")
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 403:
+                print_success("PATCH /api/opportunities/[slug] - Correctly requires proper authorization")
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 404:
+                print_info("PATCH /api/opportunities/[slug] - Opportunity not found (expected for test slug)")
+                self.test_results['passed'] += 1
+                
+            else:
+                print_error(f"PATCH /api/opportunities/[slug] - Unexpected status {response.status_code}")
+                self.test_results['failed'] += 1
+                self.log_error("Opportunity Editing", f"PATCH Status: {response.status_code}")
+                
+        except Exception as e:
+            print_error(f"PATCH opportunity test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Opportunity Editing", f"PATCH - {str(e)}")
+
     def test_new_routes_404_fix(self):
         """Test the new routes created to fix 404 errors"""
         print_test_header("New Routes - 404 Fix Testing")
