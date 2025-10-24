@@ -195,12 +195,15 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
               </div>
               
               <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm">
-                  <Heart className="w-4 h-4" />
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Share2 className="w-4 h-4" />
-                </Button>
+                <FavoriteButton 
+                  opportunityId={opportunity.id}
+                  isFavorited={isFavorited}
+                  isLoggedIn={!!session}
+                />
+                <ShareButton 
+                  opportunityTitle={opportunity.title}
+                  opportunityUrl={`${process.env.APP_URL || 'https://workhoops.es'}/oportunidades/${opportunity.slug}`}
+                />
               </div>
             </div>
           </CardHeader>
