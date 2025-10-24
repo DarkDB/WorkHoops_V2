@@ -16,7 +16,7 @@ function getResendClient() {
 export async function sendMagicLinkEmail(email: string, url: string) {
   try {
     const { data, error } = await getResendClient().emails.send({
-      from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
+      from: process.env.SUPPORT_EMAIL || 'onboarding@resend.dev',
       to: [email],
       subject: 'Accede a WorkHoops - Enlace mágico',
       html: `
@@ -72,7 +72,7 @@ export async function sendApplicationNotificationEmail(
 ) {
   try {
     const { data, error } = await getResendClient().emails.send({
-      from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
+      from: process.env.SUPPORT_EMAIL || 'onboarding@resend.dev',
       to: [organizationEmail],
       subject: `Nueva aplicación: ${opportunityTitle}`,
       html: `
@@ -130,7 +130,7 @@ export async function sendApplicationStateChangeEmail(
 
   try {
     const { data, error } = await getResendClient().emails.send({
-      from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
+      from: process.env.SUPPORT_EMAIL || 'onboarding@resend.dev',
       to: [applicantEmail],
       subject: `Actualización de aplicación: ${opportunityTitle}`,
       html: `
@@ -176,7 +176,7 @@ export async function sendPaymentConfirmationEmail(
 ) {
   try {
     const { data, error } = await getResendClient().emails.send({
-      from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
+      from: process.env.SUPPORT_EMAIL || 'onboarding@resend.dev',
       to: [organizationEmail],
       subject: `Pago confirmado - ${opportunityTitle}`,
       html: `
@@ -225,7 +225,7 @@ export async function sendTalentContactEmail(
 ) {
   try {
     const { data, error } = await getResendClient().emails.send({
-      from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
+      from: process.env.SUPPORT_EMAIL || 'onboarding@resend.dev',
       to: [talentEmail],
       subject: `Nueva solicitud de contacto en WorkHoops`,
       html: `
@@ -293,7 +293,7 @@ export async function sendInterestNotificationEmail(
 ) {
   try {
     const { data, error } = await getResendClient().emails.send({
-      from: process.env.SUPPORT_EMAIL || 'noreply@workhoops.es',
+      from: process.env.SUPPORT_EMAIL || 'onboarding@resend.dev',
       to: [talentEmail],
       subject: `Hay interés en tu perfil de WorkHoops`,
       html: `
