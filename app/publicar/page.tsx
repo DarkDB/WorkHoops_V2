@@ -409,17 +409,6 @@ export default function PublicarPage() {
               </div>
 
               <div>
-                <Label htmlFor="requirements">Requisitos</Label>
-                <Textarea 
-                  id="requirements"
-                  value={formData.requirements}
-                  onChange={(e) => handleInputChange('requirements', e.target.value)}
-                  placeholder="Experiencia requerida, formación, disponibilidad..."
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
                 <Label htmlFor="benefits">Beneficios ofrecidos</Label>
                 <Textarea 
                   id="benefits"
