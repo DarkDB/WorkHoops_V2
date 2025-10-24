@@ -53,7 +53,24 @@ export default async function DashboardPage() {
         },
         orderBy: { createdAt: 'desc' }
       },
-      talentProfile: true,
+      talentProfile: {
+        include: {
+          interestNotifications: {
+            include: {
+              interestedUser: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  role: true
+                }
+              }
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 5
+          }
+        }
+      },
       opportunities: {
         include: {
           _count: {
