@@ -49,6 +49,11 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
         where: {
           userId: session.user.id
         }
+      } : false,
+      favorites: session?.user?.id ? {
+        where: {
+          userId: session.user.id
+        }
       } : false
     }
   })
@@ -59,6 +64,9 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
 
   // Check if user has already applied
   const hasApplied = Boolean(session?.user?.id && Array.isArray(opportunity.applications) && opportunity.applications.length > 0)
+  
+  // Check if user has favorited this opportunity
+  const isFavorited = Boolean(session?.user?.id && Array.isArray(opportunity.favorites) && opportunity.favorites.length > 0)
 
   const getTypeLabel = (type: string) => {
     switch (type) {
