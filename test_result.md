@@ -311,17 +311,69 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
         -agent: "testing"
         -comment: "All 5 new routes tested and working correctly: ✅ /dashboard/applications (redirects to auth - protected route working), ✅ /dashboard/favorites (redirects to auth - protected route working), ✅ /oportunidades/jugador-base-cb-estudiantes (200 with opportunity content), ✅ /recursos/1 (200 with resource content), ✅ /legal/cookies (200 with cookies policy - fixed React onClick handler). Fixed missing 'isomorphic-dompurify' dependency. No more 404 errors on these routes."
 
+  - task: "Opportunity Editing for Club/Agency"
+    implemented: true
+    working: "NA"
+    file: "/app/components/EditOpportunityForm.tsx, /app/app/oportunidades/[slug]/edit/page.tsx, /app/app/api/opportunities/[slug]/route.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Implemented complete opportunity editing system. Created EditOpportunityForm client component with full form validation. Updated API endpoint to support both PUT and PATCH methods. Added role-based access control to ensure only opportunity authors and admins can edit. Enabled 'Editar' button in DashboardClubAgency component. System allows club/agency users to edit all fields of their published opportunities."
+
+  - task: "Admin Dashboard - Main Panel"
+    implemented: true
+    working: "NA"
+    file: "/app/app/admin/page.tsx, /app/components/AdminDashboard.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Created comprehensive admin dashboard main panel. Features include: overview statistics (total users, opportunities, pending offers, applications), quick access cards to different admin sections (opportunities management, user management, resources), system status indicators. Admin-only access with role-based protection."
+
+  - task: "Admin Dashboard - Opportunities Management"
+    implemented: true
+    working: "NA"
+    file: "/app/app/admin/opportunities/page.tsx, /app/components/AdminOpportunitiesManager.tsx, /app/app/api/admin/opportunities/[opportunityId]/route.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Implemented full opportunities verification and management system for admins. Features include: list all opportunities with filters (status, search), statistics dashboard (total, published, drafts, closed), approve/reject opportunities (change status from borrador to publicada or rechazada), close published opportunities, view opportunity details and author information. Created API endpoint PATCH /api/admin/opportunities/[opportunityId] for status updates."
+
+  - task: "Admin Dashboard - Users/CRM Management"
+    implemented: true
+    working: "NA"
+    file: "/app/app/admin/users/page.tsx, /app/components/AdminUsersManager.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Created comprehensive user CRM system for admins. Features include: list all users with complete information (name, email, role, plan type, registration date), detailed statistics by role (admin, club, agencia, jugador, entrenador) and plan type (gratis, pro), advanced filtering (by role, plan, search), user activity metrics (opportunities published, applications submitted), profile information (talent profiles, club/agency profiles), email verification status."
+
 ## metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 2
+  test_sequence: 3
   run_ui: false
 
 ## test_plan:
-  current_focus: []
+  current_focus:
+    - "Opportunity Editing for Club/Agency"
+    - "Admin Dashboard - Main Panel"
+    - "Admin Dashboard - Opportunities Management"
+    - "Admin Dashboard - Users/CRM Management"
   stuck_tasks: []
   test_all: false
-  test_priority: "completed"
+  test_priority: "high_first"
 
 ## agent_communication:
     -agent: "main"
