@@ -279,6 +279,7 @@ model TalentProfile {
   // Relations
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interestNotifications InterestNotification[]
   
   @@map("talent_profiles")
 }
