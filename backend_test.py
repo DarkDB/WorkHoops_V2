@@ -633,7 +633,7 @@ class BackendTester:
         print_test_header("Admin Users Management")
         
         try:
-            response = self.session.get(f"{BASE_URL}/admin/users", timeout=10)
+            response = self.session.get(f"{BASE_URL}/admin/users", timeout=10, allow_redirects=False)
             
             if response.status_code == 302 or response.status_code == 307:
                 print_success("GET /admin/users - Correctly redirects non-authenticated users")
