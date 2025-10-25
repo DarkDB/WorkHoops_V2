@@ -82,6 +82,7 @@ export const fileUploadSchema = z.object({
 
 // Type exports
 export type OpportunityCreateInput = z.infer<typeof opportunityCreateSchema>
+export type OpportunityUpdateInput = z.infer<typeof opportunityUpdateSchema>
 export type ApplicationCreateInput = z.infer<typeof applicationCreateSchema>
 export type ApplicationUpdateInput = z.infer<typeof applicationUpdateSchema>
 export type OrganizationCreateInput = z.infer<typeof organizationCreateSchema>
