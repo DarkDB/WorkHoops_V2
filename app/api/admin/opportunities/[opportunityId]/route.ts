@@ -43,9 +43,21 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     }
 
     // Update opportunity status
+    const updateData: any = { status }
+    
+    // Si se está aprobando (cambiando a publicada), establecer publishedAt
+    if (status === 'publicada') {
+      updateData.publishedAt = new Date()
+    }
+    
+    // Si se está rechazando o cerrando, mantener publishedAt como null o como está
+    if (status === 'borrador' || status === 'rechazada') {
+      updateData.publishedAt = null
+    }
+    
     const opportunity = await prisma.opportunity.update({
       where: { id: params.opportunityId },
-      data: { status },
+      data: updateData,
       include: {
         author: {
           select: {
