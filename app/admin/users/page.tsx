@@ -29,13 +29,13 @@ export default async function AdminUsersPage() {
       talentProfile: {
         select: {
           id: true,
-          playerRole: true
+          role: true
         }
       },
       clubAgencyProfile: {
         select: {
           id: true,
-          clubType: true
+          organizationType: true
         }
       }
     },
