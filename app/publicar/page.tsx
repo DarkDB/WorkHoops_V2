@@ -207,7 +207,7 @@ export default function PublicarPage() {
       }
 
       toast.success('¡Oportunidad creada!', {
-        description: 'Tu oferta ha sido publicada exitosamente'
+        description: 'Tu oferta está pendiente de revisión por el administrador. Te notificaremos cuando sea aprobada.'
       })
 
       router.push('/dashboard')
