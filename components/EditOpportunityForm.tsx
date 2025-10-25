@@ -82,7 +82,9 @@ export default function EditOpportunityForm({ opportunity }: EditOpportunityForm
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error al actualizar la oferta')
+        // Mostrar el mensaje de error del servidor o un mensaje por defecto
+        const errorMessage = data.message || data.error || 'Error al actualizar la oferta'
+        throw new Error(errorMessage)
       }
 
       toast.success('¡Oferta actualizada!', {
