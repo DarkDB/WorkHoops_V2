@@ -46,10 +46,9 @@ export default function EditOpportunityForm({ opportunity }: EditOpportunityForm
 
   const levels = [
     { value: 'profesional', label: 'Profesional' },
-    { value: 'semipro', label: 'Semi-profesional' },
+    { value: 'semi_profesional', label: 'Semi-profesional' },
     { value: 'amateur', label: 'Amateur' },
-    { value: 'juvenil', label: 'Juvenil' },
-    { value: 'infantil', label: 'Infantil' }
+    { value: 'cantera', label: 'Cantera' }
   ]
 
   const handleInputChange = (field: string, value: string) => {
