@@ -269,12 +269,12 @@ export default function AdminUsersManager({ users }: AdminUsersManagerProps) {
                         </div>
                         {user.talentProfile && (
                           <div className="mt-2 text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded inline-block">
-                            Perfil de talento: {user.talentProfile.playerRole}
+                            Perfil de talento: {user.talentProfile.role}
                           </div>
                         )}
                         {user.clubAgencyProfile && (
                           <div className="mt-2 text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded inline-block">
-                            Perfil de club: {user.clubAgencyProfile.clubType}
+                            Perfil de club: {user.clubAgencyProfile.organizationType}
                           </div>
                         )}
                       </div>
