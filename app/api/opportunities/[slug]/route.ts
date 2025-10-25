@@ -238,8 +238,33 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
   } catch (error) {
     console.error('Update opportunity error:', error)
+    
+    // Manejo de errores específicos
+    if (error instanceof Error) {
+      // Error de validación de Prisma
+      if (error.message.includes('Invalid value for argument')) {
+        return NextResponse.json(
+          { 
+            error: 'Error de validación',
+            message: 'Los datos proporcionados no son válidos. Por favor, revisa los campos.',
+            details: error.message
+          },
+          { status: 400 }
+        )
+      }
+      
+      // Error genérico
+      return NextResponse.json(
+        { 
+          error: 'Error al actualizar la oferta',
+          message: error.message 
+        },
+        { status: 500 }
+      )
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Error interno del servidor' },
       { status: 500 }
     )
   }
