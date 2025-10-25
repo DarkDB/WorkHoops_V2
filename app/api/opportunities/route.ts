@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Oportunidad creada exitosamente',
+      message: 'Oportunidad creada exitosamente. Está pendiente de revisión por el administrador.',
       opportunity
     }, { status: 201 })
 
