@@ -128,9 +128,8 @@ export async function PUT(request: NextRequest, { params }: Params) {
     
     console.log('Update opportunity - Received data:', JSON.stringify(body, null, 2))
     
-    // For updates, make all fields optional except what's being updated
-    const updateSchema = opportunityCreateSchema.partial()
-    const validation = updateSchema.safeParse(body)
+    // Use the update schema (all fields optional)
+    const validation = opportunityUpdateSchema.safeParse(body)
 
     if (!validation.success) {
       console.error('Validation errors:', validation.error.errors)
