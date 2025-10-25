@@ -166,9 +166,9 @@ export default function AdminDashboard({
             <p className="text-sm text-gray-600 mb-4">
               Crea y gestiona artículos, guías y recursos para la comunidad.
             </p>
-            <Link href="/recursos">
+            <Link href="/admin/resources">
               <Button className="w-full bg-green-600 hover:bg-green-700">
-                Ver recursos
+                Gestionar recursos
               </Button>
             </Link>
           </CardContent>
