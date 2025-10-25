@@ -74,7 +74,7 @@ export default async function AdminUsersPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <AdminUsersManager users={JSON.parse(JSON.stringify(users))} />
+      <AdminUsersManager users={JSON.parse(JSON.stringify(usersWithProfiles))} />
     </div>
   )
 }
