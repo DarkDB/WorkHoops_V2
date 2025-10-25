@@ -25,24 +25,51 @@ export default async function AdminUsersPage() {
           opportunities: true,
           applications: true
         }
-      },
-      talentProfile: {
-        select: {
-          id: true,
-          role: true
-        }
-      },
-      clubAgencyProfile: {
-        select: {
-          id: true,
-          organizationType: true
-        }
       }
     },
     orderBy: {
       createdAt: 'desc'
     }
+  }).catch((error) => {
+    console.error('Error fetching users:', error)
+    return [] // Return empty array if error
   })
+
+  // Try to fetch profiles separately to handle missing tables
+  let usersWithProfiles = users
+  try {
+    const talentProfiles = await prisma.talentProfile.findMany({
+      where: {
+        userId: { in: users.map(u => u.id) }
+      },
+      select: {
+        id: true,
+        role: true,
+        userId: true
+      }
+    })
+
+    const clubProfiles = await prisma.clubAgencyProfile.findMany({
+      where: {
+        userId: { in: users.map(u => u.id) }
+      },
+      select: {
+        id: true,
+        organizationType: true,
+        userId: true
+      }
+    }).catch(() => []) // If table doesn't exist, return empty array
+
+    // Merge profiles with users
+    usersWithProfiles = users.map(user => ({
+      ...user,
+      talentProfile: talentProfiles.find(p => p.userId === user.id) || null,
+      clubAgencyProfile: clubProfiles.find(p => p.userId === user.id) || null
+    }))
+  } catch (error) {
+    console.error('Error fetching profiles:', error)
+    // If profiles fetch fails, just use users without profiles
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
