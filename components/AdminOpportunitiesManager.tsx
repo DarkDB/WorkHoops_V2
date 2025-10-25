@@ -291,15 +291,37 @@ export default function AdminOpportunitiesManager({ opportunities: initialOpport
                         </>
                       )}
                       {opportunity.status === 'publicada' && (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-yellow-600 hover:text-yellow-700 border-yellow-600"
+                            onClick={() => handleUpdateStatus(opportunity.id, opportunity.slug, 'borrador')}
+                            disabled={loading === opportunity.id}
+                          >
+                            Mover a borrador
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-red-600 hover:text-red-700 border-red-600"
+                            onClick={() => handleUpdateStatus(opportunity.id, opportunity.slug, 'cerrada')}
+                            disabled={loading === opportunity.id}
+                          >
+                            <XCircle className="w-4 h-4 mr-1" />
+                            Cerrar
+                          </Button>
+                        </>
+                      )}
+                      {(opportunity.status === 'cerrada' || opportunity.status === 'rechazada') && (
                         <Button
                           size="sm"
-                          variant="outline"
-                          className="text-red-600 hover:text-red-700"
-                          onClick={() => handleUpdateStatus(opportunity.id, opportunity.slug, 'cerrada')}
+                          className="bg-blue-600 hover:bg-blue-700"
+                          onClick={() => handleUpdateStatus(opportunity.id, opportunity.slug, 'publicada')}
                           disabled={loading === opportunity.id}
                         >
-                          <XCircle className="w-4 h-4 mr-1" />
-                          Cerrar
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Reactivar
                         </Button>
                       )}
                     </div>
