@@ -25,6 +25,8 @@ interface User {
   email: string
   role: string
   planType: string | null
+  planStart: string | null
+  planEnd: string | null
   createdAt: string
   emailVerified: string | null
   _count: {
