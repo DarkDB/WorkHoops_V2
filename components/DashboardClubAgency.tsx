@@ -85,7 +85,7 @@ export default function DashboardClubAgency({
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Ofertas publicadas</p>
+                <p className="text-sm font-medium text-gray-600">Total ofertas</p>
                 <p className="text-3xl font-bold text-gray-900">{totalPublished}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -93,7 +93,24 @@ export default function DashboardClubAgency({
               </div>
             </div>
             <div className="mt-2 text-sm text-gray-500">
-              {activeOpportunities} activas
+              {activeOpportunities} publicadas
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Pendientes de revisión</p>
+                <p className="text-3xl font-bold text-gray-900">{pendingOpportunities}</p>
+              </div>
+              <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                <FileText className="w-6 h-6 text-yellow-600" />
+              </div>
+            </div>
+            <div className="mt-2 text-sm text-yellow-600">
+              Esperando aprobación
             </div>
           </CardContent>
         </Card>
