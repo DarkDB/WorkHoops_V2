@@ -241,10 +241,10 @@ export default function AdminUsersManager({ users }: AdminUsersManagerProps) {
                           <Badge className={getRoleColor(user.role)}>
                             {getRoleLabel(user.role)}
                           </Badge>
-                          {user.planType === 'pro' && (
+                          {user.planType && (
                             <Badge className={getPlanColor(user.planType)}>
-                              <Crown className="w-3 h-3 mr-1" />
-                              Pro
+                              {user.planType === 'pro' && <Crown className="w-3 h-3 mr-1" />}
+                              {user.planType === 'pro' ? 'Pro' : user.planType.replace('_', ' ').toUpperCase()}
                             </Badge>
                           )}
                         </div>
@@ -267,6 +267,22 @@ export default function AdminUsersManager({ users }: AdminUsersManagerProps) {
                             {user._count.applications} solicitud{user._count.applications !== 1 ? 'es' : ''}
                           </div>
                         </div>
+                        {/* Plan details */}
+                        {user.planType && (
+                          <div className="mt-2 text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded inline-block">
+                            Plan: {user.planType === 'pro' ? 'Pro (4.99€/mes)' : user.planType.replace('_', ' ')}
+                            {user.planStart && (
+                              <span className="ml-2">
+                                desde {new Date(user.planStart).toLocaleDateString('es-ES')}
+                              </span>
+                            )}
+                            {user.planEnd && (
+                              <span className="ml-2">
+                                hasta {new Date(user.planEnd).toLocaleDateString('es-ES')}
+                              </span>
+                            )}
+                          </div>
+                        )}
                         {user.talentProfile && (
                           <div className="mt-2 text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded inline-block">
                             Perfil de talento: {user.talentProfile.role}
