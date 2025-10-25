@@ -2,25 +2,35 @@ import { z } from "zod"
 
 export const opportunityCreateSchema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres").max(100, "El título no puede superar los 100 caracteres"),
-  type: z.enum(["empleo", "prueba", "torneo", "clinica", "beca", "patrocinio"]),
-  organizationId: z.string().cuid("ID de organización inválido"),
-  level: z.enum(["amateur", "semi_pro", "cantera", "pro"]),
+  type: z.enum(["empleo", "prueba", "torneo", "clinica", "beca", "patrocinio", "campus"]),
+  organizationId: z.string().cuid("ID de organización inválido").optional(),
+  level: z.enum(["amateur", "semipro", "semi_profesional", "profesional", "cantera", "juvenil", "infantil"]),
   city: z.string().min(2, "La ciudad es requerida"),
   region: z.string().optional(),
   country: z.string().default("España"),
-  modality: z.enum(["presencial", "online", "mixta"]).default("presencial"),
+  modality: z.enum(["presencial", "online", "mixta"]).default("presencial").optional(),
   remuneration: z.object({
     min: z.number().optional(),
     max: z.number().optional(),
     currency: z.string().default("EUR"),
     type: z.enum(["monthly", "annual", "per_event"]).default("annual"),
   }).optional(),
+  remunerationType: z.string().optional(),
+  remunerationMin: z.union([z.string(), z.number()]).optional(),
+  remunerationMax: z.union([z.string(), z.number()]).optional(),
   benefits: z.string().optional(),
   description: z.string().min(50, "La descripción debe tener al menos 50 caracteres"),
   requirements: z.string().optional(),
-  deadline: z.string().datetime().optional(),
+  deadline: z.union([z.string(), z.date()]).optional(),
+  startDate: z.union([z.string(), z.date()]).optional(),
+  contactEmail: z.string().email("Email inválido").optional(),
+  contactPhone: z.string().optional(),
+  applicationUrl: z.string().url("URL inválida").or(z.literal("")).optional(),
   tags: z.array(z.string()).max(10, "Máximo 10 etiquetas").default([]),
 })
+
+// Schema específico para actualización (más flexible)
+export const opportunityUpdateSchema = opportunityCreateSchema.partial()
 
 export const applicationCreateSchema = z.object({
   opportunityId: z.string().cuid("ID de oportunidad inválido"),
