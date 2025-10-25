@@ -41,6 +41,7 @@ export default function DashboardClubAgency({
   totalApplications 
 }: DashboardClubAgencyProps) {
   const activeOpportunities = opportunities.filter(opp => opp.status === 'publicada').length
+  const pendingOpportunities = opportunities.filter(opp => opp.status === 'borrador').length
   const totalPublished = opportunities.length
 
   const getStatusColor = (status: string) => {
