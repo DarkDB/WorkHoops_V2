@@ -126,11 +126,14 @@ export async function PUT(request: NextRequest, { params }: Params) {
     // Parse and validate request body
     const body = await request.json()
     
+    console.log('Update opportunity - Received data:', JSON.stringify(body, null, 2))
+    
     // For updates, make all fields optional except what's being updated
     const updateSchema = opportunityCreateSchema.partial()
     const validation = updateSchema.safeParse(body)
 
     if (!validation.success) {
+      console.error('Validation errors:', validation.error.errors)
       return NextResponse.json(
         { error: 'Invalid input', details: validation.error.errors },
         { status: 400 }
@@ -139,20 +142,47 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
     const data = validation.data
 
-    // Sanitize content if provided
+    // Prepare data for database update
     const sanitizedData: any = {}
+    
+    // Sanitize text fields
     if (data.title) sanitizedData.title = sanitizeInput(data.title)
     if (data.description) sanitizedData.description = sanitizeMarkdown(data.description)
     if (data.requirements) sanitizedData.requirements = sanitizeMarkdown(data.requirements)
     if (data.benefits) sanitizedData.benefits = sanitizeMarkdown(data.benefits)
     if (data.tags) sanitizedData.tags = data.tags.map(tag => sanitizeInput(tag))
     
-    // Copy other fields as-is
-    Object.keys(data).forEach(key => {
-      if (!['title', 'description', 'requirements', 'benefits', 'tags'].includes(key)) {
-        sanitizedData[key] = data[key]
-      }
-    })
+    // Handle simple fields
+    if (data.type) sanitizedData.type = data.type
+    if (data.level) sanitizedData.level = data.level
+    if (data.city) sanitizedData.city = data.city
+    if (data.country) sanitizedData.country = data.country
+    if (data.contactEmail) sanitizedData.contactEmail = data.contactEmail
+    if (data.contactPhone) sanitizedData.contactPhone = data.contactPhone
+    if (data.applicationUrl) sanitizedData.applicationUrl = data.applicationUrl
+    
+    // Handle dates
+    if (data.deadline) {
+      sanitizedData.deadline = typeof data.deadline === 'string' ? new Date(data.deadline) : data.deadline
+    }
+    if (data.startDate) {
+      sanitizedData.startDate = typeof data.startDate === 'string' ? new Date(data.startDate) : data.startDate
+    }
+    
+    // Handle remuneration fields (support both old and new format)
+    if (data.remunerationType) sanitizedData.remunerationType = data.remunerationType
+    if (data.remunerationMin !== undefined) {
+      sanitizedData.remunerationMin = typeof data.remunerationMin === 'string' 
+        ? (data.remunerationMin === '' ? null : parseFloat(data.remunerationMin))
+        : data.remunerationMin
+    }
+    if (data.remunerationMax !== undefined) {
+      sanitizedData.remunerationMax = typeof data.remunerationMax === 'string'
+        ? (data.remunerationMax === '' ? null : parseFloat(data.remunerationMax))
+        : data.remunerationMax
+    }
+
+    console.log('Update opportunity - Sanitized data:', JSON.stringify(sanitizedData, null, 2))
 
     // Update opportunity
     const opportunity = await prisma.opportunity.update({
