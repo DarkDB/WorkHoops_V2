@@ -169,8 +169,8 @@ export async function POST(request: NextRequest) {
         contactPhone: validatedData.contactPhone || null,
         applicationUrl: validatedData.applicationUrl || null,
         benefits: validatedData.benefits || null,
-        status: 'publicada' as any,
-        publishedAt: new Date(),
+        status: 'borrador' as any, // Nueva oferta en borrador para revisión del admin
+        publishedAt: null, // No publicada hasta que el admin la apruebe
         authorId: session.user.id,
         organizationId: organization.id
       }
