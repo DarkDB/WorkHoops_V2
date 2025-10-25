@@ -33,11 +33,11 @@ interface User {
   }
   talentProfile: {
     id: string
-    playerRole: string
+    role: string
   } | null
   clubAgencyProfile: {
     id: string
-    clubType: string
+    organizationType: string
   } | null
 }
 
