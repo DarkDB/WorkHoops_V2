@@ -144,6 +144,19 @@ export async function PUT(request: NextRequest, { params }: Params) {
     // Prepare data for database update
     const sanitizedData: any = {}
     
+    // Mapeo de valores del formulario a valores de Prisma
+    const levelMap: Record<string, string> = {
+      'semipro': 'semi_profesional',
+      'semi_pro': 'semi_profesional',
+      'semi-pro': 'semi_profesional',
+      'semi_profesional': 'semi_profesional',
+      'profesional': 'profesional',
+      'amateur': 'amateur',
+      'cantera': 'cantera',
+      'juvenil': 'cantera', // Mapear juvenil a cantera
+      'infantil': 'cantera', // Mapear infantil a cantera
+    }
+    
     // Sanitize text fields
     if (data.title) sanitizedData.title = sanitizeInput(data.title)
     if (data.description) sanitizedData.description = sanitizeMarkdown(data.description)
@@ -153,12 +166,18 @@ export async function PUT(request: NextRequest, { params }: Params) {
     
     // Handle simple fields
     if (data.type) sanitizedData.type = data.type
-    if (data.level) sanitizedData.level = data.level
+    if (data.level) {
+      // Mapear el nivel del formulario al valor correcto de Prisma
+      sanitizedData.level = levelMap[data.level] || data.level
+    }
     if (data.city) sanitizedData.city = data.city
     if (data.country) sanitizedData.country = data.country
     if (data.contactEmail) sanitizedData.contactEmail = data.contactEmail
     if (data.contactPhone) sanitizedData.contactPhone = data.contactPhone
-    if (data.applicationUrl) sanitizedData.applicationUrl = data.applicationUrl
+    if (data.applicationUrl !== undefined) {
+      // Permitir string vacío, convertirlo a null
+      sanitizedData.applicationUrl = data.applicationUrl === '' ? null : data.applicationUrl
+    }
     
     // Handle dates
     if (data.deadline) {
