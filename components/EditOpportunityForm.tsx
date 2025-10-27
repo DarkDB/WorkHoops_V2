@@ -45,10 +45,14 @@ export default function EditOpportunityForm({ opportunity }: EditOpportunityForm
   ]
 
   const levels = [
-    { value: 'profesional', label: 'Profesional' },
-    { value: 'semi_profesional', label: 'Semi-profesional' },
-    { value: 'amateur', label: 'Amateur' },
-    { value: 'cantera', label: 'Cantera' }
+    { value: 'acb', label: 'ACB - Liga Endesa' },
+    { value: 'primera_feb', label: 'Primera FEB (LEB Oro)' },
+    { value: 'segunda_feb', label: 'Segunda FEB (LEB Plata)' },
+    { value: 'tercera_feb', label: 'Tercera FEB (EBA)' },
+    { value: 'autonomica', label: '1ª División Autonómica' },
+    { value: 'provincial', label: 'Liga Provincial' },
+    { value: 'cantera', label: 'Cantera / Formación' },
+    { value: 'amateur', label: 'Amateur / Recreativo' }
   ]
 
   const handleInputChange = (field: string, value: string) => {
