@@ -220,9 +220,16 @@ export default function DashboardClubAgency({
                           Publicado el {new Date(opportunity.createdAt).toLocaleDateString('es-ES')}
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm font-medium text-gray-700">
-                            {opportunity._count.applications} candidatos
-                          </span>
+                          <Link href={`/dashboard/candidatos/${opportunity.id}`}>
+                            <Button 
+                              variant={opportunity._count.applications > 0 ? "default" : "ghost"} 
+                              size="sm"
+                              className={opportunity._count.applications > 0 ? "bg-workhoops-accent hover:bg-orange-600" : ""}
+                            >
+                              <Users className="w-4 h-4 mr-1" />
+                              {opportunity._count.applications} candidato{opportunity._count.applications !== 1 ? 's' : ''}
+                            </Button>
+                          </Link>
                           <Link href={`/oportunidades/${opportunity.slug}`}>
                             <Button variant="ghost" size="sm">Ver</Button>
                           </Link>
