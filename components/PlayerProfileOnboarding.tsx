@@ -93,18 +93,32 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
     },
     
     // Paso 3: Estilo y complementarios
-    playingStyle: existingProfile?.playingStyle ? (
-      typeof existingProfile.playingStyle === 'string' 
-        ? JSON.parse(existingProfile.playingStyle) 
-        : existingProfile.playingStyle
-    ) : [],
-    languages: existingProfile?.languages ? (
-      typeof existingProfile.languages === 'string'
-        ? JSON.parse(existingProfile.languages)
-        : existingProfile.languages
-    ) : [],
+    playingStyle: (() => {
+      try {
+        if (!existingProfile?.playingStyle) return []
+        if (typeof existingProfile.playingStyle === 'string') {
+          return JSON.parse(existingProfile.playingStyle)
+        }
+        return Array.isArray(existingProfile.playingStyle) ? existingProfile.playingStyle : []
+      } catch (e) {
+        console.error('Error parsing playingStyle:', e)
+        return []
+      }
+    })(),
+    languages: (() => {
+      try {
+        if (!existingProfile?.languages) return []
+        if (typeof existingProfile.languages === 'string') {
+          return JSON.parse(existingProfile.languages)
+        }
+        return Array.isArray(existingProfile.languages) ? existingProfile.languages : []
+      } catch (e) {
+        console.error('Error parsing languages:', e)
+        return []
+      }
+    })(),
     willingToTravel: existingProfile?.willingToTravel || false,
-    weeklyCommitment: existingProfile?.weeklyCommitment || '',
+    weeklyCommitment: existingProfile?.weeklyCommitment ? existingProfile.weeklyCommitment.toString() : '',
     internationalExperience: existingProfile?.internationalExperience || false,
     hasLicense: existingProfile?.hasLicense || false,
     injuryHistory: existingProfile?.injuryHistory || '',
@@ -115,11 +129,18 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
     videoUrl: existingProfile?.videoUrl || '',
     fullGameUrl: existingProfile?.fullGameUrl || '',
     socialUrl: existingProfile?.socialUrl || '',
-    photoUrls: existingProfile?.photoUrls ? (
-      typeof existingProfile.photoUrls === 'string'
-        ? JSON.parse(existingProfile.photoUrls)
-        : existingProfile.photoUrls
-    ) : []
+    photoUrls: (() => {
+      try {
+        if (!existingProfile?.photoUrls) return []
+        if (typeof existingProfile.photoUrls === 'string') {
+          return JSON.parse(existingProfile.photoUrls)
+        }
+        return Array.isArray(existingProfile.photoUrls) ? existingProfile.photoUrls : []
+      } catch (e) {
+        console.error('Error parsing photoUrls:', e)
+        return []
+      }
+    })()
   })
 
   const steps = [
