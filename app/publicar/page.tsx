@@ -588,77 +588,151 @@ export default function PublicarPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                {/* Publicación Gratis */}
-                <div className="border-2 rounded-lg p-6 bg-white">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-xl">Publicación Gratis</h3>
-                    <Badge variant="outline">1 oferta</Badge>
-                  </div>
-                  <ul className="space-y-2 mb-6 text-sm text-gray-600">
-                    <li className="flex items-center">
-                      <Shield className="w-4 h-4 mr-2 text-green-600" />
-                      Visibilidad estándar
-                    </li>
-                    <li className="flex items-center">
-                      <Shield className="w-4 h-4 mr-2 text-green-600" />
-                      Visible por 30 días
-                    </li>
-                    <li className="flex items-center">
-                      <Shield className="w-4 h-4 mr-2 text-green-600" />
-                      Acceso a candidatos
-                    </li>
-                  </ul>
-                  <Button 
-                    type="submit"
-                    className="w-full"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Publicando...' : 'Publicar Gratis'}
-                  </Button>
+              {/* Si el usuario tiene plan premium, mostrar un solo botón */}
+              {hasPremiumPlan ? (
+                <div className="md:col-span-2">
+                  <Card className="border-2 border-workhoops-accent">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="font-bold text-xl">Tu Plan Premium</h3>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {remainingOpportunities > 0 
+                              ? `Te quedan ${remainingOpportunities} de ${maxOpportunities} ofertas disponibles`
+                              : 'Has usado todas tus ofertas disponibles'}
+                          </p>
+                        </div>
+                        <Badge className="bg-workhoops-accent">
+                          {opportunitiesCount}/{maxOpportunities} usadas
+                        </Badge>
+                      </div>
+                      
+                      {remainingOpportunities > 0 ? (
+                        <>
+                          <ul className="space-y-2 mb-6 text-sm text-gray-600">
+                            <li className="flex items-center">
+                              <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
+                              Visibilidad prioritaria
+                            </li>
+                            <li className="flex items-center">
+                              <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
+                              Badge "Destacado"
+                            </li>
+                            <li className="flex items-center">
+                              <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
+                              Mayor alcance y respuestas
+                            </li>
+                          </ul>
+                          <Button 
+                            type="submit"
+                            className="w-full bg-workhoops-accent hover:bg-orange-600 text-lg py-6"
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? 'Publicando...' : `Publicar Oferta (${remainingOpportunities} disponibles)`}
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-gray-600 mb-4">
+                            Has alcanzado el límite de ofertas de tu plan. Espera a que alguna expire o elimina una existente.
+                          </p>
+                          <Link href="/dashboard">
+                            <Button variant="outline" className="w-full">
+                              Ver mis ofertas
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 </div>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Publicación Gratis */}
+                  <div className="border-2 rounded-lg p-6 bg-white">
+                    <h3 className="font-bold text-xl mb-2">Publicación Gratis</h3>
+                    <div className="text-3xl font-bold text-gray-900 mb-4">
+                      €0
+                      <span className="text-sm font-normal text-gray-600">/ 30 días</span>
+                    </div>
+                    <ul className="space-y-2 mb-6 text-sm text-gray-600">
+                      <li className="flex items-center">
+                        <Shield className="w-4 h-4 mr-2 text-green-600" />
+                        Visibilidad estándar
+                      </li>
+                      <li className="flex items-center">
+                        <Shield className="w-4 h-4 mr-2 text-green-600" />
+                        Visible por 30 días
+                      </li>
+                      <li className="flex items-center">
+                        <Shield className="w-4 h-4 mr-2 text-green-600" />
+                        Solo 1 oferta activa
+                      </li>
+                    </ul>
+                    {opportunitiesCount >= 1 ? (
+                      <div className="text-center py-2">
+                        <p className="text-sm text-gray-600 mb-3">
+                          Ya tienes una oferta publicada
+                        </p>
+                        <Link href="/planes">
+                          <Button variant="outline" className="w-full">
+                            Actualizar a Premium
+                          </Button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <Button 
+                        type="submit"
+                        className="w-full"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? 'Publicando...' : 'Publicar Gratis'}
+                      </Button>
+                    )}
+                  </div>
 
-                {/* Publicación Destacada */}
-                <div className="border-2 border-workhoops-accent rounded-lg p-6 bg-gradient-to-br from-orange-50 to-white relative overflow-hidden">
-                  <div className="absolute top-2 right-2">
-                    <Badge className="bg-workhoops-accent">Recomendado</Badge>
+                  {/* Publicación Destacada */}
+                  <div className="border-2 border-workhoops-accent rounded-lg p-6 bg-gradient-to-br from-orange-50 to-white relative overflow-hidden">
+                    <div className="absolute top-2 right-2">
+                      <Badge className="bg-workhoops-accent">Recomendado</Badge>
+                    </div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-bold text-xl">Pack Destacado</h3>
+                      <Badge variant="outline">Hasta 3 ofertas</Badge>
+                    </div>
+                    <div className="text-3xl font-bold text-workhoops-accent mb-4">
+                      €49,90
+                      <span className="text-sm font-normal text-gray-600">/ 60 días</span>
+                    </div>
+                    <ul className="space-y-2 mb-6 text-sm text-gray-600">
+                      <li className="flex items-center">
+                        <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
+                        Visibilidad prioritaria
+                      </li>
+                      <li className="flex items-center">
+                        <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
+                        Visible por 60 días
+                      </li>
+                      <li className="flex items-center">
+                        <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
+                        Hasta 3 publicaciones
+                      </li>
+                      <li className="flex items-center">
+                        <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
+                        Badge "Destacado"
+                      </li>
+                    </ul>
+                    <Link href="/planes">
+                      <Button 
+                        type="button"
+                        className="w-full bg-workhoops-accent hover:bg-orange-600"
+                      >
+                        Contratar Plan Destacado
+                      </Button>
+                    </Link>
                   </div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-xl">Pack Destacado</h3>
-                    <Badge variant="outline">Hasta 3 ofertas</Badge>
-                  </div>
-                  <div className="text-3xl font-bold text-workhoops-accent mb-4">
-                    €49,90
-                    <span className="text-sm font-normal text-gray-600">/ 60 días</span>
-                  </div>
-                  <ul className="space-y-2 mb-6 text-sm text-gray-600">
-                    <li className="flex items-center">
-                      <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
-                      Visibilidad prioritaria
-                    </li>
-                    <li className="flex items-center">
-                      <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
-                      Visible por 60 días
-                    </li>
-                    <li className="flex items-center">
-                      <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
-                      Hasta 3 publicaciones
-                    </li>
-                    <li className="flex items-center">
-                      <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
-                      Badge "Destacado"
-                    </li>
-                  </ul>
-                  <Button 
-                    type="button"
-                    onClick={(e) => handleSubmit(e, true)}
-                    className="w-full bg-workhoops-accent hover:bg-orange-600"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Procesando...' : 'Destacar por €49,90'}
-                  </Button>
                 </div>
-              </div>
+              )}
 
               <div className="text-center text-xs text-gray-500 mt-4">
                 <p>
