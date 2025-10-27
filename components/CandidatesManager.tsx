@@ -326,7 +326,7 @@ export default function CandidatesManager({ opportunity: initialOpportunity }: C
                           <div className="text-sm text-gray-600 bg-blue-50 px-3 py-2 rounded-md inline-block">
                             <Briefcase className="w-3 h-3 inline mr-1" />
                             {application.user.talentProfile.role}
-                            {application.user.talentProfile.experience && ` - ${application.user.talentProfile.experience}`}
+                            {application.user.talentProfile.position && ` - ${application.user.talentProfile.position}`}
                           </div>
                         )}
 
