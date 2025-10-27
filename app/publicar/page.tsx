@@ -74,20 +74,6 @@ export default function PublicarPage() {
     benefits: ''
   })
 
-  // Fetch user plan and opportunities count
-  useState(() => {
-    if (session?.user) {
-      fetch('/api/user/plan-info')
-        .then(res => res.json())
-        .then(data => {
-          setUserPlan(data.planType)
-          setOpportunitiesCount(data.opportunitiesCount)
-        })
-        .catch(err => console.error('Error fetching plan info:', err))
-        .finally(() => setIsLoadingPlan(false))
-    }
-  }, [session])
-
   // Check if user is logged in
   if (status === 'loading') {
     return (
