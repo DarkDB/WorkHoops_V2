@@ -382,18 +382,22 @@ export default function CandidatesManager({ opportunity: initialOpportunity }: C
                                         <p className="text-gray-600">Rol:</p>
                                         <p className="font-medium">{selectedCandidate.user.talentProfile.role}</p>
                                       </div>
-                                      {selectedCandidate.user.talentProfile.preferredPosition && (
+                                      {selectedCandidate.user.talentProfile.position && (
                                         <div>
                                           <p className="text-gray-600">Posición:</p>
-                                          <p className="font-medium">{selectedCandidate.user.talentProfile.preferredPosition}</p>
+                                          <p className="font-medium">{selectedCandidate.user.talentProfile.position}</p>
                                         </div>
                                       )}
-                                      {selectedCandidate.user.talentProfile.experience && (
-                                        <div>
-                                          <p className="text-gray-600">Experiencia:</p>
-                                          <p className="font-medium">{selectedCandidate.user.talentProfile.experience}</p>
-                                        </div>
-                                      )}
+                                      <div>
+                                        <p className="text-gray-600">Ciudad:</p>
+                                        <p className="font-medium">{selectedCandidate.user.talentProfile.city}</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-gray-600">Edad:</p>
+                                        <p className="font-medium">
+                                          {new Date().getFullYear() - new Date(selectedCandidate.user.talentProfile.birthDate).getFullYear()} años
+                                        </p>
+                                      </div>
                                       {selectedCandidate.user.talentProfile.height && (
                                         <div>
                                           <p className="text-gray-600">Altura:</p>
@@ -416,12 +420,31 @@ export default function CandidatesManager({ opportunity: initialOpportunity }: C
                                     </div>
                                   )}
 
-                                  {selectedCandidate.user.talentProfile.achievements && (
+                                  {(selectedCandidate.user.talentProfile.videoUrl || selectedCandidate.user.talentProfile.socialUrl) && (
                                     <div className="border-t pt-3">
-                                      <h4 className="font-semibold mb-2">Logros</h4>
-                                      <p className="text-sm text-gray-700 whitespace-pre-line">
-                                        {selectedCandidate.user.talentProfile.achievements}
-                                      </p>
+                                      <h4 className="font-semibold mb-2">Enlaces</h4>
+                                      <div className="space-y-2">
+                                        {selectedCandidate.user.talentProfile.videoUrl && (
+                                          <a 
+                                            href={selectedCandidate.user.talentProfile.videoUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-sm text-blue-600 hover:underline block"
+                                          >
+                                            📹 Video destacado
+                                          </a>
+                                        )}
+                                        {selectedCandidate.user.talentProfile.socialUrl && (
+                                          <a 
+                                            href={selectedCandidate.user.talentProfile.socialUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-sm text-blue-600 hover:underline block"
+                                          >
+                                            🔗 Redes sociales
+                                          </a>
+                                        )}
+                                      </div>
                                     </div>
                                   )}
 
