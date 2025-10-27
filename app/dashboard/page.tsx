@@ -275,9 +275,9 @@ export default async function DashboardPage() {
                       : 'Un perfil completo recibe 3x más visualizaciones'}
                   </p>
                 </div>
-                <Link href={needsTalentProfile ? '/talento#formulario-talento' : '/profile/edit'}>
+                <Link href={needsTalentProfile ? '/profile/complete' : '/profile/edit'}>
                   <Button size="sm" variant="outline" className="border-yellow-300 text-yellow-800 hover:bg-yellow-100">
-                    {needsTalentProfile ? 'Completar perfil de talento' : 'Completar'}
+                    {needsTalentProfile ? 'Completar perfil' : 'Completar'}
                   </Button>
                 </Link>
               </div>
