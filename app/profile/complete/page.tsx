@@ -36,12 +36,25 @@ export default async function CompleteProfilePage() {
     }
   })
 
+  // Serializar datos de manera segura
+  const serializedProfile = talentProfile ? {
+    ...talentProfile,
+    birthDate: talentProfile.birthDate?.toISOString() || null,
+    createdAt: talentProfile.createdAt.toISOString(),
+    updatedAt: talentProfile.updatedAt.toISOString(),
+    playerSkills: talentProfile.playerSkills ? {
+      ...talentProfile.playerSkills,
+      createdAt: talentProfile.playerSkills.createdAt.toISOString(),
+      updatedAt: talentProfile.playerSkills.updatedAt.toISOString()
+    } : null
+  } : null
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <PlayerProfileOnboarding 
-        user={JSON.parse(JSON.stringify(user))}
-        existingProfile={talentProfile ? JSON.parse(JSON.stringify(talentProfile)) : null}
+        user={user!}
+        existingProfile={serializedProfile}
       />
     </div>
   )
