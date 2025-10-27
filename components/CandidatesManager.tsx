@@ -49,8 +49,8 @@ interface Application {
     image: string | null
     role: string
     createdAt: string
+    talentProfile: TalentProfile | null
   }
-  talentProfile: TalentProfile | null
 }
 
 interface Opportunity {
