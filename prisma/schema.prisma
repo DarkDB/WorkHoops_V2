@@ -260,14 +260,39 @@ model TalentProfile {
   country     String   @default("España")
   
   // Sport specific (mainly for players)
-  position    String?
+  position    String?  // Base, Escolta, Alero, Ala-pívot, Pívot
+  secondaryPosition String?
   height      Int?     // in cm
   weight      Int?     // in kg
+  wingspan    Int?     // Envergadura en cm
+  dominantHand String? // Derecha, Izquierda, Ambas
+  
+  // Career info
+  currentLevel String? // Amateur, Semi-pro, Profesional
+  lastTeam    String?
+  currentCategory String?
+  
+  // Playing style (JSON array of selected styles)
+  playingStyle String? // JSON: ["Playmaker", "Tirador", etc.]
+  
+  // Additional info
+  languages   String? // JSON array
+  willingToTravel Boolean @default(false)
+  weeklyCommitment Int? // horas por semana
+  internationalExperience Boolean @default(false)
+  hasLicense  Boolean @default(false)
+  injuryHistory String? // Opcional, texto libre
+  currentGoal String? // Encontrar equipo, Mejorar nivel, etc.
   
   // Biography and links
   bio         String?
-  videoUrl    String?
+  videoUrl    String?  // YouTube/Vimeo highlights
+  fullGameUrl String?  // Partido completo
   socialUrl   String?
+  photoUrls   String?  // JSON array de URLs de fotos
+  
+  // Profile completion (para la barra de progreso)
+  profileCompletionPercentage Int @default(0)
   
   // Profile status
   isPublic    Boolean  @default(true)
@@ -279,6 +304,10 @@ model TalentProfile {
   // Relations
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Relation to skills
+  playerSkills PlayerSkills?
+  
   interestNotifications InterestNotification[]
   
   @@map("talent_profiles")
