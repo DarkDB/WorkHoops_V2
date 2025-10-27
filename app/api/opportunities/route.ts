@@ -166,13 +166,33 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Mapeo de niveles del formulario a valores de Prisma
+    const levelMap: Record<string, string> = {
+      'acb': 'profesional',
+      'primera_feb': 'profesional',
+      'segunda_feb': 'semi_profesional',
+      'tercera_feb': 'semi_profesional',
+      'autonomica': 'semi_profesional',
+      'provincial': 'amateur',
+      'cantera': 'cantera',
+      'amateur': 'amateur',
+      'semipro': 'semi_profesional',
+      'semi_pro': 'semi_profesional',
+      'semi_profesional': 'semi_profesional',
+      'profesional': 'profesional',
+      'juvenil': 'cantera',
+      'infantil': 'cantera',
+    }
+    
+    const mappedLevel = levelMap[validatedData.level] || validatedData.level
+
     // Create opportunity
     const opportunity = await prisma.opportunity.create({
       data: {
         title: validatedData.title,
         slug: validatedData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         type: validatedData.type as any,
-        level: validatedData.level as any,
+        level: mappedLevel as any,
         description: validatedData.description,
         city: validatedData.city,
         country: validatedData.country,
