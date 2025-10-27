@@ -34,13 +34,16 @@ export default async function CandidatesPage({ params }: { params: { opportunity
               talentProfile: {
                 select: {
                   id: true,
+                  fullName: true,
                   role: true,
-                  experience: true,
+                  position: true,
                   bio: true,
                   height: true,
                   weight: true,
-                  preferredPosition: true,
-                  achievements: true
+                  videoUrl: true,
+                  socialUrl: true,
+                  city: true,
+                  birthDate: true
                 }
               }
             }
