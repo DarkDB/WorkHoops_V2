@@ -184,7 +184,20 @@ export async function POST(request: NextRequest) {
       'infantil': 'cantera',
     }
     
+    console.log('Original level from form:', validatedData.level)
     const mappedLevel = levelMap[validatedData.level] || validatedData.level
+    console.log('Mapped level for DB:', mappedLevel)
+    
+    if (!['amateur', 'semi_profesional', 'profesional', 'cantera'].includes(mappedLevel)) {
+      console.error('Invalid mapped level:', mappedLevel, 'Original:', validatedData.level)
+      return NextResponse.json(
+        { 
+          error: 'Nivel no válido',
+          message: `El nivel "${validatedData.level}" no pudo ser mapeado correctamente.`
+        },
+        { status: 400 }
+      )
+    }
 
     // Create opportunity
     const opportunity = await prisma.opportunity.create({
