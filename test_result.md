@@ -371,6 +371,18 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
         -agent: "testing"
         -comment: "Admin users management tested successfully. ✅ GET /admin/users - Correctly redirects non-authenticated users (307 redirect). Authentication protection working properly. Admin-only access enforced as expected."
 
+  - task: "Player Profile Onboarding System - MultimediaStep & API"
+    implemented: true
+    working: false
+    file: "/app/components/onboarding/MultimediaStep.tsx, /app/app/api/talent/profile-onboarding/route.ts, /app/components/PlayerProfileOnboarding.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: false
+        -agent: "main"
+        -comment: "Completed multi-step player profile onboarding system. MultimediaStep.tsx component already existed (video URLs, social links, photo previews). Created new API endpoint POST /api/talent/profile-onboarding for saving complete player profiles with all 4 steps: Technical Data, Skills, Playing Style, and Multimedia. API handles both profile creation and updates, includes PlayerSkills upsert, validates data with Zod, calculates profile completion percentage. Fixed React import in PlayerProfileOnboarding.tsx. Services restarted successfully. Ready for testing."
+
 ## metadata:
   created_by: "main_agent"
   version: "1.0"
