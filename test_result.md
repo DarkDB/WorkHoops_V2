@@ -390,7 +390,8 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
   run_ui: false
 
 ## test_plan:
-  current_focus: []
+  current_focus:
+    - "Player Profile Onboarding System - MultimediaStep & API"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
