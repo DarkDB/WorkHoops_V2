@@ -1,58 +1,11 @@
-// Production Prisma schema for PostgreSQL (Vercel/Supabase)
+// Simplified Prisma schema for SQLite
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-// PostgreSQL supports enums
-enum UserRole {
-  admin
-  jugador
-  entrenador
-  club
-  agencia
-}
-
-enum OpportunityType {
-  empleo
-  prueba
-  torneo
-  clinica
-  beca
-  patrocinio
-}
-
-enum OpportunityLevel {
-  amateur
-  semi_profesional
-  profesional
-  cantera
-}
-
-enum OpportunityStatus {
-  borrador
-  pendiente
-  publicada
-  cerrada
-  suspendida
-}
-
-enum Modality {
-  presencial
-  online
-  mixta
-}
-
-enum ApplicationState {
-  enviada
-  en_revision
-  aceptada
-  rechazada
-  finalizada
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Account {
@@ -100,7 +53,7 @@ model User {
   emailVerified DateTime?
   name          String?
   image         String?
-  role          UserRole  @default(jugador)
+  role          String    @default("jugador") // jugador, entrenador, club, admin
   locale        String    @default("es")
   verified      Boolean   @default(false)
   
@@ -122,10 +75,8 @@ model User {
   opportunities Opportunity[]
   applications  Application[]
   favorites     Favorite[]
-  subscriptions EmailSubscription[]
-  talentProfile TalentProfile?
-  clubAgencyProfile ClubAgencyProfile?
-  interestNotifications InterestNotification[]
+  auditLogs     AuditLog[]
+  subscriptions Subscription[]
 
   @@map("users")
 }
@@ -156,23 +107,23 @@ model Opportunity {
   description String
   
   // Basic info
-  type        OpportunityType
-  level       OpportunityLevel
-  status      OpportunityStatus @default(borrador)
+  type        String   // empleo, prueba, torneo, clinica, beca, patrocinio
+  level       String   // amateur, semi_pro, cantera, pro
+  status      String   @default("borrador") // borrador, pendiente, publicada, cerrada
   
   // Location
   city        String?
   country     String   @default("España")
   latitude    Float?
   longitude   Float?
-  modality    Modality @default(presencial)
+  modality    String   @default("presencial") // presencial, online, mixta
   
-  // Remuneration
-  remunerationType String?   // hourly, monthly, annual, project, negotiable
-  remunerationMin  Int?
-  remunerationMax  Int?
-  currency         String    @default("EUR")
-  benefits         String?   // JSON string with benefits array
+  // Compensation & Benefits
+  remunerationType String? // monthly, annual, per_event, none
+  remunerationMin  Float?
+  remunerationMax  Float?
+  currency         String @default("EUR")
+  benefits         String?
   
   // Dates
   deadline    DateTime?
@@ -180,23 +131,23 @@ model Opportunity {
   endDate     DateTime?
   publishedAt DateTime?
   
-  // Tags and verification
-  tags        String?   // JSON string with tags array
+  // Tags as comma-separated string
+  tags        String?   // "base,entrenador,madrid"
   verified    Boolean   @default(false)
   
   // Contact
-  contactEmail String
-  contactPhone String?
+  contactEmail   String
+  contactPhone   String?
   applicationUrl String?
   
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+  author         User         @relation(fields: [authorId], references: [id])
   authorId       String
-  author         User          @relation(fields: [authorId], references: [id])
   applications   Application[]
   favorites      Favorite[]
 
@@ -204,18 +155,17 @@ model Opportunity {
 }
 
 model Application {
-  id        String           @id @default(cuid())
-  state     ApplicationState @default(enviada)
+  id        String   @id @default(cuid())
+  state     String   @default("enviada") // enviada, vista, rechazada, aceptada
   message   String?
-  metadata  String?          // JSON string with additional data
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  userId        String
-  user          User        @relation(fields: [userId], references: [id])
-  opportunityId String
   opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  opportunityId String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
 
   @@unique([userId, opportunityId])
   @@map("applications")
@@ -226,184 +176,46 @@ model Favorite {
   createdAt DateTime @default(now())
 
   // Relations
-  userId        String
-  user          User        @relation(fields: [userId], references: [id])
-  opportunityId String
   opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  opportunityId String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
 
   @@unique([userId, opportunityId])
   @@map("favorites")
 }
 
-model EmailSubscription {
+model AuditLog {
   id        String   @id @default(cuid())
-  email     String
-  filters   String   // JSON string with search filters
-  frequency String   @default("daily") // daily, weekly, monthly
-  active    Boolean  @default(true)
+  actorId   String
+  action    String   // "created", "updated", "deleted", "applied", "state_changed"
+  entity    String   // "opportunity", "application", "organization"
+  entityId  String
+  metadata  String?  // JSON as string
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   // Relations
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id])
+  actor User @relation(fields: [actorId], references: [id])
 
-  @@map("email_subscriptions")
+  @@map("audit_logs")
 }
 
-model TalentProfile {
-  id          String   @id @default(cuid())
-  fullName    String
-  birthDate   DateTime
-  role        String   // jugador, entrenador, staff
-  city        String
-  country     String   @default("España")
-  
-  // Sport specific (mainly for players)
-  position    String?  // Base, Escolta, Alero, Ala-pívot, Pívot
-  secondaryPosition String?
-  height      Int?     // in cm
-  weight      Int?     // in kg
-  wingspan    Int?     // Envergadura en cm
-  dominantHand String? // Derecha, Izquierda, Ambas
-  
-  // Career info
-  currentLevel String? // Amateur, Semi-pro, Profesional
-  lastTeam    String?
-  currentCategory String?
-  
-  // Playing style (JSON array of selected styles)
-  playingStyle String? // JSON: ["Playmaker", "Tirador", etc.]
-  
-  // Additional info
-  languages   String? // JSON array
-  willingToTravel Boolean @default(false)
-  weeklyCommitment Int? // horas por semana
-  internationalExperience Boolean @default(false)
-  hasLicense  Boolean @default(false)
-  injuryHistory String? // Opcional, texto libre
-  currentGoal String? // Encontrar equipo, Mejorar nivel, etc.
-  
-  // Biography and links
-  bio         String?
-  videoUrl    String?  // YouTube/Vimeo highlights
-  fullGameUrl String?  // Partido completo
-  socialUrl   String?
-  photoUrls   String?  // JSON array de URLs de fotos
-  
-  // Profile completion (para la barra de progreso)
-  profileCompletionPercentage Int @default(0)
-  
-  // Profile status
-  isPublic    Boolean  @default(true)
-  verified    Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String
+  stripeSubscriptionId String    @unique
+  stripePriceId        String
+  stripeCustomerId     String
+  status               String    // active, canceled, past_due, etc.
+  planType             String    // free_amateur, pro_semipro, club_agencia, destacado
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
   // Relations
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Relation to skills
-  playerSkills PlayerSkills?
-  
-  interestNotifications InterestNotification[]
-  
-  @@map("talent_profiles")
-}
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-// Nueva tabla para habilidades técnicas de jugadores
-model PlayerSkills {
-  id                String   @id @default(cuid())
-  talentProfileId   String   @unique
-  
-  // Habilidades ofensivas (1-5)
-  threePointShot    Int @default(3) // Tiro exterior
-  midRangeShot      Int @default(3) // Tiro media distancia
-  finishing         Int @default(3) // Finalización en el aro
-  ballHandling      Int @default(3) // Manejo de balón
-  playmaking        Int @default(3) // Visión de juego / Asistencias
-  offBallMovement   Int @default(3) // Juego sin balón
-  
-  // Habilidades defensivas (1-5)
-  individualDefense Int @default(3) // Defensa individual
-  teamDefense       Int @default(3) // Defensa en equipo
-  offensiveRebound  Int @default(3) // Rebote ofensivo
-  defensiveRebound  Int @default(3) // Rebote defensivo
-  
-  // Atributos físicos (1-5)
-  speed             Int @default(3) // Velocidad / Agilidad
-  athleticism       Int @default(3) // Capacidad atlética / Salto
-  endurance         Int @default(3) // Resistencia física
-  
-  // Atributos mentales (1-5)
-  leadership        Int @default(3) // Comunicación / Liderazgo
-  decisionMaking    Int @default(3) // Toma de decisiones
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  // Relation
-  talentProfile     TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
-  
-  @@map("player_skills")
-}
-model ClubAgencyProfile {
-  id                String    @id @default(cuid())
-  userId            String    @unique
-  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Basic Information
-  organizationName  String
-  organizationType  String    // club, agencia, escuela, federacion
-  foundedYear       Int?
-  description       String?
-  logo              String?
-  coverImage        String?
-  
-  // Location
-  country           String    @default("España")
-  city              String
-  address           String?
-  
-  // Categories and Divisions
-  categories        String[]  // Base, Junior, Senior, Profesional
-  divisions         String[]  // LEB Oro, LEB Plata, EBA, Liga Femenina, etc.
-  
-  // Contact Information
-  contactPerson     String?
-  contactEmail      String?
-  contactPhone      String?
-  
-  // Social Media
-  website           String?
-  facebookUrl       String?
-  twitterUrl        String?
-  instagramUrl      String?
-  linkedinUrl       String?
-  
-  // Additional Info
-  facilities        String?   // Description of facilities
-  achievements      String?   // Notable achievements
-  isPublic          Boolean   @default(true)
-  verified          Boolean   @default(false)
-  
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  
-  @@map("club_agency_profiles")
-}
-
-model InterestNotification {
-  id              String    @id @default(cuid())
-  profileId       String
-  profile         TalentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  interestedUserId String
-  interestedUser  User      @relation(fields: [interestedUserId], references: [id], onDelete: Cascade)
-  message         String?
-  status          String    @default("pending") // pending, viewed, dismissed
-  createdAt       DateTime  @default(now())
-  
-  @@map("interest_notifications")
+  @@map("subscriptions")
 }
