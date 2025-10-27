@@ -145,16 +145,26 @@ export async function PUT(request: NextRequest, { params }: Params) {
     const sanitizedData: any = {}
     
     // Mapeo de valores del formulario a valores de Prisma
+    // Prisma solo soporta: amateur, semi_profesional, profesional, cantera
     const levelMap: Record<string, string> = {
+      // Nuevas categorías 2025
+      'acb': 'profesional',
+      'primera_feb': 'profesional',
+      'segunda_feb': 'semi_profesional',
+      'tercera_feb': 'semi_profesional',
+      'autonomica': 'semi_profesional',
+      'provincial': 'amateur',
+      'cantera': 'cantera',
+      'amateur': 'amateur',
+      
+      // Legacy values
       'semipro': 'semi_profesional',
       'semi_pro': 'semi_profesional',
       'semi-pro': 'semi_profesional',
       'semi_profesional': 'semi_profesional',
       'profesional': 'profesional',
-      'amateur': 'amateur',
-      'cantera': 'cantera',
-      'juvenil': 'cantera', // Mapear juvenil a cantera
-      'infantil': 'cantera', // Mapear infantil a cantera
+      'juvenil': 'cantera',
+      'infantil': 'cantera',
     }
     
     // Sanitize text fields
