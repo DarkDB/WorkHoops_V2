@@ -52,6 +52,9 @@ export default function PublicarPage() {
   const router = useRouter()
   const { data: session, status } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [userPlan, setUserPlan] = useState<string | null>(null)
+  const [opportunitiesCount, setOpportunitiesCount] = useState(0)
+  const [isLoadingPlan, setIsLoadingPlan] = useState(true)
   const [formData, setFormData] = useState({
     title: '',
     type: '',
@@ -70,6 +73,20 @@ export default function PublicarPage() {
     applicationUrl: '',
     benefits: ''
   })
+
+  // Fetch user plan and opportunities count
+  useState(() => {
+    if (session?.user) {
+      fetch('/api/user/plan-info')
+        .then(res => res.json())
+        .then(data => {
+          setUserPlan(data.planType)
+          setOpportunitiesCount(data.opportunitiesCount)
+        })
+        .catch(err => console.error('Error fetching plan info:', err))
+        .finally(() => setIsLoadingPlan(false))
+    }
+  }, [session])
 
   // Check if user is logged in
   if (status === 'loading') {
