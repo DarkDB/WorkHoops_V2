@@ -370,60 +370,60 @@ export default function CandidatesManager({ opportunity: initialOpportunity }: C
                                 </div>
                               </div>
 
-                              {selectedCandidate.talentProfile ? (
+                              {selectedCandidate.user.talentProfile ? (
                                 <div className="space-y-3">
                                   <div className="border-t pt-3">
                                     <h4 className="font-semibold mb-2">Información Deportiva</h4>
                                     <div className="grid grid-cols-2 gap-3 text-sm">
                                       <div>
                                         <p className="text-gray-600">Rol:</p>
-                                        <p className="font-medium">{selectedCandidate.talentProfile.role}</p>
+                                        <p className="font-medium">{selectedCandidate.user.talentProfile.role}</p>
                                       </div>
-                                      {selectedCandidate.talentProfile.preferredPosition && (
+                                      {selectedCandidate.user.talentProfile.preferredPosition && (
                                         <div>
                                           <p className="text-gray-600">Posición:</p>
-                                          <p className="font-medium">{selectedCandidate.talentProfile.preferredPosition}</p>
+                                          <p className="font-medium">{selectedCandidate.user.talentProfile.preferredPosition}</p>
                                         </div>
                                       )}
-                                      {selectedCandidate.talentProfile.experience && (
+                                      {selectedCandidate.user.talentProfile.experience && (
                                         <div>
                                           <p className="text-gray-600">Experiencia:</p>
-                                          <p className="font-medium">{selectedCandidate.talentProfile.experience}</p>
+                                          <p className="font-medium">{selectedCandidate.user.talentProfile.experience}</p>
                                         </div>
                                       )}
-                                      {selectedCandidate.talentProfile.height && (
+                                      {selectedCandidate.user.talentProfile.height && (
                                         <div>
                                           <p className="text-gray-600">Altura:</p>
-                                          <p className="font-medium">{selectedCandidate.talentProfile.height} cm</p>
+                                          <p className="font-medium">{selectedCandidate.user.talentProfile.height} cm</p>
                                         </div>
                                       )}
-                                      {selectedCandidate.talentProfile.weight && (
+                                      {selectedCandidate.user.talentProfile.weight && (
                                         <div>
                                           <p className="text-gray-600">Peso:</p>
-                                          <p className="font-medium">{selectedCandidate.talentProfile.weight} kg</p>
+                                          <p className="font-medium">{selectedCandidate.user.talentProfile.weight} kg</p>
                                         </div>
                                       )}
                                     </div>
                                   </div>
 
-                                  {selectedCandidate.talentProfile.bio && (
+                                  {selectedCandidate.user.talentProfile.bio && (
                                     <div className="border-t pt-3">
                                       <h4 className="font-semibold mb-2">Biografía</h4>
-                                      <p className="text-sm text-gray-700">{selectedCandidate.talentProfile.bio}</p>
+                                      <p className="text-sm text-gray-700">{selectedCandidate.user.talentProfile.bio}</p>
                                     </div>
                                   )}
 
-                                  {selectedCandidate.talentProfile.achievements && (
+                                  {selectedCandidate.user.talentProfile.achievements && (
                                     <div className="border-t pt-3">
                                       <h4 className="font-semibold mb-2">Logros</h4>
                                       <p className="text-sm text-gray-700 whitespace-pre-line">
-                                        {selectedCandidate.talentProfile.achievements}
+                                        {selectedCandidate.user.talentProfile.achievements}
                                       </p>
                                     </div>
                                   )}
 
                                   <div className="border-t pt-3">
-                                    <Link href={`/talento/perfiles/${selectedCandidate.talentProfile.id}`} target="_blank">
+                                    <Link href={`/talento/perfiles/${selectedCandidate.user.talentProfile.id}`} target="_blank">
                                       <Button variant="outline" className="w-full">
                                         Ver perfil completo
                                       </Button>
