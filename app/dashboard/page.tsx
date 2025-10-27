@@ -253,10 +253,18 @@ export default async function DashboardPage() {
               <Badge variant="outline" className="bg-orange-50 text-workhoops-accent border-workhoops-accent">
                 {getPlanLabel(user.planType)}
               </Badge>
+              {(user.role === 'jugador' || user.role === 'entrenador') && (
+                <Link href="/profile/complete">
+                  <Button variant="outline" className="border-workhoops-accent text-workhoops-accent hover:bg-orange-50">
+                    <User className="w-4 h-4 mr-2" />
+                    {user.talentProfile ? 'Editar perfil' : 'Completar perfil'}
+                  </Button>
+                </Link>
+              )}
               <Link href="/profile">
                 <Button variant="outline">
                   <User className="w-4 h-4 mr-2" />
-                  Ver perfil
+                  Cuenta
                 </Button>
               </Link>
             </div>
