@@ -105,6 +105,15 @@ export async function POST(request: NextRequest) {
     
     const validatedData = opportunityCreateSchema.parse(body)
 
+    // Get user's plan type from database
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { planType: true }
+    })
+
+    const userPlanType = user?.planType || 'gratis'
+    console.log('User plan type:', userPlanType)
+
     // Get user's current opportunities count
     const userOpportunities = await prisma.opportunity.count({
       where: {
@@ -113,20 +122,25 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Check limits based on featured status
-    if (validatedData.featured) {
-      // Featured: up to 3 opportunities
+    console.log('User has', userOpportunities, 'opportunities, plan:', userPlanType)
+
+    // Check limits based on user's plan type
+    // Plans: 'gratis' (1 oferta), 'pro' (3 ofertas), 'destacado' (3 ofertas)
+    const isPremiumPlan = userPlanType === 'pro' || userPlanType === 'destacado'
+    
+    if (isPremiumPlan) {
+      // Premium plans: up to 3 opportunities
       if (userOpportunities >= 3) {
         return NextResponse.json(
-          { message: 'Has alcanzado el límite de 3 ofertas destacadas. Elimina una oferta existente o espera a que expiren.' },
+          { message: 'Has alcanzado el límite de 3 ofertas con tu plan. Elimina una oferta existente o espera a que expiren.' },
           { status: 403 }
         )
       }
     } else {
-      // Free: only 1 opportunity
+      // Free plan: only 1 opportunity
       if (userOpportunities >= 1) {
         return NextResponse.json(
-          { message: 'Ya tienes una oferta publicada. Con el plan gratis solo puedes tener 1 oferta activa. Actualiza a pack destacado para publicar hasta 3 ofertas.' },
+          { message: 'Ya tienes una oferta publicada. Con el plan gratis solo puedes tener 1 oferta activa. Actualiza al plan Pro para publicar hasta 3 ofertas.' },
           { status: 403 }
         )
       }
