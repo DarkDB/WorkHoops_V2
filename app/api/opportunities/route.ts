@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       select: { planType: true }
     })
 
-    const userPlanType = user?.planType || 'gratis'
+    const userPlanType = user?.planType || 'free_amateur'
     console.log('User plan type:', userPlanType)
 
     // Get user's current opportunities count
@@ -125,8 +125,10 @@ export async function POST(request: NextRequest) {
     console.log('User has', userOpportunities, 'opportunities, plan:', userPlanType)
 
     // Check limits based on user's plan type
-    // Plans: 'gratis' (1 oferta), 'pro' (3 ofertas), 'destacado' (3 ofertas)
-    const isPremiumPlan = userPlanType === 'pro' || userPlanType === 'destacado'
+    // Plans: 'free_amateur' (1 oferta), 'pro_semipro' (3 ofertas), 'club_agencia' (3 ofertas), 'destacado' (3 ofertas)
+    // Also support legacy plan names: 'gratis', 'pro', 'destacado'
+    const freePlans = ['free_amateur', 'gratis', 'free']
+    const isPremiumPlan = !freePlans.includes(userPlanType)
     
     if (isPremiumPlan) {
       // Premium plans: up to 3 opportunities
