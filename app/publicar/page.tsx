@@ -27,10 +27,21 @@ const opportunityTypes = [
 ]
 
 const levels = [
-  { value: 'amateur', label: 'Amateur' },
-  { value: 'semi_pro', label: 'Semi-profesional' },
-  { value: 'cantera', label: 'Cantera' },
-  { value: 'pro', label: 'Profesional' }
+  // Profesional
+  { value: 'acb', label: 'ACB - Liga Endesa', description: 'Primera división profesional' },
+  { value: 'primera_feb', label: 'Primera FEB (LEB Oro)', description: 'Segunda división nacional' },
+  { value: 'segunda_feb', label: 'Segunda FEB (LEB Plata)', description: 'Tercera división nacional' },
+  { value: 'tercera_feb', label: 'Tercera FEB (EBA)', description: 'Cuarta división nacional' },
+  
+  // Autonómicas
+  { value: 'autonomica', label: '1ª División Autonómica', description: 'Ligas regionales' },
+  { value: 'provincial', label: 'Liga Provincial', description: 'Competiciones provinciales' },
+  
+  // Formación
+  { value: 'cantera', label: 'Cantera / Formación', description: 'Categorías base (Mini, Infantil, Cadete, Junior)' },
+  
+  // General
+  { value: 'amateur', label: 'Amateur / Recreativo', description: 'Nivel no federado' }
 ]
 
 const positions = [
