@@ -4,7 +4,22 @@ export const opportunityCreateSchema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres").max(100, "El título no puede superar los 100 caracteres"),
   type: z.enum(["empleo", "prueba", "torneo", "clinica", "beca", "patrocinio", "campus"]),
   organizationId: z.string().cuid("ID de organización inválido").optional(),
-  level: z.enum(["amateur", "semipro", "semi_profesional", "profesional", "cantera", "juvenil", "infantil"]),
+  level: z.enum([
+    "acb", 
+    "primera_feb", 
+    "segunda_feb", 
+    "tercera_feb", 
+    "autonomica", 
+    "provincial", 
+    "cantera", 
+    "amateur",
+    // Legacy values for backward compatibility
+    "semipro", 
+    "semi_profesional", 
+    "profesional", 
+    "juvenil", 
+    "infantil"
+  ]),
   city: z.string().min(2, "La ciudad es requerida"),
   region: z.string().optional(),
   country: z.string().default("España"),
