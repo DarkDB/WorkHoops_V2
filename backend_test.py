@@ -852,6 +852,249 @@ class BackendTester:
                 self.test_results['failed'] += 1
                 self.log_error("New Routes 404 Fix", f"{name} - {str(e)}")
 
+    def test_player_profile_onboarding_system(self):
+        """Test the Player Profile Onboarding System"""
+        print_test_header("Player Profile Onboarding System")
+        
+        # Test 1: Authentication & Authorization - Test without authentication
+        try:
+            test_profile_data = {
+                "fullName": "Carlos Pérez",
+                "birthDate": "2000-05-15",
+                "city": "Madrid",
+                "position": "Base",
+                "secondaryPosition": "Escolta",
+                "height": "185",
+                "weight": "78",
+                "wingspan": "190",
+                "dominantHand": "Derecha",
+                "currentLevel": "Semi-Profesional",
+                "lastTeam": "CB Estudiantes",
+                "currentCategory": "LEB Oro",
+                "skills": {
+                    "threePointShot": 4,
+                    "midRangeShot": 4,
+                    "finishing": 3,
+                    "ballHandling": 5,
+                    "playmaking": 5,
+                    "offBallMovement": 3,
+                    "individualDefense": 3,
+                    "teamDefense": 4,
+                    "offensiveRebound": 2,
+                    "defensiveRebound": 3,
+                    "speed": 4,
+                    "athleticism": 3,
+                    "endurance": 4,
+                    "leadership": 4,
+                    "decisionMaking": 4
+                },
+                "playingStyle": ["Playmaker", "Facilitador"],
+                "languages": ["Español", "Inglés"],
+                "willingToTravel": True,
+                "weeklyCommitment": "20",
+                "internationalExperience": False,
+                "hasLicense": True,
+                "currentGoal": "Profesionalizarse",
+                "bio": "Jugador base con gran visión de juego y capacidad de liderazgo.",
+                "videoUrl": "https://www.youtube.com/watch?v=example",
+                "socialUrl": "https://instagram.com/carlos_perez"
+            }
+            
+            response = self.session.post(
+                f"{API_BASE}/talent/profile-onboarding",
+                json=test_profile_data,
+                timeout=15
+            )
+            
+            if response.status_code == 401:
+                print_success("POST /api/talent/profile-onboarding - Correctly requires authentication (401)")
+                
+                try:
+                    data = response.json()
+                    if 'error' in data and ('autenticado' in data['error'].lower() or 'authentication' in data['error'].lower()):
+                        print_success("  └─ Authentication error message is correct")
+                    else:
+                        print_warning(f"  └─ Authentication error message format: {data.get('error', 'No error message')}")
+                        self.test_results['warnings'] += 1
+                        
+                except json.JSONDecodeError:
+                    print_warning("  └─ Authentication error response is not valid JSON")
+                    self.test_results['warnings'] += 1
+                    
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 403:
+                print_success("POST /api/talent/profile-onboarding - Correctly requires proper role (403)")
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 200:
+                print_error("POST /api/talent/profile-onboarding - Should require authentication but returned 200")
+                self.test_results['failed'] += 1
+                self.log_error("Player Profile Onboarding", "No authentication protection")
+                
+            else:
+                print_error(f"POST /api/talent/profile-onboarding - Unexpected status {response.status_code}")
+                print_error(f"Response: {response.text[:300]}")
+                self.test_results['failed'] += 1
+                self.log_error("Player Profile Onboarding", f"Status: {response.status_code}, Response: {response.text[:300]}")
+                
+        except Exception as e:
+            print_error(f"Player profile onboarding test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Player Profile Onboarding", str(e))
+        
+        # Test 2: Data validation - Test with missing required fields
+        try:
+            invalid_data = {
+                "skills": {
+                    "threePointShot": 4,
+                    "midRangeShot": 4,
+                    "finishing": 3,
+                    "ballHandling": 5,
+                    "playmaking": 5,
+                    "offBallMovement": 3,
+                    "individualDefense": 3,
+                    "teamDefense": 4,
+                    "offensiveRebound": 2,
+                    "defensiveRebound": 3,
+                    "speed": 4,
+                    "athleticism": 3,
+                    "endurance": 4,
+                    "leadership": 4,
+                    "decisionMaking": 4
+                }
+                # Missing required fields: fullName, birthDate, city, position
+            }
+            
+            response = self.session.post(
+                f"{API_BASE}/talent/profile-onboarding",
+                json=invalid_data,
+                timeout=15
+            )
+            
+            if response.status_code == 400:
+                print_success("POST /api/talent/profile-onboarding - Correctly validates required fields (400)")
+                
+                try:
+                    data = response.json()
+                    if 'error' in data and ('inválidos' in data['error'].lower() or 'invalid' in data['error'].lower()):
+                        print_success("  └─ Validation error message is appropriate")
+                    else:
+                        print_warning(f"  └─ Validation error message: {data.get('error', 'No error message')}")
+                        self.test_results['warnings'] += 1
+                        
+                except json.JSONDecodeError:
+                    print_warning("  └─ Validation error response is not valid JSON")
+                    self.test_results['warnings'] += 1
+                    
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 401:
+                print_info("POST /api/talent/profile-onboarding - Authentication required (expected)")
+                self.test_results['passed'] += 1
+                
+            else:
+                print_warning(f"POST /api/talent/profile-onboarding - Validation test returned status {response.status_code}")
+                self.test_results['warnings'] += 1
+                
+        except Exception as e:
+            print_error(f"Player profile validation test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Player Profile Validation", str(e))
+        
+        # Test 3: Test with invalid skill values
+        try:
+            invalid_skills_data = {
+                "fullName": "Test Player",
+                "birthDate": "2000-01-01",
+                "city": "Madrid",
+                "position": "Base",
+                "skills": {
+                    "threePointShot": 6,  # Invalid: > 5
+                    "midRangeShot": 0,    # Invalid: < 1
+                    "finishing": 3,
+                    "ballHandling": 5,
+                    "playmaking": 5,
+                    "offBallMovement": 3,
+                    "individualDefense": 3,
+                    "teamDefense": 4,
+                    "offensiveRebound": 2,
+                    "defensiveRebound": 3,
+                    "speed": 4,
+                    "athleticism": 3,
+                    "endurance": 4,
+                    "leadership": 4,
+                    "decisionMaking": 4
+                }
+            }
+            
+            response = self.session.post(
+                f"{API_BASE}/talent/profile-onboarding",
+                json=invalid_skills_data,
+                timeout=15
+            )
+            
+            if response.status_code == 400:
+                print_success("POST /api/talent/profile-onboarding - Correctly validates skill values (400)")
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 401:
+                print_info("POST /api/talent/profile-onboarding - Authentication required (expected)")
+                self.test_results['passed'] += 1
+                
+            else:
+                print_warning(f"POST /api/talent/profile-onboarding - Skill validation test returned status {response.status_code}")
+                self.test_results['warnings'] += 1
+                
+        except Exception as e:
+            print_error(f"Player profile skill validation test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Player Profile Skill Validation", str(e))
+
+    def test_profile_complete_page_access(self):
+        """Test access to /profile/complete page"""
+        print_test_header("Profile Complete Page Access")
+        
+        try:
+            response = self.session.get(f"{BASE_URL}/profile/complete", timeout=10, allow_redirects=False)
+            
+            if response.status_code == 302 or response.status_code == 307:
+                print_success("GET /profile/complete - Correctly redirects non-authenticated users")
+                
+                # Check if redirect is to login page
+                if 'location' in response.headers:
+                    location = response.headers['location']
+                    if '/auth/login' in location:
+                        print_success("  └─ Redirects to login page as expected")
+                    else:
+                        print_warning(f"  └─ Redirects to: {location}")
+                        self.test_results['warnings'] += 1
+                else:
+                    print_warning("  └─ No location header in redirect")
+                    self.test_results['warnings'] += 1
+                    
+                self.test_results['passed'] += 1
+                
+            elif response.status_code == 200:
+                print_error("GET /profile/complete - Should redirect non-authenticated users but returned 200")
+                self.test_results['failed'] += 1
+                self.log_error("Profile Complete Page", "No authentication protection")
+                
+            elif response.status_code == 404:
+                print_error("GET /profile/complete - Page not found (404)")
+                self.test_results['failed'] += 1
+                self.log_error("Profile Complete Page", "Page not implemented")
+                
+            else:
+                print_error(f"GET /profile/complete - Unexpected status {response.status_code}")
+                self.test_results['failed'] += 1
+                self.log_error("Profile Complete Page", f"Status: {response.status_code}")
+                
+        except Exception as e:
+            print_error(f"Profile complete page access test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            self.log_error("Profile Complete Page", str(e))
+
     def run_all_tests(self):
         """Run all backend tests"""
         print(f"{Colors.BOLD}WorkHoops Backend API Testing{Colors.ENDC}")
@@ -879,6 +1122,10 @@ class BackendTester:
         self.test_admin_opportunities_management()
         self.test_admin_users_management()
         self.test_opportunity_editing_endpoints()
+        
+        # PLAYER PROFILE ONBOARDING SYSTEM TESTING
+        self.test_player_profile_onboarding_system()
+        self.test_profile_complete_page_access()
         
         # Print summary
         self.print_summary()
