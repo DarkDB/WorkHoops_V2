@@ -313,6 +313,42 @@ model TalentProfile {
   @@map("talent_profiles")
 }
 
+// Nueva tabla para habilidades técnicas de jugadores
+model PlayerSkills {
+  id                String   @id @default(cuid())
+  talentProfileId   String   @unique
+  
+  // Habilidades ofensivas (1-5)
+  threePointShot    Int @default(3) // Tiro exterior
+  midRangeShot      Int @default(3) // Tiro media distancia
+  finishing         Int @default(3) // Finalización en el aro
+  ballHandling      Int @default(3) // Manejo de balón
+  playmaking        Int @default(3) // Visión de juego / Asistencias
+  offBallMovement   Int @default(3) // Juego sin balón
+  
+  // Habilidades defensivas (1-5)
+  individualDefense Int @default(3) // Defensa individual
+  teamDefense       Int @default(3) // Defensa en equipo
+  offensiveRebound  Int @default(3) // Rebote ofensivo
+  defensiveRebound  Int @default(3) // Rebote defensivo
+  
+  // Atributos físicos (1-5)
+  speed             Int @default(3) // Velocidad / Agilidad
+  athleticism       Int @default(3) // Capacidad atlética / Salto
+  endurance         Int @default(3) // Resistencia física
+  
+  // Atributos mentales (1-5)
+  leadership        Int @default(3) // Comunicación / Liderazgo
+  decisionMaking    Int @default(3) // Toma de decisiones
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relation
+  talentProfile     TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
+  
+  @@map("player_skills")
+}
 model ClubAgencyProfile {
   id                String    @id @default(cuid())
   userId            String    @unique
