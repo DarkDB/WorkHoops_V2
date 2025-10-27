@@ -74,6 +74,31 @@ export default function PublicarPage() {
     benefits: ''
   })
 
+  // Fetch user plan and opportunities count
+  useEffect(() => {
+    if (session?.user) {
+      // Usar la sesión directamente para obtener el planType
+      setUserPlan((session.user as any).planType || 'free_amateur')
+      
+      // Obtener el conteo de ofertas
+      fetch('/api/user/opportunities-count')
+        .then(res => res.json())
+        .then(data => {
+          setOpportunitiesCount(data.count || 0)
+        })
+        .catch(err => console.error('Error fetching opportunities count:', err))
+        .finally(() => setIsLoadingPlan(false))
+    } else {
+      setIsLoadingPlan(false)
+    }
+  }, [session])
+
+  // Determinar si el usuario tiene plan premium
+  const freePlans = ['free_amateur', 'gratis', 'free', null]
+  const hasPremiumPlan = !freePlans.includes(userPlan)
+  const maxOpportunities = hasPremiumPlan ? 3 : 1
+  const remainingOpportunities = maxOpportunities - opportunitiesCount
+
   // Check if user is logged in
   if (status === 'loading') {
     return (
