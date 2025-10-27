@@ -58,7 +58,23 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
     currentCategory: existingProfile?.currentCategory || '',
     
     // Paso 2: Habilidades (valores por defecto 3)
-    skills: existingProfile?.playerSkills || {
+    skills: existingProfile?.playerSkills ? {
+      threePointShot: existingProfile.playerSkills.threePointShot || 3,
+      midRangeShot: existingProfile.playerSkills.midRangeShot || 3,
+      finishing: existingProfile.playerSkills.finishing || 3,
+      ballHandling: existingProfile.playerSkills.ballHandling || 3,
+      playmaking: existingProfile.playerSkills.playmaking || 3,
+      offBallMovement: existingProfile.playerSkills.offBallMovement || 3,
+      individualDefense: existingProfile.playerSkills.individualDefense || 3,
+      teamDefense: existingProfile.playerSkills.teamDefense || 3,
+      offensiveRebound: existingProfile.playerSkills.offensiveRebound || 3,
+      defensiveRebound: existingProfile.playerSkills.defensiveRebound || 3,
+      speed: existingProfile.playerSkills.speed || 3,
+      athleticism: existingProfile.playerSkills.athleticism || 3,
+      endurance: existingProfile.playerSkills.endurance || 3,
+      leadership: existingProfile.playerSkills.leadership || 3,
+      decisionMaking: existingProfile.playerSkills.decisionMaking || 3
+    } : {
       threePointShot: 3,
       midRangeShot: 3,
       finishing: 3,
@@ -77,8 +93,16 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
     },
     
     // Paso 3: Estilo y complementarios
-    playingStyle: existingProfile?.playingStyle ? JSON.parse(existingProfile.playingStyle) : [],
-    languages: existingProfile?.languages ? JSON.parse(existingProfile.languages) : [],
+    playingStyle: existingProfile?.playingStyle ? (
+      typeof existingProfile.playingStyle === 'string' 
+        ? JSON.parse(existingProfile.playingStyle) 
+        : existingProfile.playingStyle
+    ) : [],
+    languages: existingProfile?.languages ? (
+      typeof existingProfile.languages === 'string'
+        ? JSON.parse(existingProfile.languages)
+        : existingProfile.languages
+    ) : [],
     willingToTravel: existingProfile?.willingToTravel || false,
     weeklyCommitment: existingProfile?.weeklyCommitment || '',
     internationalExperience: existingProfile?.internationalExperience || false,
@@ -91,7 +115,11 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
     videoUrl: existingProfile?.videoUrl || '',
     fullGameUrl: existingProfile?.fullGameUrl || '',
     socialUrl: existingProfile?.socialUrl || '',
-    photoUrls: existingProfile?.photoUrls ? JSON.parse(existingProfile.photoUrls) : []
+    photoUrls: existingProfile?.photoUrls ? (
+      typeof existingProfile.photoUrls === 'string'
+        ? JSON.parse(existingProfile.photoUrls)
+        : existingProfile.photoUrls
+    ) : []
   })
 
   const steps = [
