@@ -30,19 +30,19 @@ export default async function CandidatesPage({ params }: { params: { opportunity
               email: true,
               image: true,
               role: true,
-              createdAt: true
-            }
-          },
-          talentProfile: {
-            select: {
-              id: true,
-              role: true,
-              experience: true,
-              bio: true,
-              height: true,
-              weight: true,
-              preferredPosition: true,
-              achievements: true
+              createdAt: true,
+              talentProfile: {
+                select: {
+                  id: true,
+                  role: true,
+                  experience: true,
+                  bio: true,
+                  height: true,
+                  weight: true,
+                  preferredPosition: true,
+                  achievements: true
+                }
+              }
             }
           }
         },
