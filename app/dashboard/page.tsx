@@ -90,6 +90,11 @@ export default async function DashboardPage() {
     redirect('/auth/login')
   }
 
+  // Redirect jugador/entrenador to profile completion if they don't have a talent profile
+  if ((user.role === 'jugador' || user.role === 'entrenador') && !user.talentProfile) {
+    redirect('/profile/complete')
+  }
+
   // Calculate profile completion with talent profile consideration
   const calculateProfileCompletion = () => {
     const missingItems: string[] = []
