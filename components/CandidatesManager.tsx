@@ -28,13 +28,16 @@ import {
 
 interface TalentProfile {
   id: string
+  fullName: string
   role: string
-  experience: string | null
+  position: string | null
   bio: string | null
   height: number | null
   weight: number | null
-  preferredPosition: string | null
-  achievements: string | null
+  videoUrl: string | null
+  socialUrl: string | null
+  city: string
+  birthDate: string
 }
 
 interface Application {
