@@ -21,6 +21,7 @@ const opportunityTypes = [
   { value: 'prueba', label: 'Prueba', description: 'Tryout o selección de jugadores' },
   { value: 'torneo', label: 'Torneo', description: 'Competición o evento deportivo' },
   { value: 'clinica', label: 'Clínica', description: 'Campus o formación deportiva' },
+  { value: 'campus', label: 'Campus', description: 'Campus deportivo o entrenamiento intensivo' },
   { value: 'beca', label: 'Beca', description: 'Oportunidad de estudios con baloncesto' },
   { value: 'patrocinio', label: 'Patrocinio', description: 'Apoyo económico o material' }
 ]
