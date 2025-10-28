@@ -55,7 +55,7 @@ export default async function AdminUsersPage() {
       },
       select: {
         id: true,
-        organizationType: true,
+        entityType: true,
         userId: true
       }
     }).catch(() => []) // If table doesn't exist, return empty array
