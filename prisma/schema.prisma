@@ -125,6 +125,7 @@ model User {
   subscriptions Subscription[]
   talentProfile TalentProfile?
   clubAgencyProfile ClubAgencyProfile?
+  interestNotifications InterestNotification[]
 
   @@map("users")
 }
