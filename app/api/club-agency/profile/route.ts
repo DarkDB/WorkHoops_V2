@@ -7,27 +7,32 @@ import { z } from 'zod'
 export const dynamic = 'force-dynamic'
 
 const clubAgencyProfileSchema = z.object({
-  organizationName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  organizationType: z.enum(['club', 'agencia', 'escuela', 'federacion']),
+  legalName: z.string().min(2, 'El nombre legal debe tener al menos 2 caracteres'),
+  commercialName: z.string().optional().nullable(),
+  entityType: z.enum(['club', 'agencia', 'academia', 'programa_universitario']),
   foundedYear: z.number().int().min(1900).max(new Date().getFullYear()).optional().nullable(),
   description: z.string().optional().nullable(),
   logo: z.string().url().optional().nullable(),
-  coverImage: z.string().url().optional().nullable(),
   country: z.string().default('España'),
+  province: z.string().optional().nullable(),
   city: z.string().min(2, 'La ciudad es requerida'),
-  address: z.string().optional().nullable(),
-  categories: z.array(z.string()).default([]),
-  divisions: z.array(z.string()).default([]),
+  website: z.string().url().optional().nullable(),
+  instagramUrl: z.string().url().optional().nullable(),
+  twitterUrl: z.string().url().optional().nullable(),
+  linkedinUrl: z.string().url().optional().nullable(),
+  youtubeUrl: z.string().url().optional().nullable(),
+  competitions: z.string().optional().nullable(), // JSON
+  sections: z.string().optional().nullable(), // JSON
+  rosterSize: z.number().int().optional().nullable(),
+  staffSize: z.number().int().optional().nullable(),
+  workingLanguages: z.string().optional().nullable(), // JSON
   contactPerson: z.string().optional().nullable(),
+  contactRole: z.string().optional().nullable(),
   contactEmail: z.string().email().optional().nullable(),
   contactPhone: z.string().optional().nullable(),
-  website: z.string().url().optional().nullable(),
-  facebookUrl: z.string().url().optional().nullable(),
-  twitterUrl: z.string().url().optional().nullable(),
-  instagramUrl: z.string().url().optional().nullable(),
-  linkedinUrl: z.string().url().optional().nullable(),
-  facilities: z.string().optional().nullable(),
-  achievements: z.string().optional().nullable(),
+  contactPreference: z.string().optional().nullable(),
+  facilityPhotos: z.string().optional().nullable(), // JSON
+  institutionalVideo: z.string().url().optional().nullable(),
   isPublic: z.boolean().default(true),
 })
 
