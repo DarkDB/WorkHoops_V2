@@ -83,13 +83,60 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
     if (!position) return null
     const labels: Record<string, string> = {
       base: 'Base',
+      Base: 'Base',
       escolta: 'Escolta',
+      Escolta: 'Escolta',
       alero: 'Alero',
+      Alero: 'Alero',
       'ala-pivot': 'Ala-Pívot',
-      pivot: 'Pívot'
+      'Ala-pívot': 'Ala-Pívot',
+      pivot: 'Pívot',
+      Pívot: 'Pívot'
     }
     return labels[position] || position
   }
+
+  const getSkillLabel = (skill: string) => {
+    const labels: Record<string, string> = {
+      threePointShot: 'Tiro exterior',
+      midRangeShot: 'Tiro media distancia',
+      finishing: 'Finalización',
+      ballHandling: 'Manejo de balón',
+      playmaking: 'Visión de juego',
+      offBallMovement: 'Juego sin balón',
+      individualDefense: 'Defensa individual',
+      teamDefense: 'Defensa en equipo',
+      offensiveRebound: 'Rebote ofensivo',
+      defensiveRebound: 'Rebote defensivo',
+      speed: 'Velocidad',
+      athleticism: 'Capacidad atlética',
+      endurance: 'Resistencia',
+      leadership: 'Liderazgo',
+      decisionMaking: 'Toma de decisiones'
+    }
+    return labels[skill] || skill
+  }
+
+  const getSkillColor = (value: number) => {
+    if (value >= 4) return 'bg-green-500'
+    if (value >= 3) return 'bg-blue-500'
+    return 'bg-gray-400'
+  }
+
+  // Parse JSON fields safely
+  const parseJsonField = (field: string | null): string[] => {
+    if (!field) return []
+    try {
+      const parsed = JSON.parse(field)
+      return Array.isArray(parsed) ? parsed : []
+    } catch {
+      return []
+    }
+  }
+
+  const playingStyles = parseJsonField(profile.playingStyle)
+  const languages = parseJsonField(profile.languages)
+  const photoUrls = parseJsonField(profile.photoUrls)
 
   return (
     <div className="min-h-screen bg-gray-50">
