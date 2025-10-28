@@ -321,6 +321,9 @@ model TalentProfile {
   // Relation to skills
   playerSkills PlayerSkills?
   
+  // Interest notifications
+  interestNotifications InterestNotification[]
+  
   @@map("talent_profiles")
 }
 
