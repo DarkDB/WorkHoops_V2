@@ -35,9 +35,9 @@ enum OpportunityStatus {
 
 enum OpportunityLevel {
   amateur
-  semi_pro
+  semi_profesional
+  profesional
   cantera
-  pro
 }
 
 enum Modality {
