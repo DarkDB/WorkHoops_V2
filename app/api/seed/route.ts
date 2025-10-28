@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
         slug: 'entrenador-asistente-real-madrid',
         description: 'Oportunidad única para trabajar como entrenador asistente en el Real Madrid. Experiencia previa requerida.',
         type: 'empleo',
-        level: 'profesional',
+        level: 'pro',
         status: 'publicada',
         city: 'Madrid',
         country: 'España',
