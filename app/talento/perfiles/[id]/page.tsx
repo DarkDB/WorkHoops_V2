@@ -156,6 +156,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Profile */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Header Card */}
             <Card>
               <CardHeader>
                 <div className="flex items-center space-x-4">
@@ -174,19 +175,30 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                         </Badge>
                       )}
                     </div>
-                    <Badge variant="outline" className="mb-2">
-                      {getRoleLabel(profile.role)}
-                    </Badge>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant="outline" className="mb-2">
+                        {getRoleLabel(profile.role)}
+                      </Badge>
+                      {profile.currentLevel && (
+                        <Badge className="bg-orange-100 text-orange-800 mb-2">
+                          {profile.currentLevel}
+                        </Badge>
+                      )}
+                    </div>
                     {profile.position && (
                       <p className="text-sm text-gray-600">
                         {getPositionLabel(profile.position)}
+                        {profile.secondaryPosition && profile.secondaryPosition !== 'none' && (
+                          <span> / {getPositionLabel(profile.secondaryPosition)}</span>
+                        )}
                       </p>
                     )}
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-6">
+                {/* Datos básicos */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                   <div className="flex items-center text-gray-700">
                     <MapPin className="w-5 h-5 mr-2 text-gray-400" />
                     <span>{profile.city}, {profile.country}</span>
@@ -207,11 +219,23 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                       <span>{profile.weight} kg</span>
                     </div>
                   )}
+                  {profile.wingspan && (
+                    <div className="flex items-center text-gray-700">
+                      <Activity className="w-5 h-5 mr-2 text-gray-400" />
+                      <span className="text-sm">Envergadura: {profile.wingspan} cm</span>
+                    </div>
+                  )}
+                  {profile.dominantHand && (
+                    <div className="flex items-center text-gray-700">
+                      <TrendingUp className="w-5 h-5 mr-2 text-gray-400" />
+                      <span className="text-sm">Mano: {profile.dominantHand}</span>
+                    </div>
+                  )}
                 </div>
 
                 {profile.bio && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Biografía</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">Sobre mí</h3>
                     <p className="text-gray-600 whitespace-pre-wrap">{profile.bio}</p>
                   </div>
                 )}
