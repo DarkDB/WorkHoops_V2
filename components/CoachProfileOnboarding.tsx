@@ -19,12 +19,12 @@ import {
   X
 } from 'lucide-react'
 
-import CoachGeneralDataStep from './coach/CoachGeneralDataStep'
-import CoachExperienceStep from './coach/CoachExperienceStep'
-import CoachSkillsStep from './coach/CoachSkillsStep'
-import CoachPhilosophyStep from './coach/CoachPhilosophyStep'
-import CoachFormationStep from './coach/CoachFormationStep'
-import CoachObjectivesStep from './coach/CoachObjectivesStep'
+import CoachGeneralDataStep from './onboarding/coach/CoachGeneralDataStep'
+import CoachExperienceStep from './onboarding/coach/CoachExperienceStep'
+import CoachSkillsStep from './onboarding/coach/CoachSkillsStep'
+import CoachPhilosophyStep from './onboarding/coach/CoachPhilosophyStep'
+import CoachFormationStep from './onboarding/coach/CoachFormationStep'
+import CoachObjectivesStep from './onboarding/coach/CoachObjectivesStep'
 
 interface CoachProfileOnboardingProps {
   user: any
