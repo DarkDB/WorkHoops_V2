@@ -242,8 +242,252 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
               </CardContent>
             </Card>
 
-            {/* Links */}
-            {(profile.videoUrl || profile.socialUrl) && (
+            {/* Player Skills */}
+            {profile.role === 'jugador' && profile.playerSkills && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Activity className="w-5 h-5 mr-2 text-workhoops-accent" />
+                    Habilidades
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Offensive Skills */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Ofensivas</h4>
+                      <div className="space-y-2">
+                        {['threePointShot', 'midRangeShot', 'finishing', 'ballHandling', 'playmaking', 'offBallMovement'].map((skill) => {
+                          const value = profile.playerSkills![skill as keyof typeof profile.playerSkills] as number
+                          return (
+                            <div key={skill} className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">{getSkillLabel(skill)}</span>
+                              <div className="flex items-center space-x-2">
+                                <Progress value={value * 20} className="w-24 h-2" />
+                                <span className="text-sm font-medium text-gray-900 w-8">{value}/5</span>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Defensive Skills */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Defensivas</h4>
+                      <div className="space-y-2">
+                        {['individualDefense', 'teamDefense', 'offensiveRebound', 'defensiveRebound'].map((skill) => {
+                          const value = profile.playerSkills![skill as keyof typeof profile.playerSkills] as number
+                          return (
+                            <div key={skill} className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">{getSkillLabel(skill)}</span>
+                              <div className="flex items-center space-x-2">
+                                <Progress value={value * 20} className="w-24 h-2" />
+                                <span className="text-sm font-medium text-gray-900 w-8">{value}/5</span>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Physical & Mental */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Físico y Mental</h4>
+                      <div className="space-y-2">
+                        {['speed', 'athleticism', 'endurance', 'leadership', 'decisionMaking'].map((skill) => {
+                          const value = profile.playerSkills![skill as keyof typeof profile.playerSkills] as number
+                          return (
+                            <div key={skill} className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">{getSkillLabel(skill)}</span>
+                              <div className="flex items-center space-x-2">
+                                <Progress value={value * 20} className="w-24 h-2" />
+                                <span className="text-sm font-medium text-gray-900 w-8">{value}/5</span>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Career Info */}
+            {(profile.lastTeam || profile.currentCategory || profile.currentGoal) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Briefcase className="w-5 h-5 mr-2 text-workhoops-accent" />
+                    Trayectoria
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {profile.lastTeam && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Último equipo</p>
+                      <p className="text-gray-900">{profile.lastTeam}</p>
+                    </div>
+                  )}
+                  {profile.currentCategory && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Categoría actual</p>
+                      <p className="text-gray-900">{profile.currentCategory}</p>
+                    </div>
+                  )}
+                  {profile.currentGoal && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Objetivo actual</p>
+                      <p className="text-gray-900">{profile.currentGoal}</p>
+                    </div>
+                  )}
+                  {profile.internationalExperience && (
+                    <div className="pt-2">
+                      <Badge className="bg-green-100 text-green-800">
+                        <Award className="w-3 h-3 mr-1" />
+                        Experiencia internacional
+                      </Badge>
+                    </div>
+                  )}
+                  {profile.hasLicense && (
+                    <div>
+                      <Badge className="bg-blue-100 text-blue-800">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Licencia federativa
+                      </Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Playing Style & Additional Info */}
+            {(playingStyles.length > 0 || languages.length > 0) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Target className="w-5 h-5 mr-2 text-workhoops-accent" />
+                    Estilo y Preferencias
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {playingStyles.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-2">Estilo de juego</p>
+                      <div className="flex flex-wrap gap-2">
+                        {playingStyles.map((style: string) => (
+                          <Badge key={style} variant="outline" className="bg-orange-50">
+                            {style}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {languages.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-2">Idiomas</p>
+                      <div className="flex flex-wrap gap-2">
+                        {languages.map((lang: string) => (
+                          <Badge key={lang} variant="outline">
+                            <Globe className="w-3 h-3 mr-1" />
+                            {lang}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {profile.weeklyCommitment && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Disponibilidad semanal</p>
+                      <p className="text-gray-900">{profile.weeklyCommitment} horas/semana</p>
+                    </div>
+                  )}
+                  {profile.willingToTravel && (
+                    <div>
+                      <Badge className="bg-purple-100 text-purple-800">
+                        <MapPin className="w-3 h-3 mr-1" />
+                        Disponible para viajar
+                      </Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Videos & Media */}
+            {(profile.videoUrl || profile.fullGameUrl || photoUrls.length > 0) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Video className="w-5 h-5 mr-2 text-workhoops-accent" />
+                    Videos y Multimedia
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {profile.videoUrl && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-2">Video de highlights</p>
+                      <a 
+                        href={profile.videoUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center text-workhoops-accent hover:underline"
+                      >
+                        <Youtube className="w-5 h-5 mr-2" />
+                        Ver video destacado
+                      </a>
+                    </div>
+                  )}
+                  {profile.fullGameUrl && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-2">Partido completo</p>
+                      <a 
+                        href={profile.fullGameUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center text-workhoops-accent hover:underline"
+                      >
+                        <Youtube className="w-5 h-5 mr-2" />
+                        Ver partido completo
+                      </a>
+                    </div>
+                  )}
+                  {profile.socialUrl && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-2">Redes sociales</p>
+                      <a 
+                        href={profile.socialUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center text-workhoops-accent hover:underline"
+                      >
+                        <Instagram className="w-5 h-5 mr-2" />
+                        Ver perfil social
+                      </a>
+                    </div>
+                  )}
+                  {photoUrls.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-2">Galería de fotos</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {photoUrls.slice(0, 6).map((url: string, idx: number) => (
+                          <img 
+                            key={idx}
+                            src={url}
+                            alt={`Foto ${idx + 1}`}
+                            className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Links - keep for backwards compatibility */}
+            {!profile.videoUrl && !profile.fullGameUrl && (profile.videoUrl || profile.socialUrl) && (
               <Card>
                 <CardHeader>
                   <CardTitle>Enlaces</CardTitle>
