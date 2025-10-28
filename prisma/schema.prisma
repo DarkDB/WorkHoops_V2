@@ -402,7 +402,13 @@ model ClubAgencyProfile {
   facilities        String?   // Description of facilities
   achievements      String?   // Notable achievements
   isPublic          Boolean   @default(true)
-
+  verified          Boolean   @default(false)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@map("club_agency_profiles")
+}
 
 model InterestNotification {
   id                String    @id @default(cuid())
@@ -421,12 +427,4 @@ model InterestNotification {
   @@index([status])
   @@index([createdAt])
   @@map("interest_notifications")
-}
-  verified          Boolean   @default(false)
-  
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  
-  @@map("club_agency_profiles")
-
 }
