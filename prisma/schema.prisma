@@ -365,48 +365,157 @@ model PlayerSkills {
   @@map("player_skills")
 }
 
+model CoachProfile {
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Datos Generales
+  fullName              String
+  birthYear             Int?
+  nationality           String    @default("España")
+  languages             String?   // JSON array
+  city                  String
+  willingToRelocate     Boolean   @default(false)
+  currentLevel          String?   // Base / Amateur / Semi-pro / Profesional
+  federativeLicense     String?   // Nivel 1, Nivel 2, Superior, etc.
+  totalExperience       Int?      // años
+  
+  // Experiencia y Trayectoria
+  currentClub           String?
+  previousClubs         String?   // texto libre o JSON
+  categoriesCoached     String?   // JSON array: Mini, Infantil, Junior, Senior, etc.
+  achievements          String?   // texto libre
+  internationalExp      Boolean   @default(false)
+  internationalExpDesc  String?
+  roleExperience        String?   // Asistente / Primer entrenador
+  nationalTeamExp       Boolean   @default(false)
+  
+  // Skills Técnicas y Tácticas (1-5)
+  trainingPlanning      Int       @default(3)
+  individualDevelopment Int       @default(3)
+  offensiveTactics      Int       @default(3)
+  defensiveTactics      Int       @default(3)
+  groupManagement       Int       @default(3)
+  scoutingAnalysis      Int       @default(3)
+  staffManagement       Int       @default(3)
+  communication         Int       @default(3)
+  tacticalAdaptability  Int       @default(3)
+  digitalTools          Int       @default(3)
+  physicalPreparation   Int       @default(3)
+  youthDevelopment      Int       @default(3)
+  
+  // Filosofía y Estilo
+  playingStyle          String?   // texto o JSON
+  workPriority          String?   // Desarrollo / Resultados / Formación
+  playerTypePreference  String?
+  inspirations          String?
+  
+  // Formación
+  academicDegrees       String?   // INEF, CAFD, etc.
+  certifications        String?   // FIBA, FEB, etc.
+  coursesAttended       String?
+  
+  // Objetivos
+  currentGoal           String?
+  offerType             String?   // Principal / Asistente / Formador
+  availability          String?   // Temporada / Campus / Verano
+  
+  // Competencias Personales (1-5)
+  leadership            Int       @default(3)
+  teamwork              Int       @default(3)
+  conflictResolution    Int       @default(3)
+  organization          Int       @default(3)
+  adaptability          Int       @default(3)
+  innovation            Int       @default(3)
+  
+  // Multimedia
+  videoUrl              String?
+  presentationsUrl      String?
+  photoUrls             String?   // JSON array
+  
+  // Meta
+  bio                   String?
+  isPublic              Boolean   @default(true)
+  verified              Boolean   @default(false)
+  profileCompletionPercentage Int @default(0)
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  @@map("coach_profiles")
+}
+
 model ClubAgencyProfile {
-  id                String    @id @default(cuid())
-  userId            String    @unique
-  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  // Basic Information
-  organizationName  String
-  organizationType  String    // club, agencia, escuela, federacion
-  foundedYear       Int?
-  description       String?
-  logo              String?
-  coverImage        String?
+  // Perfil de la Entidad
+  entityType            String    // club, agencia, academia, programa_universitario
+  legalName             String
+  commercialName        String?
+  country               String    @default("España")
+  province              String?
+  city                  String
+  website               String?
+  instagramUrl          String?
+  twitterUrl            String?
+  linkedinUrl           String?
+  youtubeUrl            String?
   
-  // Location
-  country           String    @default("España")
-  city              String
-  address           String?
+  competitions          String?   // JSON: ACB, LEB Oro, etc.
+  sections              String?   // JSON: Masculina, Femenina, Formación
+  foundedYear           Int?
+  rosterSize            Int?      // número de jugadores
+  staffSize             Int?      // número de staff
+  workingLanguages      String?   // JSON array
   
-  // Categories and Divisions
-  categories        String[]  // Base, Junior, Senior, Profesional
-  divisions         String[]  // LEB Oro, LEB Plata, EBA, Liga Femenina, etc.
+  // Contacto
+  contactPerson         String?
+  contactRole           String?
+  contactEmail          String?
+  contactPhone          String?
+  fiscalDocument        String?   // CIF/NIF/VAT (opcional)
+  contactPreference     String?   // email, whatsapp, phone, portal
   
-  // Contact Information
-  contactPerson     String?
-  contactEmail      String?
-  contactPhone      String?
+  // Necesidades y Criterios de Fichaje
+  profilesNeeded        String?   // JSON: Base, Escolta, Entrenador, etc.
+  ageRangeMin           Int?
+  ageRangeMax           Int?
+  minHeightByPosition   String?   // JSON object
+  experienceRequired    String?   // Amateur, Semi-pro, Profesional
+  competitiveReqs       String?   // texto libre
+  keySkills             String?   // JSON: tirador, defensor, etc.
+  availabilityNeeded    String?   // inmediata, próxima ventana, etc.
   
-  // Social Media
-  website           String?
-  facebookUrl       String?
-  twitterUrl        String?
-  instagramUrl      String?
-  linkedinUrl       String?
+  // Condiciones Ofrecidas
+  salaryRange           String?   // Opcional
+  housingProvided       Boolean   @default(false)
+  mealsTransport        Boolean   @default(false)
+  medicalInsurance      Boolean   @default(false)
+  contractType          String?   // profesional, beca, amateur
+  visaSupport           Boolean   @default(false)
+  requiredDocs          String?   // texto o JSON
+  agentPolicy           String?   // acepta, no acepta, indiferente
+  scoutingNotes         String?   // texto libre
   
-  // Additional Info
-  facilities        String?   // Description of facilities
-  achievements      String?   // Notable achievements
-  isPublic          Boolean   @default(true)
-  verified          Boolean   @default(false)
+  // Verificación y Multimedia
+  logo                  String?
+  facilityPhotos        String?   // JSON array de URLs
+  institutionalVideo    String?
+  verified              Boolean   @default(false)
+  showEmailPublic       Boolean   @default(false)
+  showPhonePublic       Boolean   @default(false)
+  candidatesViaPortal   Boolean   @default(true)
   
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  // Meta
+  description           String?
+  isPublic              Boolean   @default(true)
+  profileCompletionPercentage Int @default(0)
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
   
   @@map("club_agency_profiles")
 }
