@@ -125,6 +125,7 @@ model User {
   auditLogs     AuditLog[]
   subscriptions Subscription[]
   talentProfile TalentProfile?
+  coachProfile  CoachProfile?
   clubAgencyProfile ClubAgencyProfile?
   interestNotifications InterestNotification[]
 
