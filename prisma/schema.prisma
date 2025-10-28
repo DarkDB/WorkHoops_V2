@@ -261,3 +261,146 @@ model Subscription {
 
   @@map("subscriptions")
 }
+
+model TalentProfile {
+  id          String   @id @default(cuid())
+  fullName    String
+  birthDate   DateTime
+  role        String   // jugador, entrenador, staff
+  city        String
+  country     String   @default("España")
+  
+  // Sport specific (mainly for players)
+  position    String?  // Base, Escolta, Alero, Ala-pívot, Pívot
+  secondaryPosition String?
+  height      Int?     // in cm
+  weight      Int?     // in kg
+  wingspan    Int?     // Envergadura en cm
+  dominantHand String? // Derecha, Izquierda, Ambas
+  
+  // Career info
+  currentLevel String? // Amateur, Semi-pro, Profesional
+  lastTeam    String?
+  currentCategory String?
+  
+  // Playing style (JSON array of selected styles)
+  playingStyle String? // JSON: ["Playmaker", "Tirador", etc.]
+  
+  // Additional info
+  languages   String? // JSON array
+  willingToTravel Boolean @default(false)
+  weeklyCommitment Int? // horas por semana
+  internationalExperience Boolean @default(false)
+  hasLicense  Boolean @default(false)
+  injuryHistory String? // Opcional, texto libre
+  currentGoal String? // Encontrar equipo, Mejorar nivel, etc.
+  
+  // Biography and links
+  bio         String?
+  videoUrl    String?  // YouTube/Vimeo highlights
+  fullGameUrl String?  // Partido completo
+  socialUrl   String?
+  photoUrls   String?  // JSON array de URLs de fotos
+  
+  // Profile completion (para la barra de progreso)
+  profileCompletionPercentage Int @default(0)
+  
+  // Profile status
+  isPublic    Boolean  @default(true)
+  verified    Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Relation to skills
+  playerSkills PlayerSkills?
+  
+  @@map("talent_profiles")
+}
+
+model PlayerSkills {
+  id                String   @id @default(cuid())
+  talentProfileId   String   @unique
+  
+  // Habilidades ofensivas (1-5)
+  threePointShot    Int @default(3) // Tiro exterior
+  midRangeShot      Int @default(3) // Tiro media distancia
+  finishing         Int @default(3) // Finalización en el aro
+  ballHandling      Int @default(3) // Manejo de balón
+  playmaking        Int @default(3) // Visión de juego / Asistencias
+  offBallMovement   Int @default(3) // Juego sin balón
+  
+  // Habilidades defensivas (1-5)
+  individualDefense Int @default(3) // Defensa individual
+  teamDefense       Int @default(3) // Defensa en equipo
+  offensiveRebound  Int @default(3) // Rebote ofensivo
+  defensiveRebound  Int @default(3) // Rebote defensivo
+  
+  // Atributos físicos (1-5)
+  speed             Int @default(3) // Velocidad / Agilidad
+  athleticism       Int @default(3) // Capacidad atlética / Salto
+  endurance         Int @default(3) // Resistencia física
+  
+  // Atributos mentales (1-5)
+  leadership        Int @default(3) // Comunicación / Liderazgo
+  decisionMaking    Int @default(3) // Toma de decisiones
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relation
+  talentProfile     TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
+  
+  @@map("player_skills")
+}
+
+model ClubAgencyProfile {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Basic Information
+  organizationName  String
+  organizationType  String    // club, agencia, escuela, federacion
+  foundedYear       Int?
+  description       String?
+  logo              String?
+  coverImage        String?
+  
+  // Location
+  country           String    @default("España")
+  city              String
+  address           String?
+  
+  // Categories and Divisions
+  categories        String[]  // Base, Junior, Senior, Profesional
+  divisions         String[]  // LEB Oro, LEB Plata, EBA, Liga Femenina, etc.
+  
+  // Contact Information
+  contactPerson     String?
+  contactEmail      String?
+  contactPhone      String?
+  
+  // Social Media
+  website           String?
+  facebookUrl       String?
+  twitterUrl        String?
+  instagramUrl      String?
+  linkedinUrl       String?
+  
+  // Additional Info
+  facilities        String?   // Description of facilities
+  achievements      String?   // Notable achievements
+  isPublic          Boolean   @default(true)
+  verified          Boolean   @default(false)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@map("club_agency_profiles")
+
+}
