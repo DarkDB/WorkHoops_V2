@@ -360,3 +360,9 @@ frontend_backup/node_modules/@next/swc-linux-arm64-gnu/next-swc.linux-arm64-gnu.
 # Environment files
 *.env
 *.env.*
+-e 
+# SQLite databases (not used - PostgreSQL only)
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
