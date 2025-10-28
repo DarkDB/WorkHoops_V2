@@ -123,6 +123,8 @@ model User {
   favorites     Favorite[]
   auditLogs     AuditLog[]
   subscriptions Subscription[]
+  talentProfile TalentProfile?
+  clubAgencyProfile ClubAgencyProfile?
 
   @@map("users")
 }
