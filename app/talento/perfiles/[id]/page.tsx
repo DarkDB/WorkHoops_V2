@@ -6,6 +6,7 @@ import { Navbar } from '@/components/Navbar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
 import { 
   ArrowLeft,
   MapPin,
@@ -16,7 +17,14 @@ import {
   Youtube,
   Instagram,
   Mail,
-  Lock
+  Lock,
+  Activity,
+  Target,
+  Globe,
+  Briefcase,
+  Award,
+  TrendingUp,
+  Video
 } from 'lucide-react'
 import Link from 'next/link'
 import ContactButton from './ContactButton'
