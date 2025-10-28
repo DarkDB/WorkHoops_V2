@@ -67,7 +67,14 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(profile)
+    // Backward compatibility mapping for old frontend
+    const compatibleProfile = {
+      ...profile,
+      organizationName: profile.legalName || profile.commercialName,
+      organizationType: profile.entityType
+    }
+
+    return NextResponse.json(compatibleProfile)
 
   } catch (error) {
     console.error('Error fetching club/agency profile:', error)
