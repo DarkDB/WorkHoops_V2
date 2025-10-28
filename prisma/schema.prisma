@@ -398,6 +398,26 @@ model ClubAgencyProfile {
   facilities        String?   // Description of facilities
   achievements      String?   // Notable achievements
   isPublic          Boolean   @default(true)
+
+
+model InterestNotification {
+  id                String    @id @default(cuid())
+  profileId         String
+  interestedUserId  String
+  message           String?
+  status            String    @default("pending") // pending, read, responded
+  createdAt         DateTime  @default(now())
+  
+  // Relations
+  talentProfile     TalentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  interestedUser    User          @relation(fields: [interestedUserId], references: [id], onDelete: Cascade)
+  
+  @@index([profileId])
+  @@index([interestedUserId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("interest_notifications")
+}
   verified          Boolean   @default(false)
   
   createdAt         DateTime  @default(now())
