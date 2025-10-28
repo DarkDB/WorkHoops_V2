@@ -40,7 +40,8 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
           image: true,
           planType: true
         }
-      }
+      },
+      playerSkills: true
     }
   })
 
