@@ -110,8 +110,8 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
           <div>
             <Label htmlFor="secondaryPosition">Posición secundaria (opcional)</Label>
             <Select
-              value={formData.secondaryPosition}
-              onValueChange={(value) => updateFormData({ secondaryPosition: value })}
+              value={formData.secondaryPosition || "none"}
+              onValueChange={(value) => updateFormData({ secondaryPosition: value === "none" ? "" : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Si juegas en otra posición (opcional)" />
