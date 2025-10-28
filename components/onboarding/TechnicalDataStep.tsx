@@ -114,10 +114,10 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               onValueChange={(value) => updateFormData({ secondaryPosition: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Si juegas en otra posición" />
+                <SelectValue placeholder="Si juegas en otra posición (opcional)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Ninguna</SelectItem>
+                <SelectItem value="none">Ninguna</SelectItem>
                 {positions.map((pos) => (
                   <SelectItem key={pos.value} value={pos.value}>
                     {pos.label}
