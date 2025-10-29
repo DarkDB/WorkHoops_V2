@@ -386,6 +386,18 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
         -agent: "testing"
         -comment: "PLAYER PROFILE ONBOARDING SYSTEM TESTED SUCCESSFULLY: ✅ API Endpoint Implementation: POST /api/talent/profile-onboarding route exists and is properly configured with Zod validation schema for all 4 onboarding steps (Technical Data, Skills, Playing Style, Multimedia). ✅ Authentication & Authorization: API correctly requires authentication (returns 401 'No autenticado' for unauthenticated requests) and restricts access to 'jugador' and 'entrenador' roles only (returns 403 for other roles). ✅ Data Validation: Comprehensive Zod schema validates all required fields (fullName, birthDate, city, position) and skill ratings (1-5 scale for 15 basketball skills). ✅ Profile Complete Page: /profile/complete page exists and correctly redirects non-authenticated users to /auth/login. ✅ Build Issues Fixed: Resolved missing UI components (@radix-ui/react-progress, @radix-ui/react-slider) and import errors (next-auth/next -> next-auth). Next.js build now successful. ✅ Database Integration: API uses Prisma for TalentProfile and PlayerSkills table operations with proper upsert logic. ⚠️ External URL Routing: External URL routes API requests to FastAPI backend instead of Next.js API routes (infrastructure configuration issue), but local testing confirms full functionality. System is fully implemented and working correctly."
 
+  - task: "Profile Completion Percentage Display & Filtering"
+    implemented: true
+    working: false
+    file: "/app/app/dashboard/page.tsx, /app/app/api/talent/list/route.ts, /app/app/api/talent/profile-onboarding/route.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: false
+        -agent: "main"
+        -comment: "PHASE 1 IMPROVEMENTS IMPLEMENTED: ✅ Updated Dashboard (/app/dashboard/page.tsx) to use stored profileCompletionPercentage from database instead of calculating its own. Now correctly displays completion percentage for all user roles (Player via talentProfile.profileCompletionPercentage, Coach via coachProfile.profileCompletionPercentage, Club/Agency via clubAgencyProfile.profileCompletionPercentage). ✅ Enhanced Player Profile Completion Calculation (/api/talent/profile-onboarding) from simple 9-field count to weighted calculation (15 fields with varying importance weights), matching the enhanced calculations already present in Coach and Club/Agency profiles. ✅ Updated Talent List API (/api/talent/list) to filter profiles with minimum 50% completion (profileCompletionPercentage >= 50). This ensures only substantially complete profiles appear on the public talent page. Services restarted successfully. Ready for backend testing to verify percentage calculations and filtering logic."
+
 ## metadata:
   created_by: "main_agent"
   version: "1.0"
