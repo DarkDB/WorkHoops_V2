@@ -406,7 +406,7 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
 
 ## test_plan:
   current_focus:
-    - "Player Profile Onboarding System - MultimediaStep & API"
+    - "Profile Completion Percentage Display & Filtering"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -434,3 +434,5 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
     -message: "PLAYER PROFILE ONBOARDING SYSTEM IMPLEMENTED: Created complete multi-step profile completion for Player role. MultimediaStep.tsx component provides video URLs (highlights, full game), social media links, and photo upload UI. New API endpoint POST /api/talent/profile-onboarding handles all 4 onboarding steps (Technical Data, Skills, Playing Style, Multimedia) with full Zod validation, profile creation/update logic, PlayerSkills upsert, and profile completion percentage calculation. System ready for backend testing to verify data persistence and flow integration."
     -agent: "testing"
     -message: "PLAYER PROFILE ONBOARDING SYSTEM TESTING COMPLETED: ✅ Successfully tested the complete multi-step profile onboarding system. API endpoint is fully functional with proper authentication, authorization, and data validation. Fixed build issues by adding missing UI components and correcting import statements. System is working correctly locally. ⚠️ Note: External URL routing issue prevents testing via public URL (routes to FastAPI instead of Next.js), but this is an infrastructure configuration issue, not a code problem. The implementation is complete and functional."
+    -agent: "main"
+    -message: "PHASE 1 - PROFILE COMPLETION & FILTERING IMPROVEMENTS: Implemented three key improvements: (1) Updated Dashboard to use stored profileCompletionPercentage from database for all user roles (Player, Coach, Club/Agency) instead of calculating locally. (2) Enhanced Player profile completion calculation from simple field count to weighted system matching Coach/Club profiles. (3) Added 50% minimum completion filter to Talent List API to show only substantially complete profiles on public page. Ready for backend testing to verify calculation accuracy and filtering logic. Testing should focus on: dashboard percentage display for different roles, talent list filtering (only ≥50% profiles), and profile onboarding percentage calculation."
