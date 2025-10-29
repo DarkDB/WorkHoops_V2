@@ -722,38 +722,6 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
               </Card>
             )}
 
-            {/* Links - keep for backwards compatibility */}
-            {!profile.videoUrl && !profile.fullGameUrl && (profile.videoUrl || profile.socialUrl) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Enlaces</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {profile.videoUrl && (
-                    <a 
-                      href={profile.videoUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center text-workhoops-accent hover:underline"
-                    >
-                      <Youtube className="w-5 h-5 mr-2" />
-                      Ver vídeo destacado
-                    </a>
-                  )}
-                  {profile.socialUrl && (
-                    <a 
-                      href={profile.socialUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center text-workhoops-accent hover:underline"
-                    >
-                      <Instagram className="w-5 h-5 mr-2" />
-                      Redes sociales
-                    </a>
-                  )}
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           {/* Sidebar */}
