@@ -1437,7 +1437,7 @@ class BackendTester:
             }
             
             response = self.session.post(
-                f"{API_BASE}/club-agency/profile-onboarding",
+                f"{NEXTJS_API_BASE}/club-agency/profile-onboarding",
                 json=club_profile_data,
                 timeout=15
             )
