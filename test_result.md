@@ -388,11 +388,11 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
 
   - task: "Profile Completion Percentage Display & Filtering"
     implemented: true
-    working: true
-    file: "/app/app/dashboard/page.tsx, /app/app/api/talent/list/route.ts, /app/app/api/talent/profile-onboarding/route.ts"
+    working: false
+    file: "/app/app/api/talent/list/route.ts, /app/app/dashboard/page.tsx, /app/app/api/talent/profile-onboarding/route.ts, /app/app/api/coach/profile-onboarding/route.ts"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         -working: false
         -agent: "main"
@@ -400,6 +400,12 @@ Fix duplicate function definitions in lib/utils.ts and get WorkHoops Next.js app
         -working: true
         -agent: "testing"
         -comment: "PROFILE COMPLETION & FILTERING SYSTEM TESTED: ✅ Code Implementation Verified: All three profile onboarding endpoints (Player, Coach, Club/Agency) correctly implement weighted completion percentage calculation with proper field importance weights. Player profiles use 15 weighted fields (fullName:10, birthDate:10, city:10, position:10, bio:10, videoUrl:10, currentGoal:10, height:5, weight:5, currentLevel:8, etc.). Coach and Club/Agency profiles have similar weighted systems. ✅ Dashboard Integration: Dashboard correctly uses stored profileCompletionPercentage from database for all user roles instead of calculating locally. ✅ Talent List Filtering: API endpoint correctly filters profiles with profileCompletionPercentage >= 50 using Prisma where clause. ✅ Authentication & Authorization: All profile onboarding endpoints properly require authentication (401) and role-based access (403). ✅ Data Validation: Comprehensive Zod schemas validate all profile data including skill ratings (1-5 scale). ⚠️ Database Connectivity Issue: Supabase database connection failing in test environment, preventing full end-to-end testing, but code implementation is correct and functional. The weighted calculation system and filtering logic are properly implemented and will work correctly when database is accessible."
+        -working: false
+        -agent: "user"
+        -comment: "User reported that profiles with 67% completion are not appearing on /talento/perfiles page. Only 1 player is showing up. User correctly identified that the problem is the API only queries TalentProfile table, but Coaches save their data in CoachProfile table. The API needs to query both tables."
+        -working: false
+        -agent: "main"
+        -comment: "CRITICAL FIX APPLIED - Multi-Table Query: User was absolutely correct! The /api/talent/list endpoint was only querying TalentProfile table, missing all Coach profiles (stored in CoachProfile table). ✅ Updated API to query BOTH tables: TalentProfile (for jugadores) and CoachProfile (for entrenadores). ✅ Combined and normalized results to unified format. ✅ Applied 50% completion filter to both tables. ✅ Added isPublic: true filter for both tables. ✅ Updated player and coach onboarding APIs to explicitly set isPublic: true on create and update. Now the talent page should display both players AND coaches who meet the criteria (public + ≥50% completion). Ready for backend testing to verify multi-table querying works correctly."
 
 ## metadata:
   created_by: "main_agent"
