@@ -276,34 +276,48 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                   <div className="flex items-center text-gray-700">
                     <MapPin className="w-5 h-5 mr-2 text-gray-400" />
-                    <span>{profile.city}, {profile.country}</span>
+                    <span>{profile.city}, {isCoach ? (profile as any).nationality : (profile as any).country}</span>
                   </div>
-                  <div className="flex items-center text-gray-700">
-                    <Calendar className="w-5 h-5 mr-2 text-gray-400" />
-                    <span>{calculateAge(profile.birthDate)} años</span>
-                  </div>
-                  {profile.height && (
+                  {age && (
+                    <div className="flex items-center text-gray-700">
+                      <Calendar className="w-5 h-5 mr-2 text-gray-400" />
+                      <span>{age} años</span>
+                    </div>
+                  )}
+                  {!isCoach && (profile as any).height && (
                     <div className="flex items-center text-gray-700">
                       <Ruler className="w-5 h-5 mr-2 text-gray-400" />
-                      <span>{profile.height} cm</span>
+                      <span>{(profile as any).height} cm</span>
                     </div>
                   )}
-                  {profile.weight && (
+                  {!isCoach && (profile as any).weight && (
                     <div className="flex items-center text-gray-700">
                       <Weight className="w-5 h-5 mr-2 text-gray-400" />
-                      <span>{profile.weight} kg</span>
+                      <span>{(profile as any).weight} kg</span>
                     </div>
                   )}
-                  {profile.wingspan && (
+                  {!isCoach && (profile as any).wingspan && (
                     <div className="flex items-center text-gray-700">
                       <Activity className="w-5 h-5 mr-2 text-gray-400" />
-                      <span className="text-sm">Envergadura: {profile.wingspan} cm</span>
+                      <span className="text-sm">Envergadura: {(profile as any).wingspan} cm</span>
                     </div>
                   )}
-                  {profile.dominantHand && (
+                  {!isCoach && (profile as any).dominantHand && (
                     <div className="flex items-center text-gray-700">
                       <TrendingUp className="w-5 h-5 mr-2 text-gray-400" />
-                      <span className="text-sm">Mano: {profile.dominantHand}</span>
+                      <span className="text-sm">Mano: {(profile as any).dominantHand}</span>
+                    </div>
+                  )}
+                  {isCoach && (profile as any).totalExperience && (
+                    <div className="flex items-center text-gray-700">
+                      <Briefcase className="w-5 h-5 mr-2 text-gray-400" />
+                      <span>{(profile as any).totalExperience} años de experiencia</span>
+                    </div>
+                  )}
+                  {isCoach && (profile as any).federativeLicense && (
+                    <div className="flex items-center text-gray-700">
+                      <Award className="w-5 h-5 mr-2 text-gray-400" />
+                      <span>{(profile as any).federativeLicense}</span>
                     </div>
                   )}
                 </div>
