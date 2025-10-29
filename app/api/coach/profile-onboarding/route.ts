@@ -77,19 +77,28 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = coachProfileSchema.parse(body)
 
-    // Calculate profile completion percentage
-    const completionFields = [
-      validatedData.fullName,
-      validatedData.city,
-      validatedData.currentLevel,
-      validatedData.totalExperience,
-      validatedData.achievements,
-      validatedData.bio,
-      validatedData.videoUrl,
-      validatedData.currentGoal
+    // Calculate profile completion percentage - weighted by importance
+    const weightedFields = [
+      { value: validatedData.fullName, weight: 10 },
+      { value: validatedData.city, weight: 10 },
+      { value: validatedData.totalExperience, weight: 8 },
+      { value: validatedData.currentLevel, weight: 8 },
+      { value: validatedData.federativeLicense, weight: 6 },
+      { value: validatedData.currentClub, weight: 5 },
+      { value: validatedData.achievements, weight: 8 },
+      { value: validatedData.categoriesCoached && validatedData.categoriesCoached.length > 0, weight: 7 },
+      { value: validatedData.bio, weight: 10 },
+      { value: validatedData.videoUrl, weight: 10 },
+      { value: validatedData.currentGoal, weight: 8 },
+      { value: validatedData.playingStyle && validatedData.playingStyle.length > 0, weight: 5 },
+      { value: validatedData.certifications, weight: 5 }
     ]
-    const filledFields = completionFields.filter(f => f && f !== '').length
-    const profileCompletionPercentage = Math.round((filledFields / completionFields.length) * 100)
+    
+    const totalWeight = weightedFields.reduce((sum, field) => sum + field.weight, 0)
+    const filledWeight = weightedFields.reduce((sum, field) => {
+      return sum + (field.value ? field.weight : 0)
+    }, 0)
+    const profileCompletionPercentage = Math.round((filledWeight / totalWeight) * 100)
 
     // Check if profile exists
     const existingProfile = await prisma.coachProfile.findUnique({
