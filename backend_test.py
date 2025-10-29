@@ -1219,7 +1219,7 @@ class BackendTester:
         
         try:
             # Test GET /api/talent/list
-            response = self.session.get(f"{API_BASE}/talent/list", timeout=15)
+            response = self.session.get(f"{NEXTJS_API_BASE}/talent/list", timeout=15)
             
             if response.status_code == 200:
                 print_success("GET /api/talent/list - Success")
