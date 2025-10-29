@@ -476,34 +476,65 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
             )}
 
             {/* Career Info */}
-            {(profile.lastTeam || profile.currentCategory || profile.currentGoal) && (
+            {((!isCoach && ((profile as any).lastTeam || (profile as any).currentCategory || (profile as any).currentGoal)) || 
+              (isCoach && ((profile as any).currentClub || (profile as any).previousClubs || (profile as any).achievements || (profile as any).currentGoal))) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Briefcase className="w-5 h-5 mr-2 text-workhoops-accent" />
-                    Trayectoria
+                    {isCoach ? 'Experiencia Profesional' : 'Trayectoria'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {profile.lastTeam && (
+                  {!isCoach && (profile as any).lastTeam && (
                     <div>
                       <p className="text-sm font-medium text-gray-700">Último equipo</p>
-                      <p className="text-gray-900">{profile.lastTeam}</p>
+                      <p className="text-gray-900">{(profile as any).lastTeam}</p>
                     </div>
                   )}
-                  {profile.currentCategory && (
+                  {!isCoach && (profile as any).currentCategory && (
                     <div>
                       <p className="text-sm font-medium text-gray-700">Categoría actual</p>
-                      <p className="text-gray-900">{profile.currentCategory}</p>
+                      <p className="text-gray-900">{(profile as any).currentCategory}</p>
                     </div>
                   )}
-                  {profile.currentGoal && (
+                  {isCoach && (profile as any).currentClub && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Club actual</p>
+                      <p className="text-gray-900">{(profile as any).currentClub}</p>
+                    </div>
+                  )}
+                  {isCoach && (profile as any).previousClubs && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Clubes anteriores</p>
+                      <p className="text-gray-900 whitespace-pre-wrap">{(profile as any).previousClubs}</p>
+                    </div>
+                  )}
+                  {isCoach && categoriesCoached.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-2">Categorías entrenadas</p>
+                      <div className="flex flex-wrap gap-2">
+                        {categoriesCoached.map((cat: string) => (
+                          <Badge key={cat} variant="outline" className="bg-blue-50">
+                            {cat}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {isCoach && (profile as any).achievements && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Logros destacados</p>
+                      <p className="text-gray-900 whitespace-pre-wrap">{(profile as any).achievements}</p>
+                    </div>
+                  )}
+                  {(profile as any).currentGoal && (
                     <div>
                       <p className="text-sm font-medium text-gray-700">Objetivo actual</p>
-                      <p className="text-gray-900">{profile.currentGoal}</p>
+                      <p className="text-gray-900">{(profile as any).currentGoal}</p>
                     </div>
                   )}
-                  {profile.internationalExperience && (
+                  {!isCoach && (profile as any).internationalExperience && (
                     <div className="pt-2">
                       <Badge className="bg-green-100 text-green-800">
                         <Award className="w-3 h-3 mr-1" />
@@ -511,7 +542,26 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                       </Badge>
                     </div>
                   )}
-                  {profile.hasLicense && (
+                  {isCoach && (profile as any).internationalExp && (
+                    <div>
+                      <Badge className="bg-green-100 text-green-800 mb-2">
+                        <Award className="w-3 h-3 mr-1" />
+                        Experiencia internacional
+                      </Badge>
+                      {(profile as any).internationalExpDesc && (
+                        <p className="text-sm text-gray-600 mt-2">{(profile as any).internationalExpDesc}</p>
+                      )}
+                    </div>
+                  )}
+                  {isCoach && (profile as any).nationalTeamExp && (
+                    <div>
+                      <Badge className="bg-blue-100 text-blue-800">
+                        <Award className="w-3 h-3 mr-1" />
+                        Experiencia en selecciones nacionales
+                      </Badge>
+                    </div>
+                  )}
+                  {!isCoach && (profile as any).hasLicense && (
                     <div>
                       <Badge className="bg-blue-100 text-blue-800">
                         <CheckCircle className="w-3 h-3 mr-1" />
