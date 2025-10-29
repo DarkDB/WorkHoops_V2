@@ -21,7 +21,7 @@ const clubAgencyProfileOnboardingSchema = z.object({
   
   contactPerson: z.string().optional(),
   contactRole: z.string().optional(),
-  contactEmail: z.string().email('Email inválido'),
+  contactEmail: z.string().optional(),
   contactPhone: z.string().optional(),
   contactPreference: z.string().optional(),
   website: z.string().optional(),
