@@ -252,20 +252,25 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Badge variant="outline" className="mb-2">
-                        {getRoleLabel(profile.role)}
+                        {getRoleLabel(isCoach ? 'entrenador' : (profile as any).role)}
                       </Badge>
-                      {profile.currentLevel && (
+                      {(profile as any).currentLevel && (
                         <Badge className="bg-orange-100 text-orange-800 mb-2">
-                          {profile.currentLevel}
+                          {(profile as any).currentLevel}
                         </Badge>
                       )}
                     </div>
-                    {profile.position && (
+                    {!isCoach && (profile as any).position && (
                       <p className="text-sm text-gray-600">
-                        {getPositionLabel(profile.position)}
-                        {profile.secondaryPosition && profile.secondaryPosition !== 'none' && (
-                          <span> / {getPositionLabel(profile.secondaryPosition)}</span>
+                        {getPositionLabel((profile as any).position)}
+                        {(profile as any).secondaryPosition && (profile as any).secondaryPosition !== 'none' && (
+                          <span> / {getPositionLabel((profile as any).secondaryPosition)}</span>
                         )}
+                      </p>
+                    )}
+                    {isCoach && (profile as any).roleExperience && (
+                      <p className="text-sm text-gray-600">
+                        {(profile as any).roleExperience}
                       </p>
                     )}
                   </div>
