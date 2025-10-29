@@ -74,6 +74,8 @@ export default async function DashboardPage() {
           }
         }
       },
+      coachProfile: true,
+      clubAgencyProfile: true,
       opportunities: {
         include: {
           _count: {
