@@ -5,11 +5,11 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 const coachProfileSchema = z.object({
-  fullName: z.string().min(1, 'Nombre completo es requerido'),
+  fullName: z.string().optional(),
   birthYear: z.number().nullable().optional(),
-  nationality: z.string().default('España'),
+  nationality: z.string().optional(),
   languages: z.array(z.string()).optional(),
-  city: z.string().min(1, 'Ciudad es requerida'),
+  city: z.string().optional(),
   willingToRelocate: z.boolean().optional(),
   currentLevel: z.string().optional(),
   federativeLicense: z.string().optional(),
