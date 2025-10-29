@@ -1361,7 +1361,7 @@ class BackendTester:
             }
             
             response = self.session.post(
-                f"{API_BASE}/coach/profile-onboarding",
+                f"{NEXTJS_API_BASE}/coach/profile-onboarding",
                 json=coach_profile_data,
                 timeout=15
             )
