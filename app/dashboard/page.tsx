@@ -90,8 +90,16 @@ export default async function DashboardPage() {
     redirect('/auth/login')
   }
 
-  // Redirect jugador/entrenador to profile completion if they don't have a talent profile
-  if ((user.role === 'jugador' || user.role === 'entrenador') && !user.talentProfile) {
+  // Redirect to profile completion based on role
+  if (user.role === 'jugador' && !user.talentProfile) {
+    redirect('/profile/complete')
+  }
+  
+  if (user.role === 'entrenador' && !user.coachProfile) {
+    redirect('/profile/complete')
+  }
+  
+  if ((user.role === 'club' || user.role === 'agencia') && !user.clubAgencyProfile) {
     redirect('/profile/complete')
   }
 
