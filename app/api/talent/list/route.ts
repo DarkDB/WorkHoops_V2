@@ -12,7 +12,11 @@ export async function GET(request: NextRequest) {
 
     // Build filter
     const where: any = {
-      isPublic: true
+      isPublic: true,
+      // Only show profiles with at least 50% completion
+      profileCompletionPercentage: {
+        gte: 50
+      }
     }
 
     if (role) {
