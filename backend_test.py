@@ -1219,7 +1219,7 @@ class BackendTester:
         
         # Test 1: Get all profiles (both players and coaches)
         try:
-            response = self.session.get(f"{API_BASE}/talent/list", timeout=15)
+            response = self.session.get(f"{BASE_URL}/api/talent/list", timeout=15)
             
             if response.status_code == 200:
                 print_success("GET /api/talent/list - Success")
@@ -1317,7 +1317,7 @@ class BackendTester:
         
         # Test 1: Filter by jugador (players only)
         try:
-            response = self.session.get(f"{API_BASE}/talent/list?role=jugador", timeout=15)
+            response = self.session.get(f"{BASE_URL}/api/talent/list?role=jugador", timeout=15)
             
             if response.status_code == 200:
                 print_success("GET /api/talent/list?role=jugador - Success")
@@ -1352,7 +1352,7 @@ class BackendTester:
             
         # Test 2: Filter by entrenador (coaches only)
         try:
-            response = self.session.get(f"{API_BASE}/talent/list?role=entrenador", timeout=15)
+            response = self.session.get(f"{BASE_URL}/api/talent/list?role=entrenador", timeout=15)
             
             if response.status_code == 200:
                 print_success("GET /api/talent/list?role=entrenador - Success")
@@ -1398,7 +1398,7 @@ class BackendTester:
 
         # Test 3: Filter by 'all' (should return both)
         try:
-            response = self.session.get(f"{API_BASE}/talent/list?role=all", timeout=15)
+            response = self.session.get(f"{BASE_URL}/api/talent/list?role=all", timeout=15)
             
             if response.status_code == 200:
                 print_success("GET /api/talent/list?role=all - Success")
@@ -1433,7 +1433,7 @@ class BackendTester:
         
         try:
             # Test city filter with Madrid (common city)
-            response = self.session.get(f"{API_BASE}/talent/list?city=Madrid", timeout=15)
+            response = self.session.get(f"{BASE_URL}/api/talent/list?city=Madrid", timeout=15)
             
             if response.status_code == 200:
                 print_success("GET /api/talent/list?city=Madrid - Success")
@@ -1482,7 +1482,7 @@ class BackendTester:
         print_test_header("Data Normalization Verification")
         
         try:
-            response = self.session.get(f"{API_BASE}/talent/list", timeout=15)
+            response = self.session.get(f"{BASE_URL}/api/talent/list", timeout=15)
             
             if response.status_code == 200:
                 print_success("GET /api/talent/list - Success")
