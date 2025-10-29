@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       
       contactPerson: validatedData.contactPerson || null,
       contactRole: validatedData.contactRole || null,
-      contactEmail: validatedData.contactEmail,
+      contactEmail: validatedData.contactEmail || '',
       contactPhone: validatedData.contactPhone || null,
       contactPreference: validatedData.contactPreference || null,
       website: validatedData.website || null,
