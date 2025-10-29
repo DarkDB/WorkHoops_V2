@@ -76,19 +76,28 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = clubAgencyProfileOnboardingSchema.parse(body)
 
-    // Calculate profile completion percentage
-    const completionFields = [
-      validatedData.legalName,
-      validatedData.entityType,
-      validatedData.city,
-      validatedData.contactEmail,
-      validatedData.description,
-      validatedData.logo,
-      validatedData.profilesNeeded && validatedData.profilesNeeded.length > 0,
-      validatedData.scoutingNotes
+    // Calculate profile completion percentage - weighted by importance
+    const weightedFields = [
+      { value: validatedData.legalName, weight: 10 },
+      { value: validatedData.entityType, weight: 10 },
+      { value: validatedData.city, weight: 10 },
+      { value: validatedData.contactEmail, weight: 8 },
+      { value: validatedData.description, weight: 10 },
+      { value: validatedData.logo, weight: 8 },
+      { value: validatedData.profilesNeeded && validatedData.profilesNeeded.length > 0, weight: 10 },
+      { value: validatedData.scoutingNotes, weight: 8 },
+      { value: validatedData.competitions && validatedData.competitions.length > 0, weight: 6 },
+      { value: validatedData.sections && validatedData.sections.length > 0, weight: 5 },
+      { value: validatedData.contactPerson, weight: 5 },
+      { value: validatedData.website, weight: 5 },
+      { value: validatedData.institutionalVideo, weight: 5 }
     ]
-    const filledFields = completionFields.filter(f => f && f !== '').length
-    const profileCompletionPercentage = Math.round((filledFields / completionFields.length) * 100)
+    
+    const totalWeight = weightedFields.reduce((sum, field) => sum + field.weight, 0)
+    const filledWeight = weightedFields.reduce((sum, field) => {
+      return sum + (field.value ? field.weight : 0)
+    }, 0)
+    const profileCompletionPercentage = Math.round((filledWeight / totalWeight) * 100)
 
     // Check if profile exists
     const existingProfile = await prisma.clubAgencyProfile.findUnique({
