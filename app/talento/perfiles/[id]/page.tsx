@@ -198,8 +198,20 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
   }
 
   const playingStyles = parseJsonField(profile.playingStyle)
-  const languages = parseJsonField(profile.languages)
-  const photoUrls = parseJsonField(profile.photoUrls)
+  const languages = isCoach 
+    ? parseJsonField((profile as any).languages) 
+    : parseJsonField((profile as any).languages)
+  const photoUrls = isCoach 
+    ? parseJsonField((profile as any).photoUrls) 
+    : parseJsonField((profile as any).photoUrls)
+  const categoriesCoached = isCoach 
+    ? parseJsonField((profile as any).categoriesCoached) 
+    : []
+  
+  // Calculate age
+  const age = isCoach 
+    ? calculateAge(null, (profile as any).birthYear)
+    : calculateAge((profile as any).birthDate, null)
 
   return (
     <div className="min-h-screen bg-gray-50">
