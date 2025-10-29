@@ -105,59 +105,81 @@ export default async function DashboardPage() {
     redirect('/profile/complete')
   }
 
-  // Calculate profile completion with talent profile consideration
+  // Calculate profile completion using stored database values
   const calculateProfileCompletion = () => {
     const missingItems: string[] = []
-    let totalFields = 0
-    let completedFields = 0
+    let percentage = 0
     
-    // Basic user fields
-    if (!user.name) missingItems.push('Nombre completo')
-    totalFields += 1
-    completedFields += user.name ? 1 : 0
-    
-    if (!user.image) missingItems.push('Foto de perfil')
-    totalFields += 1
-    completedFields += user.image ? 1 : 0
-    
-    // For players and coaches, check talent profile completion
-    if (user.role === 'jugador' || user.role === 'entrenador') {
+    // For players (jugador), use TalentProfile completion percentage
+    if (user.role === 'jugador') {
       if (user.talentProfile) {
-        // Talent profile exists - check completeness
-        if (!user.talentProfile.fullName) missingItems.push('Nombre en perfil de talento')
+        percentage = user.talentProfile.profileCompletionPercentage || 0
+        
+        // Identify missing critical fields
+        if (!user.talentProfile.fullName) missingItems.push('Nombre completo')
         if (!user.talentProfile.birthDate) missingItems.push('Fecha de nacimiento')
         if (!user.talentProfile.city) missingItems.push('Ciudad')
-        if (!user.talentProfile.bio) missingItems.push('Biografía')
         if (!user.talentProfile.position) missingItems.push('Posición')
+        if (!user.talentProfile.bio) missingItems.push('Biografía')
         if (!user.talentProfile.videoUrl) missingItems.push('Video destacado')
-        
-        totalFields += 6
-        completedFields += [
-          user.talentProfile.fullName,
-          user.talentProfile.birthDate,
-          user.talentProfile.city,
-          user.talentProfile.bio,
-          user.talentProfile.position,
-          user.talentProfile.videoUrl,
-        ].filter(f => f !== null && f !== '').length
+        if (!user.talentProfile.currentGoal) missingItems.push('Objetivo actual')
+        if (!user.talentProfile.height) missingItems.push('Altura')
+        if (!user.talentProfile.weight) missingItems.push('Peso')
       } else {
-        // No talent profile
-        missingItems.push('Crear perfil de talento completo')
-        totalFields += 6
+        missingItems.push('Completar perfil de jugador')
       }
-      
-      // Activity indicators
-      if (user.applications.length === 0) missingItems.push('Aplicar a tu primera oportunidad')
-      totalFields += 1
-      completedFields += user.applications.length > 0 ? 1 : 0
-      
-      if (user.favorites.length === 0) missingItems.push('Guardar oportunidades favoritas')
-      totalFields += 1
-      completedFields += user.favorites.length > 0 ? 1 : 0
     }
     
+    // For coaches (entrenador), use CoachProfile completion percentage
+    else if (user.role === 'entrenador') {
+      if (user.coachProfile) {
+        percentage = user.coachProfile.profileCompletionPercentage || 0
+        
+        // Identify missing critical fields
+        if (!user.coachProfile.fullName) missingItems.push('Nombre completo')
+        if (!user.coachProfile.city) missingItems.push('Ciudad')
+        if (!user.coachProfile.totalExperience) missingItems.push('Años de experiencia')
+        if (!user.coachProfile.currentLevel) missingItems.push('Nivel actual')
+        if (!user.coachProfile.bio) missingItems.push('Biografía')
+        if (!user.coachProfile.videoUrl) missingItems.push('Video de presentación')
+        if (!user.coachProfile.currentGoal) missingItems.push('Objetivo actual')
+        if (!user.coachProfile.achievements) missingItems.push('Logros')
+      } else if (user.talentProfile) {
+        // Legacy: Coach might have talentProfile instead
+        percentage = user.talentProfile.profileCompletionPercentage || 0
+        if (!user.talentProfile.fullName) missingItems.push('Nombre completo')
+        if (!user.talentProfile.city) missingItems.push('Ciudad')
+        if (!user.talentProfile.bio) missingItems.push('Biografía')
+        if (!user.talentProfile.videoUrl) missingItems.push('Video destacado')
+      } else {
+        missingItems.push('Completar perfil de entrenador')
+      }
+    }
+    
+    // For clubs and agencies
+    else if (user.role === 'club' || user.role === 'agencia') {
+      if (user.clubAgencyProfile) {
+        percentage = user.clubAgencyProfile.profileCompletionPercentage || 0
+        
+        // Identify missing critical fields
+        if (!user.clubAgencyProfile.legalName) missingItems.push('Nombre legal')
+        if (!user.clubAgencyProfile.entityType) missingItems.push('Tipo de entidad')
+        if (!user.clubAgencyProfile.city) missingItems.push('Ciudad')
+        if (!user.clubAgencyProfile.contactEmail) missingItems.push('Email de contacto')
+        if (!user.clubAgencyProfile.description) missingItems.push('Descripción')
+        if (!user.clubAgencyProfile.logo) missingItems.push('Logo')
+        if (!user.clubAgencyProfile.profilesNeeded) missingItems.push('Perfiles buscados')
+      } else {
+        missingItems.push('Completar perfil de club/agencia')
+      }
+    }
+    
+    // Generic user fields
+    if (!user.name) missingItems.push('Nombre de usuario')
+    if (!user.image) missingItems.push('Foto de perfil')
+    
     return {
-      percentage: Math.round((completedFields / totalFields) * 100),
+      percentage,
       missing: missingItems
     }
   }
