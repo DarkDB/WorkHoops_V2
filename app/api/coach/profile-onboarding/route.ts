@@ -97,11 +97,11 @@ export async function POST(request: NextRequest) {
     })
 
     const profileData = {
-      fullName: validatedData.fullName,
+      fullName: validatedData.fullName || '',
       birthYear: validatedData.birthYear || null,
-      nationality: validatedData.nationality,
+      nationality: validatedData.nationality || 'España',
       languages: validatedData.languages ? JSON.stringify(validatedData.languages) : null,
-      city: validatedData.city,
+      city: validatedData.city || '',
       willingToRelocate: validatedData.willingToRelocate || false,
       currentLevel: validatedData.currentLevel || null,
       federativeLicense: validatedData.federativeLicense || null,
