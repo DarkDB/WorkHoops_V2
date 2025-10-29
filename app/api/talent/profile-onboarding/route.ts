@@ -87,20 +87,30 @@ export async function POST(request: NextRequest) {
     // Convertir birthDate a DateTime
     const birthDateObj = new Date(validatedData.birthDate)
 
-    // Calcular porcentaje de completado
-    const completionFields = [
-      validatedData.fullName,
-      validatedData.birthDate,
-      validatedData.city,
-      validatedData.position,
-      validatedData.height,
-      validatedData.weight,
-      validatedData.bio,
-      validatedData.videoUrl,
-      validatedData.currentGoal
+    // Calculate profile completion percentage - weighted by importance
+    const weightedFields = [
+      { value: validatedData.fullName, weight: 10 },
+      { value: validatedData.birthDate, weight: 10 },
+      { value: validatedData.city, weight: 10 },
+      { value: validatedData.position, weight: 10 },
+      { value: validatedData.height, weight: 5 },
+      { value: validatedData.weight, weight: 5 },
+      { value: validatedData.currentLevel, weight: 8 },
+      { value: validatedData.bio, weight: 10 },
+      { value: validatedData.videoUrl, weight: 10 },
+      { value: validatedData.currentGoal, weight: 10 },
+      { value: validatedData.secondaryPosition, weight: 3 },
+      { value: validatedData.playingStyle && validatedData.playingStyle.length > 0, weight: 7 },
+      { value: validatedData.languages && validatedData.languages.length > 0, weight: 5 },
+      { value: validatedData.fullGameUrl, weight: 5 },
+      { value: validatedData.socialUrl, weight: 2 }
     ]
-    const filledFields = completionFields.filter(f => f && f !== '').length
-    const profileCompletionPercentage = Math.round((filledFields / completionFields.length) * 100)
+    
+    const totalWeight = weightedFields.reduce((sum, field) => sum + field.weight, 0)
+    const filledWeight = weightedFields.reduce((sum, field) => {
+      return sum + (field.value ? field.weight : 0)
+    }, 0)
+    const profileCompletionPercentage = Math.round((filledWeight / totalWeight) * 100)
 
     // Buscar perfil existente
     const existingProfile = await prisma.talentProfile.findUnique({
