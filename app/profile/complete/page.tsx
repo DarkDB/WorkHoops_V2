@@ -14,50 +14,104 @@ export default async function CompleteProfilePage() {
     redirect('/auth/login')
   }
 
+  const userRole = session.user.role
+
   // Verificar si es jugador o entrenador
-  if (session.user.role !== 'jugador' && session.user.role !== 'entrenador') {
-    redirect('/dashboard')
+  if (userRole === 'jugador' || userRole === 'entrenador') {
+    // Obtener perfil existente si lo hay
+    let profile = null
+    
+    if (userRole === 'jugador') {
+      profile = await prisma.talentProfile.findUnique({
+        where: { userId: session.user.id },
+        include: { playerSkills: true }
+      })
+    } else if (userRole === 'entrenador') {
+      profile = await prisma.coachProfile.findUnique({
+        where: { userId: session.user.id }
+      })
+    }
+
+    // Obtener datos del usuario
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true
+      }
+    })
+
+    // Serializar datos de manera segura
+    const serializedProfile = profile ? {
+      ...profile,
+      birthDate: profile.birthDate?.toISOString() || null,
+      createdAt: profile.createdAt.toISOString(),
+      updatedAt: profile.updatedAt.toISOString(),
+      ...(userRole === 'jugador' && profile.playerSkills ? {
+        playerSkills: {
+          ...profile.playerSkills,
+          createdAt: profile.playerSkills.createdAt.toISOString(),
+          updatedAt: profile.playerSkills.updatedAt.toISOString()
+        }
+      } : {})
+    } : null
+
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        {userRole === 'jugador' ? (
+          <PlayerProfileOnboarding 
+            user={user!}
+            existingProfile={serializedProfile}
+          />
+        ) : (
+          <CoachProfileOnboarding 
+            user={user!}
+            existingProfile={serializedProfile}
+          />
+        )}
+      </div>
+    )
   }
 
-  // Obtener perfil existente si lo hay
-  const talentProfile = await prisma.talentProfile.findUnique({
-    where: { userId: session.user.id },
-    include: {
-      playerSkills: true
-    }
-  })
+  // Verificar si es club o agencia
+  if (userRole === 'club' || userRole === 'agencia') {
+    // Obtener perfil existente si lo hay
+    const profile = await prisma.clubAgencyProfile.findUnique({
+      where: { userId: session.user.id }
+    })
 
-  // Obtener datos del usuario
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true
-    }
-  })
+    // Obtener datos del usuario
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true
+      }
+    })
 
-  // Serializar datos de manera segura
-  const serializedProfile = talentProfile ? {
-    ...talentProfile,
-    birthDate: talentProfile.birthDate?.toISOString() || null,
-    createdAt: talentProfile.createdAt.toISOString(),
-    updatedAt: talentProfile.updatedAt.toISOString(),
-    playerSkills: talentProfile.playerSkills ? {
-      ...talentProfile.playerSkills,
-      createdAt: talentProfile.playerSkills.createdAt.toISOString(),
-      updatedAt: talentProfile.playerSkills.updatedAt.toISOString()
+    // Serializar datos de manera segura
+    const serializedProfile = profile ? {
+      ...profile,
+      createdAt: profile.createdAt.toISOString(),
+      updatedAt: profile.updatedAt.toISOString()
     } : null
-  } : null
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <PlayerProfileOnboarding 
-        user={user!}
-        existingProfile={serializedProfile}
-      />
-    </div>
-  )
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <ClubAgencyProfileOnboarding 
+          user={user!}
+          existingProfile={serializedProfile}
+        />
+      </div>
+    )
+  }
+
+  // Si no es ningún rol válido, redirigir al dashboard
+  redirect('/dashboard')
 }
