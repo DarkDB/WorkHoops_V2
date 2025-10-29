@@ -14,6 +14,8 @@ import uuid
 # Configuration
 BASE_URL = "https://workhoops-profiles.preview.emergentagent.com"  # Next.js frontend URL
 API_BASE = f"{BASE_URL}/api"
+# For Next.js API routes, use localhost since external URL routes to FastAPI
+NEXTJS_API_BASE = "http://localhost:3000/api"
 
 class Colors:
     GREEN = '\033[92m'
