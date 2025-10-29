@@ -1192,7 +1192,7 @@ class BackendTester:
             }
             
             response = self.session.post(
-                f"{API_BASE}/talent/profile-onboarding",
+                f"{NEXTJS_API_BASE}/talent/profile-onboarding",
                 json=complete_player_data,
                 timeout=15
             )
