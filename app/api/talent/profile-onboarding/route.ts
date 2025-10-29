@@ -201,7 +201,8 @@ export async function POST(request: NextRequest) {
           fullGameUrl: validatedData.fullGameUrl || null,
           socialUrl: validatedData.socialUrl || null,
           photoUrls: validatedData.photoUrls ? JSON.stringify(validatedData.photoUrls) : null,
-          profileCompletionPercentage
+          profileCompletionPercentage,
+          isPublic: true  // Asegurar que el perfil sea público
         }
       })
 
