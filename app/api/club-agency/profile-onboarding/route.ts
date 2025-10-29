@@ -5,13 +5,13 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 const clubAgencyProfileOnboardingSchema = z.object({
-  legalName: z.string().min(1, 'Nombre legal es requerido'),
+  legalName: z.string().optional(),
   commercialName: z.string().optional(),
-  entityType: z.string().min(1, 'Tipo de entidad es requerido'),
+  entityType: z.string().optional(),
   foundedYear: z.number().nullable().optional(),
-  country: z.string().default('España'),
+  country: z.string().optional(),
   province: z.string().optional(),
-  city: z.string().min(1, 'Ciudad es requerida'),
+  city: z.string().optional(),
   competitions: z.array(z.string()).optional(),
   sections: z.array(z.string()).optional(),
   rosterSize: z.number().nullable().optional(),
