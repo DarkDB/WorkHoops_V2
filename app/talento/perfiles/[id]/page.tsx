@@ -38,7 +38,8 @@ interface PageProps {
 export default async function TalentProfileDetailPage({ params }: PageProps) {
   const session = await getServerSession(authOptions)
   
-  const profile = await prisma.talentProfile.findUnique({
+  // Try to find in TalentProfile first (players)
+  const talentProfile = await prisma.talentProfile.findUnique({
     where: { id: params.id },
     include: {
       user: {
@@ -53,7 +54,39 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
     }
   })
 
-  if (!profile || !profile.isPublic) {
+  // If not found, try CoachProfile
+  const coachProfile = !talentProfile ? await prisma.coachProfile.findUnique({
+    where: { id: params.id },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          image: true,
+          planType: true
+        }
+      }
+    }
+  }) : null
+
+  // If neither found or not public, return 404
+  if (!talentProfile && !coachProfile) {
+    notFound()
+  }
+
+  if (talentProfile && !talentProfile.isPublic) {
+    notFound()
+  }
+
+  if (coachProfile && !coachProfile.isPublic) {
+    notFound()
+  }
+
+  // Determine which profile to use
+  const profile = talentProfile || coachProfile
+  const isCoach = !!coachProfile
+  
+  if (!profile) {
     notFound()
   }
 
