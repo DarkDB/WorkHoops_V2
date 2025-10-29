@@ -62,6 +62,7 @@ export async function GET(request: NextRequest) {
     // Fetch Coach Profiles (CoachProfile)
     if (!role || role === 'all' || role === 'entrenador') {
       const coachWhere: any = {
+        isPublic: true,  // Solo perfiles públicos
         profileCompletionPercentage: { gte: 50 }
       }
 
