@@ -1,111 +1,69 @@
 <analysis>
-The AI engineer's trajectory showcases an iterative development process, starting with crucial Vercel deployment stabilization (Prisma, Supabase connection pooling) and quickly moving into feature expansion. Initial focus was on resolving  and , followed by implementing core functionalities like talent profiles, Stripe payments, and a refined user dashboard. Subsequent work involved meticulous debugging of compilation errors (TypeScript type mismatches, dynamic server usage in Next.js API routes) and numerous UI/UX improvements based on detailed user feedback. Key challenges included correcting Stripe integration for annual plans, refining role-based access controls, enhancing contact mechanisms with email notifications via Resend, and building out differentiated user experiences for various roles. The engineer consistently addressed issues, refactored code (e.g., removing redundant  field), and modularized components to handle increasing complexity.
+The AI engineer's trajectory demonstrates a comprehensive effort in extending WorkHoops functionality, particularly around user profile onboarding and associated database and frontend logic. Key achievements include the successful implementation of a multi-step player profile onboarding, including form components, API endpoints, and initial data validation. A significant portion of the work involved persistent debugging of deployment failures and client-side errors, often stemming from misconfigurations in Prisma schema, database providers (SQLite vs. PostgreSQL), and enum mismatches. The engineer systematically addressed these by standardizing on PostgreSQL, updating schemas, and refining data handling in components and API routes. The latest phase involved extending the multi-step onboarding to Coach and Club/Agency roles, creating their respective form components, API endpoints, and critical Supabase migration scripts with RLS. The current focus is on refining profile completion percentage calculation and ensuring profiles display correctly on the talent page.
 </analysis>
 
 <product_requirements>
-The WorkHoops platform connects basketball stakeholders in Spain with opportunities, featuring a modern Next.js UI in Spanish, compliant with RGPD. It aims to offer displaying/publishing opportunities, talent profiles, Stripe payments, NextAuth.js authentication, file uploads (AWS S3/Supabase Storage - planned), Resend emails, favorites, and an admin panel. The initial MVP focused on robust authentication, paid publishing, an application system, role-based access control (RBAC), and Zod validation.
-
-So far, the application has stable user registration, login, and basic dashboard views. Deployment issues with Supabase (Prisma connection, pgbouncer incompatibility) have been largely resolved. Key features implemented include user profile management, Stripe payment initiation (including annual plans and correct pricing), a comprehensive talent profile creation/display system with public listings, and initial opportunity publishing with basic checks and role-based access.
-
-Recent improvements and pending work include:
-1.  **Stripe Integration:** Correct annual plan pricing on  page (from 4.99€ to 39€) and update button text.
-2.  **User Profiles & Contact:**
-    *   Implement Contactar button logic on talent profiles: collect name/email/message, activate based on Plan Pro status, show Upgrade Plan modal with benefits for non-Pro users, and notify interest for non-Pro profiles.
-    *   Ensure profile photo upload and display.
-    *   Ensure contact/interest emails are sent via Resend.
-3.  **Dashboard & Notifications:**
-    *   Show missing items for profile completion.
-    *   Differentiate dashboard for Jugador/Entrenador (applications, profile) vs. Club/Agencia (published offers, candidates).
-    *   Display interest notifications in the user dashboard.
-4.  **Content & UI:**
-    *   Update CEO info on Sobre WorkHoops page.
-    *   Change 2 months free to 4 months free on plans page.
-    *   Remove duplicate Nivel field in Publicar oferta form.
-    *   Fix 400 error on Publicar oferta form.
-    *   Remove/change Colaboramos con section.
-    *   Add Testimonios section to homepage and Sobre page.
-    *   Replace team photos with icons/avatars.
-    *   Fix broken image on Talento page.
-5.  **Club/Agency Profile & Opportunities:**
-    *   Create specific profile fields for Club/Agencia (name, type, categories, location, description, logo, social links, contact person).
-    *   Implement full edit functionality for published opportunities in the Club/Agency dashboard, including a functional Ver button.
-6.  **Admin Dashboard (Future):** Verify offers, manage resources, and a CRM for users/subscriptions.
+The WorkHoops platform aims to connect Spanish basketball stakeholders with opportunities, featuring offer display/publishing, talent profiles, Stripe payments, NextAuth.js authentication, file uploads (Supabase), Resend emails, and an admin panel. The MVP successfully delivered robust authentication, paid publishing, an application system, RBAC, and Zod validation. The application has stable registration/login, user profile management, Stripe annual plans, comprehensive talent profile creation, and opportunity publishing. Recent updates include full opportunity editing, an admin dashboard for offer/user/resource management, dynamic offer publishing limits, an application system, and a multi-step profile onboarding system tailored for Player, Coach, and Club/Agency roles. The goal is to provide a personalized, guided experience for users to complete their profiles upon registration, with continuous progress saving.
 </product_requirements>
 
 <key_technical_concepts>
--   **Frontend:** Next.js 14 (App Router), React, TypeScript, Tailwind CSS, Shadcn UI, Sonner (Toasts).
--   **Backend:** Next.js API Routes, Prisma (ORM), PostgreSQL (Supabase), NextAuth.js (Authentication), Zod (Validation).
--   **Integrations:** Supabase (Database, Storage), Resend (Emails), Stripe (Payments), PgBouncer (Connection Pooling), Vision Expert Agent (Image Generation).
--   **Deployment:** Vercel (with dynamic rendering () for API routes).
+- **Frontend**: Next.js 14 (App Router), React, TypeScript, Tailwind CSS, Shadcn UI, Zod.
+- **Backend**: Next.js API Routes, Prisma (ORM), PostgreSQL (Supabase), NextAuth.js.
+- **Integrations**: Supabase (DB, Storage), Resend (Emails), Stripe (Payments).
+- **Database Management**: SQL migrations, schema updates, Row Level Security (RLS).
+- **UI/UX**: Multi-step forms, conditional rendering, data validation.
+- **Deployment**: Vercel.
 </key_technical_concepts>
 
 <code_architecture>
 
--   ****: Important for configuring , Stripe keys ( added), and  (added).
--   ****: Defines database models.  and  models added, with relations to  and . Adjusted for PostgreSQL and enum consistency.
--   ****: Manages NextAuth.js authentication, JWT and session callbacks. Updated to correctly map user roles (, ) from Prisma and include  and  in session.
--   ****: Handles email sending via Resend. New functions (, ) added.  updated to  for testing.
--   ****: Manages Stripe API interactions. Updated to differentiate between monthly and annual plans for checkout sessions.
--   ****: Contains Zod schemas for input validation. Updated for new fields and role types.
--   ****: Extends NextAuth.js types. Updated  definition to include  and .
--   ****: Navigation component. Updated to correctly display Publicar oferta link based on user role and ensure Talento link visibility.
--   ****: **NEW** component to display specific dashboard content for Club/Agency users, including their published opportunities.
--   ****: **NEW** client component for editing opportunities.
--   ****: User registration API. Updated for .
--   ****: API for creating/listing opportunities. Updated validation schema (removed , improved  and  validation), added , and enhanced error logging.
--   ****: **NEW** API endpoint for fetching/updating a specific opportunity by slug.
--   ****: Stripe checkout API. Updated to handle  for correct price IDs. Added .
--   ****: API for talent contact. Added rate limiting, , ,  fields. Integrated . Added .
--   ****: **NEW** API endpoint for notifying interest in a talent profile. Saves  to DB and sends email. Added .
--   ****: **NEW** API endpoint for creating/updating . Added .
--   ****: User update API. Updated to accept  field and added .
--   ****: User registration page.  added to API.
--   ****: User dashboard. Modified to differentiate content based on user role, show missing profile items, query and display s, and conditionally render .
--   ****: Opportunity detail page. Integrated  and , and updated with opportunity details.
--   ****: **NEW** component for toggling favorite status.
--   ****: **NEW** component for sharing opportunities.
--   ****: **NEW** page for editing opportunities. Implemented as a server component to fetch and update an opportunity.
--   ****: Pricing plans page. Updated Stripe button text, adjusted annual savings calculation (2 to 4 months), and passes  to Stripe API.
--   ****: User profile edit page. Added image upload input (base64 conversion), and redirection logic for  roles.
--   ****: **NEW** page for Club/Agency profile editing.
--   ****: Publish opportunity form. Removed duplicate Nivel field and the  field. Added frontend logging for debugging.
--   ****: About Us page. Updated CEO text, removed Colaboramos con section, replaced team photos with icons/avatars, and added testimonials.
--   ****: Talent page. Fixed broken hero image by replacing its URL.
--   ****: Public talent profiles listing page. Filter Todos los roles confirmed functional.
--   ****: Individual talent profile page. Passes  to .
--   ****: **NEW** component for the Contactar button. Enhanced logic to display different buttons/modals based on user role (Club/Agency vs. Player/Coach) and profile plan status (Pro vs. non-Pro), including a Upgrade Plan modal and Notify Interest functionality.
--   ****: **NEW** SQL script to create the  table in Supabase.
+- ****: Central database schema. Updated extensively to include , , , , , and  models.  and  enums were also updated/corrected to reflect the application's actual usage. The provider was explicitly set to .
+- ****: Environment variables. Cleaned to exclusively use  for PostgreSQL, removing local SQLite references.
+- ****: Zod schemas for API validation. Updated  and  to handle optional fields during auto-save.
+- ****: Player onboarding step for media links. Existed as a placeholder and was verified.
+- ****: New API endpoint for creating/updating player profiles through the multi-step form.
+- ****: Dashboard page. Modified to include conditional redirection for users (Jugador, Entrenador, Club/Agencia) without complete profiles, and added Completar perfil / Editar perfil buttons based on profile status. User query was updated to fetch , , .
+- ****: Main onboarding page. Logic added to detect user role and render the appropriate multi-step onboarding component (, , ).
+- ****: Main component for player multi-step onboarding. Corrected  and  issues for null/empty profile data.
+- ****: Player onboarding step. Fixed an issue with  having an empty string , changing it to none and mapping it back to empty string for persistence.
+- ****: Individual player profile display page. Enhanced to display the newly collected detailed player profile information.
+- ****: Admin user management page. Corrected field name from  to  when querying .
+- ****: API for  profile management. Updated to use new schema fields (, etc.) and included a temporary compatibility mapping for old frontend data.
+- ****: New components for each step of the Coach onboarding form.
+- ****: Main component for Coach multi-step onboarding.
+- ****: New API endpoint for creating/updating coach profiles.
+- ****: New components for each step of the Club/Agency onboarding form.
+- ****: Main component for Club/Agency multi-step onboarding.
+- ****: New API endpoint for creating/updating club/agency profiles.
+- ****: SQL script for creating new  and  tables.
+- ****: SQL script for defining Row Level Security policies.
+- ****: Documentation for Supabase migration.
+- ****: New directory created to store old/unused Prisma schemas and SQLite database file, centralizing configuration to .
 </code_architecture>
 
 <pending_tasks>
--   **Admin Dashboard:** Develop a comprehensive admin dashboard for verifying offers, managing resources, and a CRM with user payment and subscription information.
--   **File Uploads:** Implement robust file uploads using Supabase Storage (currently using base64 for profile images as a placeholder).
--   **Email Alerts:** Develop a system for email alert notifications based on saved filters.
--   **Profile Verification:** Implement the verification process for profiles/organizations.
--   **Row Level Security (RLS):** Enable RLS policies in Supabase for enhanced database security.
+- **Admin Dashboard - Resource Management**: Complete full CRUD functionality for resources.
+- **Admin Dashboard - CRM**: Further enhance user CRM for detailed payment and subscription management.
+- **File Uploads**: Implement robust file uploads using Supabase Storage (specifically for MultimediaStep.tsx).
+- **Email Alerts**: Develop a system for email notifications based on saved filters.
+- **Profile Verification**: Implement a comprehensive verification process for profiles/organizations.
+- **Row Level Security (RLS)**: Ensure all RLS policies in Supabase are correctly enabled and functioning for new and existing tables.
+- **Player/Coach/Club-Agency Profile Onboarding Forms**:
+    - Finalize integration of  with Supabase Storage.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was tasked with a list of improvements following the successful fix of a 400 error in the opportunity publication form. The user's latest requests (Chat Message 606) were:
-1.  **Fix Profile Image Display:** Ensure the uploaded profile image is visible.
-2.  **Fix Contact Emails:** Verify and ensure interest notification emails are successfully sent to player/coach profiles.
-3.  **Refine Contact Button Logic:** Restrict player/coach profiles from contacting others, instead showing an Upgrade Plan button with a modal linking to Stripe checkout (4.99€ plan).
-4.  **Implement Full Opportunity Editing:** Complete the editing functionality for published offers by club/agency profiles.
-5.  **Develop Admin Dashboard:** Start building the Admin Dashboard, including offer verification, resource management, and a user CRM.
+Immediately before this summary request, the AI engineer was addressing user feedback regarding the profile completion percentage and visibility on the talent page. The user reported that the dashboard's profile progress bar was not filling correctly, and profiles were not appearing on the main talent page as expected.
 
-The AI engineer has already completed tasks 1, 2, and 3 from this list:
--   **Profile Image:** Corrected  to include the  field in the NextAuth.js JWT and session callbacks, enabling profile image visualization.
--   **Contact Emails:** Identified and fixed the Resend email issue in  by changing the  to  (a verified domain for testing with the provided API key).
--   **Contact Button Logic:** Updated  to conditionally render based on  and . It now shows a detailed Upgrade Plan modal with benefits and a Stripe checkout link for non-Pro player/coach profiles, while allowing Club/Agency users to notify interest or contact directly if the talent has a Pro Plan.
+The AI engineer has identified that the current percentage calculation is too basic. The work has begun to refine the  logic for both the Coach and Club/Agency onboarding API endpoints:
+- ****: The  function has been updated to include a broader set of important fields from the  model, moving beyond a basic 8-field check to ensure a more accurate reflection of profile completeness.
+- ****: Similarly, the  function has been enhanced to consider more comprehensive fields from the  model.
 
-The work being done immediately before this summary request (Chat Message 640-642) is **Implementing Edición de Ofertas Completa (Full Opportunity Editing)**. The engineer has just created a new client component, , and is in the process of updating the  page to utilize this new component for the full editing functionality.
+The next immediate steps planned are to:
+1. Update the dashboard to correctly display the enhanced percentage.
+2. Implement filtering on the talent page () to only show profiles that meet a minimum completion threshold (e.g., 50%). The engineer is currently investigating the API endpoint used by the client-side talent profiles page to apply this filtering.
 </current_work>
 
 <optional_next_step>
-Complete the implementation of  and integrate it into  to provide full opportunity editing functionality.
+Identify and modify the API endpoint that  uses to filter profiles based on completion percentage.
 </optional_next_step>
-<direct_quote>
-User: Y haz el paso recomendado que me has dicho. (Chat Message 606)
-AI Engineer: ¡Perfecto! Voy a continuar con las tareas pendientes: **Edición de ofertas** y **Admin Dashboard completo**. (Chat Message 640)
-AI Engineer: Primero voy a crear un componente cliente completo para la edición: Ahora voy a actualizar la página de edición para usar este componente: (Chat Message 641-642)
-</direct_quote>

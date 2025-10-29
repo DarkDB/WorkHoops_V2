@@ -6,7 +6,7 @@ El Admin Dashboard está completamente implementado y funcional. Aquí te explic
 ## 🚀 Opción 1: Crear cuenta de Admin manualmente (RECOMENDADO)
 
 ### Paso 1: Registrarse en WorkHoops
-1. Ve a: https://courtconnect-9.preview.emergentagent.com/auth/register
+1. Ve a: https://workhoops-profiles.preview.emergentagent.com/auth/register
 2. Registra una cuenta nueva con tu email
 3. Completa el registro normalmente
 
@@ -42,12 +42,12 @@ Una vez que tengas acceso de admin, puedes acceder a:
 
 ### Panel Principal
 ```
-https://courtconnect-9.preview.emergentagent.com/admin
+https://workhoops-profiles.preview.emergentagent.com/admin
 ```
 
 ### Gestión de Ofertas
 ```
-https://courtconnect-9.preview.emergentagent.com/admin/opportunities
+https://workhoops-profiles.preview.emergentagent.com/admin/opportunities
 ```
 Aquí puedes:
 - ✅ Aprobar ofertas en estado "borrador"
@@ -58,7 +58,7 @@ Aquí puedes:
 
 ### Gestión de Usuarios (CRM)
 ```
-https://courtconnect-9.preview.emergentagent.com/admin/users
+https://workhoops-profiles.preview.emergentagent.com/admin/users
 ```
 Aquí puedes ver:
 - 👥 Lista completa de usuarios

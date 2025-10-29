@@ -12,7 +12,7 @@ from datetime import datetime
 import uuid
 
 # Configuration
-BASE_URL = "https://courtconnect-9.preview.emergentagent.com"  # Next.js frontend URL
+BASE_URL = "https://workhoops-profiles.preview.emergentagent.com"  # Next.js frontend URL
 API_BASE = f"{BASE_URL}/api"
 
 class Colors:
