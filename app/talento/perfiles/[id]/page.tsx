@@ -616,13 +616,13 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                       </div>
                     </div>
                   )}
-                  {profile.weeklyCommitment && (
+                  {!isCoach && (profile as any).weeklyCommitment && (
                     <div>
                       <p className="text-sm font-medium text-gray-700">Disponibilidad semanal</p>
-                      <p className="text-gray-900">{profile.weeklyCommitment} horas/semana</p>
+                      <p className="text-gray-900">{(profile as any).weeklyCommitment} horas/semana</p>
                     </div>
                   )}
-                  {profile.willingToTravel && (
+                  {!isCoach && (profile as any).willingToTravel && (
                     <div>
                       <Badge className="bg-purple-100 text-purple-800">
                         <MapPin className="w-3 h-3 mr-1" />
