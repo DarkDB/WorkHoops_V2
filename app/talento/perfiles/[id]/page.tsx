@@ -332,7 +332,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
             </Card>
 
             {/* Player Skills */}
-            {profile.role === 'jugador' && profile.playerSkills && (
+            {!isCoach && (profile as any).role === 'jugador' && (profile as any).playerSkills && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
@@ -347,7 +347,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">Ofensivas</h4>
                       <div className="space-y-2">
                         {['threePointShot', 'midRangeShot', 'finishing', 'ballHandling', 'playmaking', 'offBallMovement'].map((skill) => {
-                          const value = profile.playerSkills![skill as keyof typeof profile.playerSkills] as number
+                          const value = (profile as any).playerSkills![skill as keyof typeof (profile as any).playerSkills] as number
                           return (
                             <div key={skill} className="flex items-center justify-between">
                               <span className="text-sm text-gray-600">{getSkillLabel(skill)}</span>
@@ -366,7 +366,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">Defensivas</h4>
                       <div className="space-y-2">
                         {['individualDefense', 'teamDefense', 'offensiveRebound', 'defensiveRebound'].map((skill) => {
-                          const value = profile.playerSkills![skill as keyof typeof profile.playerSkills] as number
+                          const value = (profile as any).playerSkills![skill as keyof typeof (profile as any).playerSkills] as number
                           return (
                             <div key={skill} className="flex items-center justify-between">
                               <span className="text-sm text-gray-600">{getSkillLabel(skill)}</span>
@@ -385,10 +385,82 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">Físico y Mental</h4>
                       <div className="space-y-2">
                         {['speed', 'athleticism', 'endurance', 'leadership', 'decisionMaking'].map((skill) => {
-                          const value = profile.playerSkills![skill as keyof typeof profile.playerSkills] as number
+                          const value = (profile as any).playerSkills![skill as keyof typeof (profile as any).playerSkills] as number
                           return (
                             <div key={skill} className="flex items-center justify-between">
                               <span className="text-sm text-gray-600">{getSkillLabel(skill)}</span>
+                              <div className="flex items-center space-x-2">
+                                <Progress value={value * 20} className="w-24 h-2" />
+                                <span className="text-sm font-medium text-gray-900 w-8">{value}/5</span>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Coach Skills */}
+            {isCoach && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Activity className="w-5 h-5 mr-2 text-workhoops-accent" />
+                    Habilidades Técnicas
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Technical Skills */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Habilidades Técnicas</h4>
+                      <div className="space-y-2">
+                        {['trainingPlanning', 'individualDevelopment', 'offensiveTactics', 'defensiveTactics', 'groupManagement', 'scoutingAnalysis'].map((skill) => {
+                          const value = (profile as any)[skill] as number
+                          return (
+                            <div key={skill} className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">{getCoachSkillLabel(skill)}</span>
+                              <div className="flex items-center space-x-2">
+                                <Progress value={value * 20} className="w-24 h-2" />
+                                <span className="text-sm font-medium text-gray-900 w-8">{value}/5</span>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Communication & Management */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Comunicación y Gestión</h4>
+                      <div className="space-y-2">
+                        {['communication', 'staffManagement', 'tacticalAdaptability', 'digitalTools', 'physicalPreparation', 'youthDevelopment'].map((skill) => {
+                          const value = (profile as any)[skill] as number
+                          return (
+                            <div key={skill} className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">{getCoachSkillLabel(skill)}</span>
+                              <div className="flex items-center space-x-2">
+                                <Progress value={value * 20} className="w-24 h-2" />
+                                <span className="text-sm font-medium text-gray-900 w-8">{value}/5</span>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Soft Skills */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Competencias Personales</h4>
+                      <div className="space-y-2">
+                        {['leadership', 'teamwork', 'conflictResolution', 'organization', 'adaptability', 'innovation'].map((skill) => {
+                          const value = (profile as any)[skill] as number
+                          return (
+                            <div key={skill} className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">{getCoachSkillLabel(skill)}</span>
                               <div className="flex items-center space-x-2">
                                 <Progress value={value * 20} className="w-24 h-2" />
                                 <span className="text-sm font-medium text-gray-900 w-8">{value}/5</span>
