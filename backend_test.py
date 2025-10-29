@@ -1735,7 +1735,13 @@ class BackendTester:
         
         # PROFILE COMPLETION PERCENTAGE & FILTERING TESTING
         self.test_profile_completion_percentage_calculation()
-        self.test_talent_list_filtering()
+        
+        # MULTI-TABLE QUERY TESTING (Critical Fix)
+        self.test_multi_table_talent_list_query()
+        self.test_role_filtering()
+        self.test_city_filtering_multi_table()
+        self.test_data_normalization()
+        
         self.test_coach_profile_onboarding()
         self.test_club_agency_profile_onboarding()
         
