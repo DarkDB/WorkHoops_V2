@@ -162,6 +162,30 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
     return 'bg-gray-400'
   }
 
+  const getCoachSkillLabel = (skill: string) => {
+    const labels: Record<string, string> = {
+      trainingPlanning: 'Planificación de entrenamientos',
+      individualDevelopment: 'Desarrollo individual',
+      offensiveTactics: 'Táctica ofensiva',
+      defensiveTactics: 'Táctica defensiva',
+      groupManagement: 'Gestión de grupo',
+      scoutingAnalysis: 'Análisis y scouting',
+      staffManagement: 'Gestión de staff',
+      communication: 'Comunicación',
+      tacticalAdaptability: 'Adaptabilidad táctica',
+      digitalTools: 'Herramientas digitales',
+      physicalPreparation: 'Preparación física',
+      youthDevelopment: 'Desarrollo juvenil',
+      leadership: 'Liderazgo',
+      teamwork: 'Trabajo en equipo',
+      conflictResolution: 'Resolución de conflictos',
+      organization: 'Organización',
+      adaptability: 'Adaptabilidad',
+      innovation: 'Innovación'
+    }
+    return labels[skill] || skill
+  }
+
   // Parse JSON fields safely
   const parseJsonField = (field: string | null): string[] => {
     if (!field) return []
