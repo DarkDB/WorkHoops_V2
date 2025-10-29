@@ -1213,13 +1213,13 @@ class BackendTester:
         print_info("Note: Profile completion percentage calculation requires authentication.")
         print_info("The weighted calculation system is implemented with 15 fields and importance weights.")
         
-    def test_talent_list_filtering(self):
-        """Test talent list filtering with 50% minimum completion"""
-        print_test_header("Talent List Filtering (50% Minimum)")
+    def test_multi_table_talent_list_query(self):
+        """Test the Multi-Table Query for Talent/Coach Profiles List"""
+        print_test_header("Multi-Table Talent/Coach Profiles Query")
         
+        # Test 1: Get all profiles (both players and coaches)
         try:
-            # Test GET /api/talent/list
-            response = self.session.get(f"{NEXTJS_API_BASE}/talent/list", timeout=15)
+            response = self.session.get(f"{API_BASE}/talent/list", timeout=15)
             
             if response.status_code == 200:
                 print_success("GET /api/talent/list - Success")
@@ -1227,9 +1227,22 @@ class BackendTester:
                 try:
                     data = response.json()
                     if 'profiles' in data and isinstance(data['profiles'], list):
-                        print_success(f"Response format correct - found {len(data['profiles'])} profiles")
+                        print_success(f"Response format correct - found {len(data['profiles'])} total profiles")
                         
-                        # Check if filtering is working (all profiles should have >= 50% completion)
+                        # Analyze profile types
+                        players = [p for p in data['profiles'] if p.get('role') == 'jugador']
+                        coaches = [p for p in data['profiles'] if p.get('role') == 'entrenador']
+                        
+                        print_info(f"  └─ Players (jugador): {len(players)}")
+                        print_info(f"  └─ Coaches (entrenador): {len(coaches)}")
+                        
+                        if len(coaches) > 0:
+                            print_success("✓ Multi-table query working - Coach profiles are included!")
+                        else:
+                            print_warning("⚠ No coach profiles found - may indicate issue with CoachProfile table query")
+                            self.test_results['warnings'] += 1
+                        
+                        # Check completion percentage filtering (>= 50%)
                         filtered_correctly = True
                         low_completion_profiles = []
                         
@@ -1240,6 +1253,7 @@ class BackendTester:
                                 low_completion_profiles.append({
                                     'id': profile.get('id', 'unknown'),
                                     'fullName': profile.get('fullName', 'unknown'),
+                                    'role': profile.get('role', 'unknown'),
                                     'completion': completion
                                 })
                         
@@ -1258,51 +1272,280 @@ class BackendTester:
                         else:
                             print_error(f"✗ Found {len(low_completion_profiles)} profiles with < 50% completion")
                             for profile in low_completion_profiles[:3]:  # Show first 3
-                                print_error(f"  └─ {profile['fullName']}: {profile['completion']}%")
+                                print_error(f"  └─ {profile['fullName']} ({profile['role']}): {profile['completion']}%")
                             self.test_results['failed'] += 1
-                            self.log_error("Talent List Filtering", f"Found {len(low_completion_profiles)} profiles below 50% threshold")
+                            self.log_error("Multi-Table Query", f"Found {len(low_completion_profiles)} profiles below 50% threshold")
                         
-                        # Check profile structure
+                        # Check data structure consistency
                         if data['profiles']:
                             profile = data['profiles'][0]
-                            required_fields = ['id', 'fullName', 'profileCompletionPercentage', 'role', 'city']
+                            required_fields = ['id', 'fullName', 'profileCompletionPercentage', 'role', 'city', 'user']
                             missing_fields = [field for field in required_fields if field not in profile]
                             
                             if missing_fields:
                                 print_warning(f"Profile structure missing fields: {missing_fields}")
                                 self.test_results['warnings'] += 1
                             else:
-                                print_success("Profile structure is complete")
+                                print_success("✓ Profile data structure is complete and normalized")
                         
-                        # Check total count
-                        if 'total' in data:
-                            print_success(f"Total count provided: {data['total']}")
-                        else:
-                            print_warning("Total count missing from response")
-                            self.test_results['warnings'] += 1
+                        self.test_results['passed'] += 1
                             
                     else:
                         print_error("Response format incorrect - missing 'profiles' array")
                         self.test_results['failed'] += 1
-                        self.log_error("Talent List Filtering", "Invalid response format")
+                        self.log_error("Multi-Table Query", "Invalid response format")
                         
                 except json.JSONDecodeError:
                     print_error("Response is not valid JSON")
                     self.test_results['failed'] += 1
-                    self.log_error("Talent List Filtering", "Invalid JSON response")
-                    
-                self.test_results['passed'] += 1
+                    self.log_error("Multi-Table Query", "Invalid JSON response")
                 
             else:
                 print_error(f"GET /api/talent/list failed with status {response.status_code}")
                 print_error(f"Response: {response.text[:300]}")
                 self.test_results['failed'] += 1
-                self.log_error("Talent List Filtering", f"Status: {response.status_code}, Response: {response.text[:300]}")
+                self.log_error("Multi-Table Query", f"Status: {response.status_code}, Response: {response.text[:300]}")
                 
         except Exception as e:
-            print_error(f"Talent list filtering test failed: {str(e)}")
+            print_error(f"Multi-table query test failed: {str(e)}")
             self.test_results['failed'] += 1
-            self.log_error("Talent List Filtering", str(e))
+            self.log_error("Multi-Table Query", str(e))
+
+    def test_role_filtering(self):
+        """Test role-based filtering for talent list"""
+        print_test_header("Role-Based Filtering")
+        
+        # Test 1: Filter by jugador (players only)
+        try:
+            response = self.session.get(f"{API_BASE}/talent/list?role=jugador", timeout=15)
+            
+            if response.status_code == 200:
+                print_success("GET /api/talent/list?role=jugador - Success")
+                
+                try:
+                    data = response.json()
+                    if 'profiles' in data:
+                        players_only = all(p.get('role') == 'jugador' for p in data['profiles'])
+                        if players_only:
+                            print_success(f"✓ Player filter working - {len(data['profiles'])} players returned")
+                        else:
+                            print_error("✗ Player filter failed - non-player profiles returned")
+                            self.test_results['failed'] += 1
+                            self.log_error("Role Filtering", "Player filter not working correctly")
+                        
+                        self.test_results['passed'] += 1
+                    else:
+                        print_error("Invalid response format for player filter")
+                        self.test_results['failed'] += 1
+                        
+                except json.JSONDecodeError:
+                    print_error("Player filter response is not valid JSON")
+                    self.test_results['failed'] += 1
+                    
+            else:
+                print_error(f"Player filter failed with status {response.status_code}")
+                self.test_results['failed'] += 1
+                
+        except Exception as e:
+            print_error(f"Player filter test failed: {str(e)}")
+            self.test_results['failed'] += 1
+            
+        # Test 2: Filter by entrenador (coaches only)
+        try:
+            response = self.session.get(f"{API_BASE}/talent/list?role=entrenador", timeout=15)
+            
+            if response.status_code == 200:
+                print_success("GET /api/talent/list?role=entrenador - Success")
+                
+                try:
+                    data = response.json()
+                    if 'profiles' in data:
+                        coaches_only = all(p.get('role') == 'entrenador' for p in data['profiles'])
+                        if coaches_only:
+                            print_success(f"✓ Coach filter working - {len(data['profiles'])} coaches returned")
+                            
+                            # This is the critical test - coaches should appear here
+                            if len(data['profiles']) > 0:
+                                print_success("✓ CRITICAL: Coach profiles are being returned from CoachProfile table!")
+                                
+                                # Show sample coach data
+                                coach = data['profiles'][0]
+                                print_info(f"  └─ Sample coach: {coach.get('fullName', 'N/A')} ({coach.get('profileCompletionPercentage', 0)}% complete)")
+                            else:
+                                print_warning("⚠ No coach profiles found - this may indicate the original issue")
+                                self.test_results['warnings'] += 1
+                        else:
+                            print_error("✗ Coach filter failed - non-coach profiles returned")
+                            self.test_results['failed'] += 1
+                            self.log_error("Role Filtering", "Coach filter not working correctly")
+                        
+                        self.test_results['passed'] += 1
+                    else:
+                        print_error("Invalid response format for coach filter")
+                        self.test_results['failed'] += 1
+                        
+                except json.JSONDecodeError:
+                    print_error("Coach filter response is not valid JSON")
+                    self.test_results['failed'] += 1
+                    
+            else:
+                print_error(f"Coach filter failed with status {response.status_code}")
+                self.test_results['failed'] += 1
+                
+        except Exception as e:
+            print_error(f"Coach filter test failed: {str(e)}")
+            self.test_results['failed'] += 1
+
+        # Test 3: Filter by 'all' (should return both)
+        try:
+            response = self.session.get(f"{API_BASE}/talent/list?role=all", timeout=15)
+            
+            if response.status_code == 200:
+                print_success("GET /api/talent/list?role=all - Success")
+                
+                try:
+                    data = response.json()
+                    if 'profiles' in data:
+                        players = [p for p in data['profiles'] if p.get('role') == 'jugador']
+                        coaches = [p for p in data['profiles'] if p.get('role') == 'entrenador']
+                        
+                        print_success(f"✓ 'All' filter working - {len(players)} players + {len(coaches)} coaches = {len(data['profiles'])} total")
+                        self.test_results['passed'] += 1
+                    else:
+                        print_error("Invalid response format for 'all' filter")
+                        self.test_results['failed'] += 1
+                        
+                except json.JSONDecodeError:
+                    print_error("'All' filter response is not valid JSON")
+                    self.test_results['failed'] += 1
+                    
+            else:
+                print_error(f"'All' filter failed with status {response.status_code}")
+                self.test_results['failed'] += 1
+                
+        except Exception as e:
+            print_error(f"'All' filter test failed: {str(e)}")
+            self.test_results['failed'] += 1
+
+    def test_city_filtering_multi_table(self):
+        """Test city filtering across both tables"""
+        print_test_header("City Filtering (Multi-Table)")
+        
+        try:
+            # Test city filter with Madrid (common city)
+            response = self.session.get(f"{API_BASE}/talent/list?city=Madrid", timeout=15)
+            
+            if response.status_code == 200:
+                print_success("GET /api/talent/list?city=Madrid - Success")
+                
+                try:
+                    data = response.json()
+                    if 'profiles' in data:
+                        madrid_profiles = [p for p in data['profiles'] if 'madrid' in p.get('city', '').lower()]
+                        
+                        if len(madrid_profiles) == len(data['profiles']):
+                            print_success(f"✓ City filter working correctly - {len(madrid_profiles)} Madrid profiles")
+                            
+                            # Check if both players and coaches from Madrid are included
+                            madrid_players = [p for p in madrid_profiles if p.get('role') == 'jugador']
+                            madrid_coaches = [p for p in madrid_profiles if p.get('role') == 'entrenador']
+                            
+                            print_info(f"  └─ Madrid players: {len(madrid_players)}")
+                            print_info(f"  └─ Madrid coaches: {len(madrid_coaches)}")
+                            
+                            if len(madrid_coaches) > 0:
+                                print_success("✓ City filtering works for coaches from CoachProfile table")
+                            
+                        else:
+                            print_warning(f"⚠ City filter may not be working perfectly - {len(madrid_profiles)}/{len(data['profiles'])} match")
+                            self.test_results['warnings'] += 1
+                        
+                        self.test_results['passed'] += 1
+                    else:
+                        print_error("Invalid response format for city filter")
+                        self.test_results['failed'] += 1
+                        
+                except json.JSONDecodeError:
+                    print_error("City filter response is not valid JSON")
+                    self.test_results['failed'] += 1
+                    
+            else:
+                print_error(f"City filter failed with status {response.status_code}")
+                self.test_results['failed'] += 1
+                
+        except Exception as e:
+            print_error(f"City filter test failed: {str(e)}")
+            self.test_results['failed'] += 1
+
+    def test_data_normalization(self):
+        """Test that data from both tables is properly normalized"""
+        print_test_header("Data Normalization Verification")
+        
+        try:
+            response = self.session.get(f"{API_BASE}/talent/list", timeout=15)
+            
+            if response.status_code == 200:
+                print_success("GET /api/talent/list - Success")
+                
+                try:
+                    data = response.json()
+                    if 'profiles' in data and len(data['profiles']) > 0:
+                        
+                        # Check that all profiles have the same structure
+                        required_fields = ['id', 'fullName', 'role', 'city', 'country', 'profileCompletionPercentage', 'user']
+                        
+                        structure_consistent = True
+                        for i, profile in enumerate(data['profiles']):
+                            missing_fields = [field for field in required_fields if field not in profile]
+                            if missing_fields:
+                                print_error(f"Profile {i} missing fields: {missing_fields}")
+                                structure_consistent = False
+                        
+                        if structure_consistent:
+                            print_success("✓ All profiles have consistent normalized structure")
+                        else:
+                            print_error("✗ Profile structure inconsistency detected")
+                            self.test_results['failed'] += 1
+                            self.log_error("Data Normalization", "Inconsistent profile structure")
+                        
+                        # Check role-specific fields
+                        players = [p for p in data['profiles'] if p.get('role') == 'jugador']
+                        coaches = [p for p in data['profiles'] if p.get('role') == 'entrenador']
+                        
+                        if players:
+                            player = players[0]
+                            if 'position' in player and 'height' in player and 'weight' in player:
+                                print_success("✓ Player profiles include position/height/weight fields")
+                            else:
+                                print_warning("⚠ Player profiles may be missing expected fields")
+                                self.test_results['warnings'] += 1
+                        
+                        if coaches:
+                            coach = coaches[0]
+                            # For coaches, position field should contain currentLevel or similar
+                            if 'position' in coach:
+                                print_success("✓ Coach profiles include position field (mapped from currentLevel)")
+                            else:
+                                print_warning("⚠ Coach profiles missing position mapping")
+                                self.test_results['warnings'] += 1
+                        
+                        self.test_results['passed'] += 1
+                        
+                    else:
+                        print_error("No profiles found for normalization test")
+                        self.test_results['failed'] += 1
+                        
+                except json.JSONDecodeError:
+                    print_error("Response is not valid JSON")
+                    self.test_results['failed'] += 1
+                    
+            else:
+                print_error(f"Data normalization test failed with status {response.status_code}")
+                self.test_results['failed'] += 1
+                
+        except Exception as e:
+            print_error(f"Data normalization test failed: {str(e)}")
+            self.test_results['failed'] += 1
 
     def test_coach_profile_onboarding(self):
         """Test coach profile onboarding completion percentage"""
