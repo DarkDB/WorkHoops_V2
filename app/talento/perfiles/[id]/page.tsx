@@ -352,7 +352,8 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">Ofensivas</h4>
                       <div className="space-y-2">
                         {['threePointShot', 'midRangeShot', 'finishing', 'ballHandling', 'playmaking', 'offBallMovement'].map((skill) => {
-                          const value = (profile as any).playerSkills![skill as keyof typeof (profile as any).playerSkills] as number
+                          const playerSkills = (profile as any).playerSkills
+                          const value = playerSkills[skill] as number
                           return (
                             <div key={skill} className="flex items-center justify-between">
                               <span className="text-sm text-gray-600">{getSkillLabel(skill)}</span>
@@ -371,7 +372,8 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">Defensivas</h4>
                       <div className="space-y-2">
                         {['individualDefense', 'teamDefense', 'offensiveRebound', 'defensiveRebound'].map((skill) => {
-                          const value = (profile as any).playerSkills![skill as keyof typeof (profile as any).playerSkills] as number
+                          const playerSkills = (profile as any).playerSkills
+                          const value = playerSkills[skill] as number
                           return (
                             <div key={skill} className="flex items-center justify-between">
                               <span className="text-sm text-gray-600">{getSkillLabel(skill)}</span>
@@ -390,7 +392,8 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">Físico y Mental</h4>
                       <div className="space-y-2">
                         {['speed', 'athleticism', 'endurance', 'leadership', 'decisionMaking'].map((skill) => {
-                          const value = (profile as any).playerSkills![skill as keyof typeof (profile as any).playerSkills] as number
+                          const playerSkills = (profile as any).playerSkills
+                          const value = playerSkills[skill] as number
                           return (
                             <div key={skill} className="flex items-center justify-between">
                               <span className="text-sm text-gray-600">{getSkillLabel(skill)}</span>
