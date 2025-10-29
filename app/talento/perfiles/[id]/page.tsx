@@ -627,7 +627,8 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
             )}
 
             {/* Videos & Media */}
-            {(profile.videoUrl || profile.fullGameUrl || photoUrls.length > 0) && (
+            {((!isCoach && ((profile as any).videoUrl || (profile as any).fullGameUrl || photoUrls.length > 0)) ||
+              (isCoach && ((profile as any).videoUrl || (profile as any).presentationsUrl || photoUrls.length > 0))) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
@@ -636,25 +637,27 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {profile.videoUrl && (
+                  {(profile as any).videoUrl && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-2">Video de highlights</p>
+                      <p className="text-sm font-medium text-gray-700 mb-2">
+                        {isCoach ? 'Video de presentación' : 'Video de highlights'}
+                      </p>
                       <a 
-                        href={profile.videoUrl} 
+                        href={(profile as any).videoUrl} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="flex items-center text-workhoops-accent hover:underline"
                       >
                         <Youtube className="w-5 h-5 mr-2" />
-                        Ver video destacado
+                        {isCoach ? 'Ver video de presentación' : 'Ver video destacado'}
                       </a>
                     </div>
                   )}
-                  {profile.fullGameUrl && (
+                  {!isCoach && (profile as any).fullGameUrl && (
                     <div>
                       <p className="text-sm font-medium text-gray-700 mb-2">Partido completo</p>
                       <a 
-                        href={profile.fullGameUrl} 
+                        href={(profile as any).fullGameUrl} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="flex items-center text-workhoops-accent hover:underline"
@@ -664,11 +667,25 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                       </a>
                     </div>
                   )}
-                  {profile.socialUrl && (
+                  {isCoach && (profile as any).presentationsUrl && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-2">Presentaciones y material</p>
+                      <a 
+                        href={(profile as any).presentationsUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center text-workhoops-accent hover:underline"
+                      >
+                        <Video className="w-5 h-5 mr-2" />
+                        Ver presentaciones
+                      </a>
+                    </div>
+                  )}
+                  {(profile as any).socialUrl && (
                     <div>
                       <p className="text-sm font-medium text-gray-700 mb-2">Redes sociales</p>
                       <a 
-                        href={profile.socialUrl} 
+                        href={(profile as any).socialUrl} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="flex items-center text-workhoops-accent hover:underline"
