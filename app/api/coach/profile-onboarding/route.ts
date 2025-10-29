@@ -160,7 +160,8 @@ export async function POST(request: NextRequest) {
       innovation: validatedData.innovation,
       bio: validatedData.bio || null,
       
-      profileCompletionPercentage
+      profileCompletionPercentage,
+      isPublic: true  // Asegurar que el perfil sea público
     }
 
     if (existingProfile) {
