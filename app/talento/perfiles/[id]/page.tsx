@@ -92,15 +92,21 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
 
   const canContact = profile.user.planType === 'pro_semipro' || profile.user.planType === 'destacado'
 
-  const calculateAge = (birthDate: Date) => {
-    const today = new Date()
-    const birth = new Date(birthDate)
-    let age = today.getFullYear() - birth.getFullYear()
-    const monthDiff = today.getMonth() - birth.getMonth()
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--
+  const calculateAge = (birthDate?: Date | null, birthYear?: number | null) => {
+    if (birthDate) {
+      const today = new Date()
+      const birth = new Date(birthDate)
+      let age = today.getFullYear() - birth.getFullYear()
+      const monthDiff = today.getMonth() - birth.getMonth()
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--
+      }
+      return age
     }
-    return age
+    if (birthYear) {
+      return new Date().getFullYear() - birthYear
+    }
+    return null
   }
 
   const getRoleLabel = (role: string) => {
