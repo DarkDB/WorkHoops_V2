@@ -96,13 +96,13 @@ export async function POST(request: NextRequest) {
     })
 
     const profileData = {
-      legalName: validatedData.legalName,
+      legalName: validatedData.legalName || '',
       commercialName: validatedData.commercialName || null,
-      entityType: validatedData.entityType,
+      entityType: validatedData.entityType || '',
       foundedYear: validatedData.foundedYear || null,
-      country: validatedData.country,
+      country: validatedData.country || 'España',
       province: validatedData.province || null,
-      city: validatedData.city,
+      city: validatedData.city || '',
       competitions: validatedData.competitions ? JSON.stringify(validatedData.competitions) : null,
       sections: validatedData.sections ? JSON.stringify(validatedData.sections) : null,
       rosterSize: validatedData.rosterSize || null,
