@@ -1488,6 +1488,12 @@ class BackendTester:
         self.test_player_profile_onboarding_system()
         self.test_profile_complete_page_access()
         
+        # PROFILE COMPLETION PERCENTAGE & FILTERING TESTING
+        self.test_profile_completion_percentage_calculation()
+        self.test_talent_list_filtering()
+        self.test_coach_profile_onboarding()
+        self.test_club_agency_profile_onboarding()
+        
         # Print summary
         self.print_summary()
         
