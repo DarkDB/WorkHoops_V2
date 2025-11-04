@@ -4,16 +4,11 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { ArrowRight, Star, Users, Trophy, Shield, CheckCircle, Upload, MapPin, Calendar } from 'lucide-react'
+import { ArrowRight, Star, Users, Trophy, Shield, CheckCircle, User, FileText, Briefcase, Quote } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/Navbar'
-import { toast } from 'sonner'
 
 const benefits = [
   {
@@ -38,47 +33,79 @@ const benefits = [
   }
 ]
 
-const roles = [
-  'Jugador/a',
-  'Entrenador/a', 
-  'Entrenador/a Asistente',
-  'Preparador/a Físico',
-  'Fisioterapeuta',
-  'Árbitro/a',
-  'Directivo/a',
-  'Ojeador/a'
+const processSteps = [
+  {
+    number: 1,
+    icon: <User className="w-8 h-8" />,
+    title: 'Regístrate',
+    description: 'Crea tu cuenta y elige tu rol: Jugador o Entrenador'
+  },
+  {
+    number: 2,
+    icon: <FileText className="w-8 h-8" />,
+    title: 'Completa tu perfil',
+    description: 'Formulario multi-paso personalizado según tu rol con toda tu información profesional'
+  },
+  {
+    number: 3,
+    icon: <Briefcase className="w-8 h-8" />,
+    title: 'Conecta con oportunidades',
+    description: 'Los clubes y agencias te encontrarán y podrán contactarte directamente'
+  }
 ]
 
-const positions = [
-  'Base (Point Guard)',
-  'Escolta (Shooting Guard)', 
-  'Alero (Small Forward)',
-  'Ala-Pívot (Power Forward)',
-  'Pívot (Center)',
-  'Polivalente'
+const testimonials = [
+  {
+    name: 'Carlos Martínez',
+    role: 'Base - ACB',
+    image: '👤',
+    quote: 'Gracias a WorkHoops conseguí mi primer contrato profesional en ACB. El proceso fue muy sencillo y los clubes pudieron ver todo mi potencial.',
+    achievement: 'Fichó por CB Estudiantes'
+  },
+  {
+    name: 'Laura Sánchez',
+    role: 'Entrenadora - EBA',
+    image: '👤',
+    quote: 'Como entrenadora, tener un perfil completo me ayudó a destacar. Ahora dirijo un equipo de EBA y todo empezó aquí.',
+    achievement: 'Primer entrenador en CB Morón'
+  },
+  {
+    name: 'Miguel Ángel Torres',
+    role: 'Alero - LEB Oro',
+    image: '👤',
+    quote: 'La visibilidad que da WorkHoops es increíble. Recibí varias ofertas de clubes que nunca hubieran sabido de mí sin esta plataforma.',
+    achievement: 'Fichó por Tizona Burgos'
+  }
+]
+
+const faqs = [
+  {
+    question: '¿Qué incluye mi perfil?',
+    answer: 'Tu perfil incluye datos personales, información técnica (altura, peso, posición), habilidades evaluadas, historial deportivo, videos destacados, logros y mucho más. Todo adaptado a tu rol específico.'
+  },
+  {
+    question: '¿Quién puede ver mi perfil?',
+    answer: 'Tu perfil es visible para clubes, agencias y reclutadores registrados en la plataforma. Tú controlas la visibilidad y puedes hacer tu perfil público o privado en cualquier momento.'
+  },
+  {
+    question: '¿Es gratuito crear un perfil?',
+    answer: 'Sí, crear y mantener tu perfil es completamente gratuito. Ofrecemos planes premium con características adicionales como mayor visibilidad y estadísticas avanzadas.'
+  },
+  {
+    question: '¿Cuánto tiempo tarda en completarse el perfil?',
+    answer: 'El formulario multi-paso está diseñado para completarse en 10-15 minutos. Puedes guardar tu progreso y continuar más tarde si lo necesitas.'
+  }
 ]
 
 export default function TalentoPage() {
   const router = useRouter()
   const { data: session, status } = useSession()
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [hasProfile, setHasProfile] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [formData, setFormData] = useState({
-    fullName: '',
-    birthDate: '',
-    role: '',
-    city: '',
-    position: '',
-    height: '',
-    weight: '',
-    bio: '',
-    video: '',
-    social: ''
-  })
 
-  // Load existing talent profile if user is logged in
+  // Check if user has a profile
   useEffect(() => {
-    const loadProfile = async () => {
+    const checkProfile = async () => {
       if (status === 'loading') return
       
       if (session?.user) {
@@ -86,18 +113,17 @@ export default function TalentoPage() {
           const response = await fetch('/api/talent/profile')
           if (response.ok) {
             const data = await response.json()
-            if (data.profile) {
-              setFormData({
-                fullName: data.profile.fullName || '',
-                birthDate: data.profile.birthDate ? new Date(data.profile.birthDate).toISOString().split('T')[0] : '',
-                role: data.profile.role || '',
-                city: data.profile.city || '',
-                position: data.profile.position || '',
-                height: data.profile.height?.toString() || '',
-                weight: data.profile.weight?.toString() || '',
-                bio: data.profile.bio || '',
-                video: data.profile.videoUrl || '',
-                social: data.profile.socialUrl || ''
+            setHasProfile(!!data.profile)
+          }
+        } catch (err) {
+          console.error('Error checking profile:', err)
+        }
+      }
+      setIsLoading(false)
+    }
+
+    checkProfile()
+  }, [session, status])
               })
             }
           }
