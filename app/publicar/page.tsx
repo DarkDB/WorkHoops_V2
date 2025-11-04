@@ -26,6 +26,48 @@ const opportunityTypes = [
   { value: 'patrocinio', label: 'Patrocinio', description: 'Apoyo económico o material' }
 ]
 
+const clubBenefits = [
+  {
+    icon: <Target className="w-6 h-6" />,
+    title: 'Acceso a talento verificado',
+    description: 'Conecta con jugadores y entrenadores con perfiles completos y verificados'
+  },
+  {
+    icon: <Users className="w-6 h-6" />,
+    title: 'Alcance nacional e internacional',
+    description: 'Tu oferta es visible para miles de profesionales en toda España'
+  },
+  {
+    icon: <TrendingUp className="w-6 h-6" />,
+    title: 'Sistema de filtrado avanzado',
+    description: 'Los candidatos pueden encontrar tu oferta según sus preferencias y habilidades'
+  },
+  {
+    icon: <BarChart3 className="w-6 h-6" />,
+    title: 'Gestión centralizada',
+    description: 'Administra todas tus ofertas y candidatos desde un solo panel'
+  }
+]
+
+const planFeatures = [
+  {
+    title: 'Publicaciones ilimitadas',
+    description: 'Sin límite de ofertas activas al mismo tiempo'
+  },
+  {
+    title: 'Visibilidad destacada',
+    description: 'Tus ofertas aparecen en posiciones premium'
+  },
+  {
+    title: 'Acceso a estadísticas',
+    description: 'Métricas de visualizaciones y aplicaciones'
+  },
+  {
+    title: 'Soporte prioritario',
+    description: 'Asistencia dedicada para tu club'
+  }
+]
+
 const levels = [
   // Profesional
   { value: 'acb', label: 'ACB - Liga Endesa', description: 'Primera división profesional' },
