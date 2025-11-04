@@ -317,24 +317,142 @@ export default function PublicarPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <Card>
-            <CardContent className="p-12 text-center">
-              <Shield className="w-16 h-16 mx-auto mb-4 text-orange-300" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          {/* Header */}
+          <div className="mb-8 text-center">
+            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              Publicar una oportunidad
+            </h1>
+            <p className="text-lg text-gray-600">
+              Esta funcionalidad está disponible para Clubs y Agencias
+            </p>
+          </div>
+
+          {/* Hero informativo */}
+          <Card className="mb-8 bg-gradient-to-br from-orange-50 to-white border-workhoops-accent/20">
+            <CardContent className="p-8">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <div className="inline-flex items-center space-x-2 bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                    <Shield className="w-4 h-4" />
+                    <span>Plan Club/Agencia</span>
+                  </div>
+                  <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+                    Encuentra el talento perfecto para tu club
+                  </h2>
+                  <p className="text-gray-600 mb-6">
+                    Publica ofertas ilimitadas y conecta con jugadores y entrenadores verificados en toda España. 
+                    Simplifica tu proceso de reclutamiento con nuestra plataforma especializada.
+                  </p>
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                      <span>2.500+ perfiles activos</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                      <span>Publicación gratuita</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                      <span>Alcance nacional</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="relative">
+                  <img 
+                    src="https://images.unsplash.com/photo-1546519638-68e109498ffc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwY29hY2h8ZW58MHx8fHwxNzYxMjI5MjYyfDA&ixlib=rb-4.1.0&q=85"
+                    alt="Entrenador dirigiendo equipo"
+                    className="rounded-lg shadow-lg w-full h-64 object-cover"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Beneficios */}
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+              ¿Por qué publicar ofertas en WorkHoops?
+            </h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {clubBenefits.map((benefit, index) => (
+                <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-4 text-workhoops-accent">
+                      {benefit.icon}
+                    </div>
+                    <h4 className="font-semibold text-gray-900 mb-2">{benefit.title}</h4>
+                    <p className="text-sm text-gray-600">{benefit.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Plan Features */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="text-center">Características del Plan Club/Agencia</CardTitle>
+              <CardDescription className="text-center">
+                Todo lo que necesitas para encontrar el talento perfecto
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                {planFeatures.map((feature, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-gray-900">{feature.title}</h4>
+                      <p className="text-sm text-gray-600">{feature.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Stats */}
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <Card>
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-workhoops-accent mb-2">2.500+</div>
+                <p className="text-gray-600">Perfiles de talento</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-workhoops-accent mb-2">500+</div>
+                <p className="text-gray-600">Clubes activos</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-workhoops-accent mb-2">1.200+</div>
+                <p className="text-gray-600">Ofertas publicadas</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Notice Card */}
+          <Card className="bg-orange-50 border-workhoops-accent/30">
+            <CardContent className="p-8 text-center">
+              <Shield className="w-16 h-16 mx-auto mb-4 text-orange-500" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Solo Clubs y Agencias pueden publicar
               </h2>
               <p className="text-gray-600 mb-6">
-                Tu cuenta actual es de tipo "{session.user.role}". Solo los Clubs y Agencias pueden publicar ofertas.
+                Tu cuenta actual es de tipo <strong>"{session.user.role}"</strong>. Solo los Clubs y Agencias pueden publicar ofertas.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/dashboard">
-                  <Button variant="outline">
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto">
                     Ir al Dashboard
                   </Button>
                 </Link>
                 <Link href="/oportunidades">
-                  <Button>
+                  <Button size="lg" className="w-full sm:w-auto">
                     Ver Oportunidades
                   </Button>
                 </Link>
