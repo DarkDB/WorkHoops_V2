@@ -44,8 +44,7 @@ export async function GET(request: NextRequest) {
           },
           select: {
             id: true,
-            title: true,
-            featured: true
+            title: true
           }
         }
       },
