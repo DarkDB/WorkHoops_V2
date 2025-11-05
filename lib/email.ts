@@ -72,7 +72,7 @@ export async function sendApplicationNotificationEmail(
 ) {
   try {
     const { data, error } = await getResendClient().emails.send({
-      from: process.env.SUPPORT_EMAIL || 'onboarding@resend.dev',
+      from: 'WorkHoops <hola@workhoops.com>',
       to: [organizationEmail],
       subject: `Nueva aplicación: ${opportunityTitle}`,
       html: `
