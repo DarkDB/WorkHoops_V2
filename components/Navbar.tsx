@@ -121,7 +121,7 @@ export function Navbar() {
               <div className="flex items-center space-x-4">
                 {/* Admin Dashboard Button */}
                 {session.user.role === 'admin' && (
-                  <Link href="/dashboard/admin">
+                  <Link href="/admin">
                     <Button size="sm" variant="outline" className="border-red-500 text-red-600 hover:bg-red-50">
                       <Shield className="w-4 h-4 mr-2" />
                       Admin
