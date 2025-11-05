@@ -82,6 +82,8 @@ export default function RootLayout({
               duration: 4000,
             }}
           />
+          <Analytics />
+          <SpeedInsights />
         </NextAuthProvider>
       </body>
     </html>
