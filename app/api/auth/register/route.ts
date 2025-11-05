@@ -54,6 +54,27 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // Send welcome email (non-blocking)
+    try {
+      const { sendWelcomeEmail } = await import('@/lib/email')
+      await sendWelcomeEmail(name, email, finalRole)
+      console.log('[REGISTER] Welcome email sent to:', email)
+    } catch (emailError) {
+      console.error('[REGISTER] Failed to send welcome email, but user created:', emailError)
+      // No lanzar error, solo registrar
+    }
+
+    // Send admin welcome email if role is admin (non-blocking)
+    if (finalRole === 'admin') {
+      try {
+        const { sendAdminWelcomeEmail } = await import('@/lib/email')
+        await sendAdminWelcomeEmail(name, email)
+        console.log('[REGISTER] Admin welcome email sent to:', email)
+      } catch (emailError) {
+        console.error('[REGISTER] Failed to send admin welcome email:', emailError)
+      }
+    }
+
     // Remove sensitive data
     const { ...safeUser } = user
 
