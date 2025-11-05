@@ -315,6 +315,15 @@ export function Navbar() {
                       <p className="text-base font-medium text-gray-800">{session.user.name}</p>
                       <p className="text-sm text-gray-500">{session.user.email}</p>
                     </div>
+                    {session.user.role === 'admin' && (
+                      <Link
+                        href="/dashboard/admin"
+                        className="block px-3 py-2 text-base font-medium text-red-600 hover:text-red-800 bg-red-50 rounded-lg mx-2"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        🛡️ Panel de Administrador
+                      </Link>
+                    )}
                     <Link
                       href="/dashboard"
                       className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
