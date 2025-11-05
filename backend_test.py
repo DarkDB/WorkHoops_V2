@@ -1969,6 +1969,9 @@ class BackendTester:
         self.test_coach_profile_onboarding()
         self.test_club_agency_profile_onboarding()
         
+        # EMAIL SYSTEM PHASE 1 TESTING (NEW)
+        self.test_email_system_phase1()
+        
         # Print summary
         self.print_summary()
         
