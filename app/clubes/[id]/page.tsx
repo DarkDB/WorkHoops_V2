@@ -30,7 +30,7 @@ export default async function ClubProfilePage({ params }: PageProps) {
       clubAgencyProfile: true,
       opportunities: {
         where: {
-          status: 'approved'
+          status: 'publicada'
         },
         orderBy: {
           featured: 'desc'
