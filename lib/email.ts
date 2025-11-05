@@ -348,13 +348,14 @@ export async function sendInterestNotificationEmail(
     })
 
     if (error) {
-      console.error('Error sending interest notification email:', error)
-      throw new Error('Failed to send interest notification email')
+      console.error('[RESEND] Error from Resend API:', error)
+      throw new Error('Failed to send interest notification email: ' + JSON.stringify(error))
     }
 
+    console.log('[RESEND] Email sent successfully! ID:', data?.id)
     return data
   } catch (error) {
-    console.error('Error sending interest notification email:', error)
-    throw new Error('Failed to send interest notification email')
+    console.error('[RESEND] Exception caught:', error)
+    throw error
   }
 }
