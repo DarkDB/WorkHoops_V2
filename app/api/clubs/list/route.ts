@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
         clubAgencyProfile: true,
         opportunities: {
           where: {
-            status: 'approved' // Solo contar ofertas aprobadas
+            status: 'publicada' // Solo contar ofertas publicadas
           },
           select: {
             id: true,
