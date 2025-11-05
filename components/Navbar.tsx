@@ -118,6 +118,16 @@ export function Navbar() {
               <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
             ) : session ? (
               <div className="flex items-center space-x-4">
+                {/* Admin Dashboard Button */}
+                {session.user.role === 'admin' && (
+                  <Link href="/dashboard/admin">
+                    <Button size="sm" variant="outline" className="border-red-500 text-red-600 hover:bg-red-50">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Admin
+                    </Button>
+                  </Link>
+                )}
+                
                 {/* Role-specific actions */}
                 {(session.user.role === 'club' || session.user.role === 'agencia') && (
                   <Link href="/publicar">
