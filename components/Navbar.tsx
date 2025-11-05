@@ -318,7 +318,7 @@ export function Navbar() {
                     </div>
                     {session.user.role === 'admin' && (
                       <Link
-                        href="/dashboard/admin"
+                        href="/admin"
                         className="block px-3 py-2 text-base font-medium text-red-600 hover:text-red-800 bg-red-50 rounded-lg mx-2"
                         onClick={() => setIsOpen(false)}
                       >
