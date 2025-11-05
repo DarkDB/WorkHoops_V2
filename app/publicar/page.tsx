@@ -51,12 +51,12 @@ const clubBenefits = [
 
 const planFeatures = [
   {
-    title: 'Publicaciones ilimitadas',
-    description: 'Sin límite de ofertas activas al mismo tiempo'
+    title: 'Hasta 3 publicaciones destacadas',
+    description: 'Ofertas premium durante 60 días con máxima visibilidad'
   },
   {
-    title: 'Visibilidad destacada',
-    description: 'Tus ofertas aparecen en posiciones premium'
+    title: 'Posición preferente',
+    description: 'Tus ofertas aparecen en las primeras posiciones'
   },
   {
     title: 'Acceso a estadísticas',
