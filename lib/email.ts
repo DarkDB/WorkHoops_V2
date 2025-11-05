@@ -130,7 +130,7 @@ export async function sendApplicationStateChangeEmail(
 
   try {
     const { data, error } = await getResendClient().emails.send({
-      from: process.env.SUPPORT_EMAIL || 'onboarding@resend.dev',
+      from: 'WorkHoops <hola@workhoops.com>',
       to: [applicantEmail],
       subject: `Actualización de aplicación: ${opportunityTitle}`,
       html: `
@@ -176,7 +176,7 @@ export async function sendPaymentConfirmationEmail(
 ) {
   try {
     const { data, error } = await getResendClient().emails.send({
-      from: process.env.SUPPORT_EMAIL || 'onboarding@resend.dev',
+      from: 'WorkHoops <hola@workhoops.com>',
       to: [organizationEmail],
       subject: `Pago confirmado - ${opportunityTitle}`,
       html: `
@@ -225,7 +225,7 @@ export async function sendTalentContactEmail(
 ) {
   try {
     const { data, error } = await getResendClient().emails.send({
-      from: process.env.SUPPORT_EMAIL || 'onboarding@resend.dev',
+      from: 'WorkHoops <hola@workhoops.com>',
       to: [talentEmail],
       subject: `Nueva solicitud de contacto en WorkHoops`,
       html: `
@@ -293,7 +293,7 @@ export async function sendInterestNotificationEmail(
 ) {
   try {
     const { data, error } = await getResendClient().emails.send({
-      from: process.env.SUPPORT_EMAIL || 'onboarding@resend.dev',
+      from: 'WorkHoops <hola@workhoops.com>',
       to: [talentEmail],
       subject: `Hay interés en tu perfil de WorkHoops`,
       html: `
