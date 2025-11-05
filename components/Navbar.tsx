@@ -88,6 +88,13 @@ export function Navbar() {
               <span>Perfiles</span>
             </Link>
             <Link 
+              href="/clubes" 
+              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
+            >
+              <span>🏀</span>
+              <span>Clubes</span>
+            </Link>
+            <Link 
               href="/recursos" 
               className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
             >
