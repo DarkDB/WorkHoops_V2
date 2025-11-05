@@ -33,7 +33,7 @@ export default async function DashboardPage() {
 
   // Redirect admin to admin dashboard
   if (session.user.role === 'admin') {
-    redirect('/dashboard/admin')
+    redirect('/admin')
   }
 
   // Fetch real user data from database
