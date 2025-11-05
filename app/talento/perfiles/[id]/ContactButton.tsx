@@ -35,7 +35,10 @@ export default function ContactButton({
   profileName,
   canContact, 
   isLoggedIn,
-  userRole
+  userRole,
+  currentUserId,
+  isOwnProfile,
+  userPlanType
 }: ContactButtonProps) {
   const router = useRouter()
   const [isContacting, setIsContacting] = useState(false)
@@ -50,6 +53,78 @@ export default function ContactButton({
   
   // Check if current user is club/agency or player/coach
   const isClubOrAgency = userRole === 'club' || userRole === 'agencia'
+  const isPlayerOrCoach = userRole === 'jugador' || userRole === 'entrenador'
+
+  // Determinar si se debe mostrar el botón según los casos de uso
+  const shouldShowButton = () => {
+    // Caso 1 & 2: Jugador/Entrenador viendo perfil de otro jugador/entrenador -> NO mostrar
+    if (isPlayerOrCoach && !isOwnProfile) {
+      return false
+    }
+    
+    // Caso 1: Jugador/Entrenador en su propio perfil -> Mostrar (para informar sobre plan)
+    if (isPlayerOrCoach && isOwnProfile) {
+      return true
+    }
+    
+    // Casos 3 & 4: Club/Agencia viendo jugador/entrenador -> Mostrar
+    if (isClubOrAgency) {
+      return true
+    }
+    
+    // Usuario no logueado -> Mostrar
+    if (!isLoggedIn) {
+      return true
+    }
+    
+    return false
+  }
+
+  // Determinar el texto y comportamiento del botón
+  const getButtonConfig = () => {
+    // Caso 1: Jugador/Entrenador en su propio perfil SIN plan pro
+    if (isPlayerOrCoach && isOwnProfile && !canContact) {
+      return {
+        text: 'Activar Plan Pro',
+        icon: <Zap className="w-4 h-4 mr-2" />,
+        variant: 'default' as const
+      }
+    }
+    
+    // Jugador/Entrenador en su propio perfil CON plan pro
+    if (isPlayerOrCoach && isOwnProfile && canContact) {
+      return {
+        text: 'Plan Pro Activo',
+        icon: <CheckCircle className="w-4 h-4 mr-2" />,
+        variant: 'outline' as const
+      }
+    }
+    
+    // Caso 3: Club/Agencia en perfil de jugador/entrenador SIN plan pro
+    if (isClubOrAgency && !canContact) {
+      return {
+        text: 'Notificar interés',
+        icon: <Star className="w-4 h-4 mr-2" />,
+        variant: 'outline' as const
+      }
+    }
+    
+    // Caso 4: Club/Agencia en perfil de jugador/entrenador CON plan pro
+    if (isClubOrAgency && canContact) {
+      return {
+        text: 'Contactar',
+        icon: <Mail className="w-4 h-4 mr-2" />,
+        variant: 'default' as const
+      }
+    }
+    
+    // Default (no logueado)
+    return {
+      text: 'Contactar',
+      icon: <Mail className="w-4 h-4 mr-2" />,
+      variant: 'default' as const
+    }
+  }
 
   const handleOpenDialog = () => {
     // Not logged in
@@ -64,21 +139,31 @@ export default function ContactButton({
       return
     }
 
-    // If user is player/coach, always show upgrade dialog
-    if (!isClubOrAgency) {
+    // Caso 1: Jugador/Entrenador en su propio perfil SIN plan pro
+    if (isPlayerOrCoach && isOwnProfile && !canContact) {
       setUpgradeDialogOpen(true)
       return
     }
+    
+    // Jugador/Entrenador en su propio perfil CON plan pro
+    if (isPlayerOrCoach && isOwnProfile && canContact) {
+      toast.success('Plan Pro Activo', {
+        description: 'Los clubs y agencias pueden contactarte directamente'
+      })
+      return
+    }
 
-    // User doesn't have pro plan
-    if (!canContact) {
-      // Open interest notification dialog for clubs/agencies
+    // Caso 3: Club/Agencia viendo perfil SIN plan pro -> Notificar interés
+    if (isClubOrAgency && !canContact) {
       setInterestDialogOpen(true)
       return
     }
 
-    // Open contact dialog
-    setDialogOpen(true)
+    // Caso 4: Club/Agencia viendo perfil CON plan pro -> Contactar
+    if (isClubOrAgency && canContact) {
+      setDialogOpen(true)
+      return
+    }
   }
 
   const handleContact = async () => {
