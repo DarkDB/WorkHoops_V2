@@ -24,6 +24,9 @@ interface ContactButtonProps {
   canContact: boolean
   isLoggedIn: boolean
   userRole?: string
+  currentUserId?: string  // Para saber si es el propio perfil
+  isOwnProfile?: boolean  // Indicador directo
+  userPlanType?: string   // Plan del usuario actual
 }
 
 export default function ContactButton({ 
