@@ -745,10 +745,13 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                   isOwnProfile={session?.user?.id === profile.user.id}
                   userPlanType={session?.user?.planType}
                 />
-                {!canContact && (
+                {/* Mostrar mensaje solo si es Club/Agencia viendo perfil sin plan pro */}
+                {session?.user?.role && ['club', 'agencia'].includes(session.user.role) && 
+                 session.user.id !== profile.user.id && 
+                 !canContact && (
                   <p className="text-xs text-gray-500 mt-2 text-center">
                     <Lock className="w-3 h-3 inline mr-1" />
-                    Este usuario necesita plan Pro para recibir contactos
+                    Este usuario necesita plan Pro para recibir contactos directos
                   </p>
                 )}
               </CardContent>
