@@ -31,6 +31,11 @@ export default async function DashboardPage() {
     redirect('/auth/login')
   }
 
+  // Redirect admin to admin dashboard
+  if (session.user.role === 'admin') {
+    redirect('/dashboard/admin')
+  }
+
   // Fetch real user data from database
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
