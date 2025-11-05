@@ -292,6 +292,11 @@ export async function sendInterestNotificationEmail(
   profileUrl: string
 ) {
   try {
+    console.log('[RESEND] Attempting to send interest notification email')
+    console.log('[RESEND] To:', talentEmail)
+    console.log('[RESEND] From: WorkHoops <hola@workhoops.com>')
+    console.log('[RESEND] API Key present:', !!process.env.RESEND_API_KEY)
+    
     const { data, error } = await getResendClient().emails.send({
       from: 'WorkHoops <hola@workhoops.com>',
       to: [talentEmail],
