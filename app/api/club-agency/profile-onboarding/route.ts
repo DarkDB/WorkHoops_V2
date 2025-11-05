@@ -165,6 +165,21 @@ export async function POST(request: NextRequest) {
         data: profileData
       })
 
+      // Send profile completed email if 100% (non-blocking)
+      if (profileCompletionPercentage === 100 && existingProfile.profileCompletionPercentage < 100) {
+        try {
+          const user = await prisma.user.findUnique({ where: { id: session.user.id } })
+          if (user) {
+            const { sendProfileCompletedEmail } = await import('@/lib/email')
+            const profileUrl = `${process.env.APP_URL}/clubes/${updatedProfile.id}`
+            await sendProfileCompletedEmail(user.name!, user.email!, user.role, profileUrl)
+            console.log('[CLUB PROFILE] Profile completed email sent to:', user.email)
+          }
+        } catch (emailError) {
+          console.error('[CLUB PROFILE] Failed to send profile completed email:', emailError)
+        }
+      }
+
       return NextResponse.json({ 
         success: true,
         profile: updatedProfile,
@@ -177,6 +192,21 @@ export async function POST(request: NextRequest) {
           ...profileData
         }
       })
+
+      // Send profile completed email if 100% (non-blocking)
+      if (profileCompletionPercentage === 100) {
+        try {
+          const user = await prisma.user.findUnique({ where: { id: session.user.id } })
+          if (user) {
+            const { sendProfileCompletedEmail } = await import('@/lib/email')
+            const profileUrl = `${process.env.APP_URL}/clubes/${newProfile.id}`
+            await sendProfileCompletedEmail(user.name!, user.email!, user.role, profileUrl)
+            console.log('[CLUB PROFILE] Profile completed email sent to:', user.email)
+          }
+        } catch (emailError) {
+          console.error('[CLUB PROFILE] Failed to send profile completed email:', emailError)
+        }
+      }
 
       return NextResponse.json({ 
         success: true,
