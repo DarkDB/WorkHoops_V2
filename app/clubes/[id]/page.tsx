@@ -149,26 +149,53 @@ export default async function ClubProfilePage({ params }: PageProps) {
                   )}
                 </div>
 
-                {canContact && (
-                  <div className="flex flex-wrap gap-3">
-                    {profile.contactEmail && (
-                      <a href={`mailto:${profile.contactEmail}`}>
-                        <Button size="sm" variant="outline">
-                          <Mail className="w-4 h-4 mr-2" />
-                          Contactar
+                {/* Botones de acción según el rol del usuario */}
+                <div className="flex flex-wrap gap-3">
+                  {/* Caso 6: Club/Agencia en su propio perfil */}
+                  {session?.user?.id === club.id && (
+                    <>
+                      {club.planType === 'destacado' ? (
+                        <Button size="sm" variant="default" className="bg-workhoops-accent" disabled>
+                          <Star className="w-4 h-4 mr-2" />
+                          Club Destacado
                         </Button>
-                      </a>
-                    )}
-                    {profile.website && (
-                      <a href={profile.website} target="_blank" rel="noopener noreferrer">
-                        <Button size="sm" variant="outline">
-                          <Globe className="w-4 h-4 mr-2" />
-                          Web
-                        </Button>
-                      </a>
-                    )}
-                  </div>
-                )}
+                      ) : (
+                        <Link href="/planes">
+                          <Button size="sm" variant="default" className="bg-workhoops-accent">
+                            <Star className="w-4 h-4 mr-2" />
+                            Activar Plan Destacado
+                          </Button>
+                        </Link>
+                      )}
+                    </>
+                  )}
+                  
+                  {/* Caso 5: Club/Agencia viendo otro club/agencia - NO mostrar botones de contacto */}
+                  {/* Solo mostrar botones si NO es club/agencia O si es su propio perfil con plan Pro */}
+                  {session?.user?.id !== club.id && 
+                   session?.user?.role !== 'club' && 
+                   session?.user?.role !== 'agencia' && 
+                   canContact && (
+                    <>
+                      {profile.contactEmail && (
+                        <a href={`mailto:${profile.contactEmail}`}>
+                          <Button size="sm" variant="outline">
+                            <Mail className="w-4 h-4 mr-2" />
+                            Contactar
+                          </Button>
+                        </a>
+                      )}
+                      {profile.website && (
+                        <a href={profile.website} target="_blank" rel="noopener noreferrer">
+                          <Button size="sm" variant="outline">
+                            <Globe className="w-4 h-4 mr-2" />
+                            Web
+                          </Button>
+                        </a>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
