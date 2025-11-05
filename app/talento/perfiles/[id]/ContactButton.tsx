@@ -259,29 +259,22 @@ export default function ContactButton({
     }
   }
 
+  const buttonConfig = getButtonConfig()
+  
+  // No mostrar el botón en ciertos casos
+  if (!shouldShowButton()) {
+    return null
+  }
+
   return (
     <>
       <Button 
-        variant={(!canContact && isLoggedIn) || !isClubOrAgency ? "outline" : "default"}
+        variant={buttonConfig.variant}
         className="w-full"
         onClick={handleOpenDialog}
       >
-        {!isClubOrAgency && isLoggedIn ? (
-          <>
-            <Zap className="w-4 h-4 mr-2" />
-            Activar Plan Pro
-          </>
-        ) : !canContact && isLoggedIn ? (
-          <>
-            <Lock className="w-4 h-4 mr-2" />
-            Puedes notificarle tu interés
-          </>
-        ) : (
-          <>
-            <Mail className="w-4 h-4 mr-2" />
-            Contactar
-          </>
-        )}
+        {buttonConfig.icon}
+        {buttonConfig.text}
       </Button>
 
       {/* Contact Dialog - When user has Pro plan */}
