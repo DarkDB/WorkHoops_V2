@@ -258,6 +258,14 @@ export function Navbar() {
                 <span>Perfiles</span>
               </Link>
               <Link
+                href="/clubes"
+                className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                onClick={() => setIsOpen(false)}
+              >
+                <span>🏀</span>
+                <span>Clubes</span>
+              </Link>
+              <Link
                 href="/recursos"
                 className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
                 onClick={() => setIsOpen(false)}
