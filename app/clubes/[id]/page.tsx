@@ -225,12 +225,6 @@ export default async function ClubProfilePage({ params }: PageProps) {
                                 )}
                               </div>
                             </div>
-                            {opportunity.featured && (
-                              <Badge className="bg-workhoops-accent ml-2">
-                                <Star className="w-3 h-3 mr-1" />
-                                Destacada
-                              </Badge>
-                            )}
                           </div>
                           
                           <div className="flex items-center justify-between mt-3">
