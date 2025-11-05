@@ -65,8 +65,7 @@ export async function GET(request: NextRequest) {
       planType: club.planType,
       verified: club.verified,
       profile: club.clubAgencyProfile,
-      opportunitiesCount: club.opportunities.length,
-      hasFeaturedOpportunities: club.opportunities.some(o => o.featured)
+      opportunitiesCount: club.opportunities.length
     }))
 
     // Sort by opportunities count (most first), then by plan type
