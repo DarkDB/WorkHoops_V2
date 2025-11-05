@@ -229,6 +229,21 @@ export async function POST(request: NextRequest) {
         }
       })
 
+      // Send profile completed email if 100% (non-blocking)
+      if (profileCompletionPercentage === 100) {
+        try {
+          const user = await prisma.user.findUnique({ where: { id: session.user.id } })
+          if (user) {
+            const { sendProfileCompletedEmail } = await import('@/lib/email')
+            const profileUrl = `${process.env.APP_URL}/talento/perfiles/${newProfile.id}`
+            await sendProfileCompletedEmail(user.name!, user.email!, user.role, profileUrl)
+            console.log('[PROFILE] Profile completed email sent to:', user.email)
+          }
+        } catch (emailError) {
+          console.error('[PROFILE] Failed to send profile completed email:', emailError)
+        }
+      }
+
       return NextResponse.json({ 
         success: true,
         profile: newProfile,
