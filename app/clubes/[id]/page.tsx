@@ -33,7 +33,7 @@ export default async function ClubProfilePage({ params }: PageProps) {
           status: 'publicada'
         },
         orderBy: {
-          featured: 'desc'
+          createdAt: 'desc'
         },
         select: {
           id: true,
@@ -43,7 +43,6 @@ export default async function ClubProfilePage({ params }: PageProps) {
           level: true,
           city: true,
           deadline: true,
-          featured: true,
           createdAt: true
         }
       }
