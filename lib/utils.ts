@@ -84,7 +84,8 @@ export function getOpportunityLevelLabel(level: string): string {
 
 export function getApplicationStateLabel(state: string): string {
   const labels: Record<string, string> = {
-    enviada: 'Enviada',
+    pendiente: 'Pendiente',
+    vista: 'Vista',
     vista: 'Vista',
     rechazada: 'Rechazada',
     aceptada: 'Aceptada',
