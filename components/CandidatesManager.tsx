@@ -247,7 +247,7 @@ export default function CandidatesManager({ opportunity: initialOpportunity }: C
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos los estados</SelectItem>
-                  <SelectItem value="enviada">Nuevas</SelectItem>
+                  <SelectItem value="pendiente">Nuevas</SelectItem>
                   <SelectItem value="en_revision">En Revisión</SelectItem>
                   <SelectItem value="aceptada">Aceptadas</SelectItem>
                   <SelectItem value="rechazada">Rechazadas</SelectItem>
