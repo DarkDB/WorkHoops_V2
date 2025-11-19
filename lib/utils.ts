@@ -85,7 +85,7 @@ export function getOpportunityLevelLabel(level: string): string {
 export function getApplicationStateLabel(state: string): string {
   const labels: Record<string, string> = {
     pendiente: 'Pendiente',
-    vista: 'Vista',
+    en_revision: 'En Revisión',
     vista: 'Vista',
     rechazada: 'Rechazada',
     aceptada: 'Aceptada',
@@ -96,8 +96,8 @@ export function getApplicationStateLabel(state: string): string {
 export function getApplicationStateColor(state: string): string {
   const colors: Record<string, string> = {
     pendiente: 'bg-blue-100 text-blue-800',
+    en_revision: 'bg-yellow-100 text-yellow-800',
     vista: 'bg-purple-100 text-purple-800',
-    vista: 'bg-yellow-100 text-yellow-800',
     rechazada: 'bg-red-100 text-red-800',
     aceptada: 'bg-green-100 text-green-800',
   }
