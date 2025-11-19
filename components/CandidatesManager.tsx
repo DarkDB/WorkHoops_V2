@@ -105,10 +105,14 @@ export default function CandidatesManager({ opportunity: initialOpportunity }: C
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
-      enviada: 'Enviada',
+      pendiente: 'Pendiente',
       en_revision: 'En Revisión',
+      vista: 'Vista',
       aceptada: 'Aceptada',
-      rechazada: 'Rechazada'
+      rechazada: 'Rechazada',
+      // Compatibilidad con valores antiguos
+      enviada: 'Pendiente',
+      finalizada: 'Aceptada'
     }
     return labels[status] || status
   }
