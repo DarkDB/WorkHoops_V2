@@ -234,7 +234,7 @@ Este programa está diseñado para jóvenes talentos que buscan desarrollar su c
     create: {
       userId: regularUser.id,
       opportunityId: opportunity1.id,
-      state: 'enviada',
+      state: 'pendiente',
       message: 'Buenos días,\n\nMe dirijo a ustedes para expresar mi interés en la posición de Entrenador de Cantera Masculina U16. Con 5 años de experiencia entrenando equipos juveniles y mi titulación de Entrenador Superior, creo que puedo aportar mucho valor al desarrollo de los jóvenes talentos del club.\n\nAdjunto mi CV y estaré encantado de ampliar cualquier información en una entrevista personal.\n\nSaludos cordiales,\nMarc González'
     }
   })

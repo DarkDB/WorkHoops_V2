@@ -145,7 +145,7 @@ export default async function ApplicationsPage() {
             <CardContent className="p-4">
               <div className="text-center">
                 <p className="text-2xl font-bold text-gray-900">
-                  {applications.filter(app => app.state === 'enviada').length}
+                  {applications.filter(app => app.state === 'pendiente').length}
                 </p>
                 <p className="text-sm text-gray-600">Enviadas</p>
               </div>

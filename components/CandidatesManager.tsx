@@ -96,7 +96,7 @@ export default function CandidatesManager({ opportunity: initialOpportunity }: C
         return 'bg-blue-100 text-blue-800'
       case 'rechazada':
         return 'bg-red-100 text-red-800'
-      case 'enviada':
+      case 'pendiente':
         return 'bg-yellow-100 text-yellow-800'
       default:
         return 'bg-gray-100 text-gray-800'
@@ -166,7 +166,7 @@ export default function CandidatesManager({ opportunity: initialOpportunity }: C
 
   const stats = {
     total: opportunity.applications.length,
-    enviada: opportunity.applications.filter(a => a.state === 'enviada').length,
+    enviada: opportunity.applications.filter(a => a.state === 'pendiente').length,
     en_revision: opportunity.applications.filter(a => a.state === 'en_revision').length,
     aceptada: opportunity.applications.filter(a => a.state === 'aceptada').length,
     rechazada: opportunity.applications.filter(a => a.state === 'rechazada').length
@@ -488,7 +488,7 @@ export default function CandidatesManager({ opportunity: initialOpportunity }: C
                         </div>
                       )}
 
-                      {application.state === 'enviada' && (
+                      {application.state === 'pendiente' && (
                         <Button
                           size="sm"
                           variant="outline"
