@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
         userId: session.user.id,
         opportunityId,
         message: sanitizeInput(message),
-        state: 'enviada',
+        state: 'pendiente',
       },
       include: {
         user: {
