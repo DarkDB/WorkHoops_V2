@@ -48,11 +48,25 @@ enum Modality {
 }
 
 enum ApplicationState {
-  enviada
+  pendiente
   en_revision
-  aceptada
+  vista
   rechazada
-  finalizada
+  aceptada
+}
+
+enum ResourceStatus {
+  draft
+  published
+}
+
+enum ResourceCategory {
+  preparacion
+  carrera
+  recursos
+  salud
+  tactica
+  mental
 }
 
 model Account {
