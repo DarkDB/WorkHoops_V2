@@ -494,3 +494,4 @@ frontend_backup/node_modules/@next/swc-linux-arm64-gnu/next-swc.linux-arm64-gnu.
 # Environment files
 *.env
 *.env.*
+.next/cache/webpack/server-production/0.pack
