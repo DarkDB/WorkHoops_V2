@@ -125,3 +125,133 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* ============================================
+   MEJORAS DE ANIMACIÓN Y TRANSICIONES
+   ============================================ */
+
+/* Fade-in animation for cards and elements */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Staggered fade-in for lists */
+.fade-in-stagger > * {
+  animation: fadeIn 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.fade-in-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.fade-in-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.fade-in-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.fade-in-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.fade-in-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.fade-in-stagger > *:nth-child(6) { animation-delay: 0.3s; }
+.fade-in-stagger > *:nth-child(7) { animation-delay: 0.35s; }
+.fade-in-stagger > *:nth-child(8) { animation-delay: 0.4s; }
+.fade-in-stagger > *:nth-child(9) { animation-delay: 0.45s; }
+
+/* Enhanced card hover effects */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Button press effect */
+.button-press:active {
+  transform: scale(0.98);
+}
+
+/* Smooth hover transitions for all interactive elements */
+a, button, [role="button"] {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Image hover zoom */
+.image-zoom {
+  overflow: hidden;
+}
+
+.image-zoom img {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.image-zoom:hover img {
+  transform: scale(1.05);
+}
+
+/* Badge pulse animation */
+@keyframes badgePulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.badge-pulse {
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+/* Loading shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Smooth reveal on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Enhanced focus states */
+*:focus-visible {
+  outline: 2px solid #FF6A00;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Smooth color transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
