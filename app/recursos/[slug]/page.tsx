@@ -206,14 +206,20 @@ export default async function RecursoPage({
   )
 }
 
-// Comentado para evitar problemas en build time
-// export async function generateStaticParams() {
-//   const resources = await prisma.resource.findMany({
-//     where: { status: 'published' },
-//     select: { slug: true },
-//   })
+// Generate static paths for all published resources at build time
+export async function generateStaticParams() {
+  try {
+    const resources = await prisma.resource.findMany({
+      where: { status: 'published' },
+      select: { slug: true },
+    })
 
-//   return resources.map((resource) => ({
-//     slug: resource.slug,
-//   }))
-// }
+    return resources.map((resource) => ({
+      slug: resource.slug,
+    }))
+  } catch (error) {
+    console.error('Error generating static params for resources:', error)
+    // Return empty array if DB is not available during build
+    return []
+  }
+}
