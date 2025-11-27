@@ -351,12 +351,12 @@ export default async function HomePage() {
           </p>
           <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
             <Link href="/planes">
-              <Button size="lg" className="bg-white text-workhoops-accent hover:bg-gray-100 px-8 py-4">
+              <Button size="lg" className="bg-white text-workhoops-accent hover:bg-gray-100 px-8 py-4 button-press">
                 Ver planes y precios
               </Button>
             </Link>
             <Link href="/oportunidades">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-workhoops-accent px-8 py-4">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-workhoops-accent px-8 py-4 button-press">
                 Explorar oportunidades
               </Button>
             </Link>
