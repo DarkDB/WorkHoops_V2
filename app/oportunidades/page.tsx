@@ -268,27 +268,24 @@ export default async function OpportunitiesPage({ searchParams }: OpportunitiesP
           </div>
         </div>
 
-        {/* Results grid */}
+        {/* Opportunities grid */}
         <Suspense fallback={<OpportunitiesLoading />}>
           {opportunities.length === 0 ? (
-            <Card className="p-8 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No se encontraron oportunidades
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Prueba ajustando los filtros o busca con términos diferentes
-              </p>
-              <Link href="/oportunidades">
-                <Button variant="outline">
-                  Ver todas las oportunidades
-                </Button>
-              </Link>
-            </Card>
+            <EmptyState
+              icon={Inbox}
+              title="No se encontraron oportunidades"
+              description={
+                searchParams.search || searchParams.type || searchParams.level || searchParams.city
+                  ? "Prueba a ajustar los filtros de búsqueda para ver más resultados"
+                  : "Aún no hay oportunidades publicadas. ¡Sé el primero en publicar una!"
+              }
+              actionLabel="Publicar oportunidad"
+              actionHref="/publicar"
+              secondaryActionLabel="Ver todas"
+              secondaryActionHref="/oportunidades"
+            />
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-stagger">
               {opportunities.map((opportunity) => (
                 <OpportunityCard key={opportunity.id} opportunity={opportunity} />
               ))}
