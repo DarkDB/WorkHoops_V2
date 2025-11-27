@@ -206,13 +206,14 @@ export default async function RecursoPage({
   )
 }
 
-export async function generateStaticParams() {
-  const resources = await prisma.resource.findMany({
-    where: { status: 'published' },
-    select: { slug: true },
-  })
+// Comentado para evitar problemas en build time
+// export async function generateStaticParams() {
+//   const resources = await prisma.resource.findMany({
+//     where: { status: 'published' },
+//     select: { slug: true },
+//   })
 
-  return resources.map((resource) => ({
-    slug: resource.slug,
-  }))
-}
+//   return resources.map((resource) => ({
+//     slug: resource.slug,
+//   }))
+// }
