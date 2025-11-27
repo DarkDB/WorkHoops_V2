@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { EmptyState } from '@/components/EmptyState'
 import { 
   Plus, 
   Edit, 
@@ -29,7 +30,8 @@ import {
   EyeOff, 
   Search,
   Save,
-  X
+  X,
+  FileText
 } from 'lucide-react'
 import { toast } from 'sonner'
 import dynamic from 'next/dynamic'
