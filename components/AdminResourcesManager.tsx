@@ -293,17 +293,25 @@ export default function AdminResourcesManager() {
         {loading ? (
           <Card><CardContent className="py-8 text-center"><p>Cargando...</p></CardContent></Card>
         ) : filteredResources.length === 0 ? (
-          <EmptyState
-            icon={FileText}
-            title="No hay artículos"
-            description={
-              searchTerm || filterStatus !== 'all' || filterCategory !== 'all'
-                ? "No se encontraron artículos con los filtros aplicados. Intenta ajustar tu búsqueda."
-                : "Aún no has creado ningún artículo. ¡Empieza a compartir contenido de valor con la comunidad!"
-            }
-            actionLabel="Crear primer artículo"
-            actionHref="#"
-          />
+          <div className="space-y-4">
+            <EmptyState
+              icon={FileText}
+              title="No hay artículos"
+              description={
+                searchTerm || filterStatus !== 'all' || filterCategory !== 'all'
+                  ? "No se encontraron artículos con los filtros aplicados. Intenta ajustar tu búsqueda."
+                  : "Aún no has creado ningún artículo. ¡Empieza a compartir contenido de valor con la comunidad!"
+              }
+            />
+            {!searchTerm && filterStatus === 'all' && filterCategory === 'all' && (
+              <div className="text-center">
+                <Button onClick={handleCreate}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Crear primer artículo
+                </Button>
+              </div>
+            )}
+          </div>
         ) : (
           filteredResources.map(resource => (
             <Card key={resource.id}>
