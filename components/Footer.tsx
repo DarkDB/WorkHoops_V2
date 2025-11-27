@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Mail, MapPin, Phone, Twitter, Instagram, Linkedin, Youtube } from 'lucide-react'
+import { Mail, MapPin, Phone, Twitter, Instagram, Linkedin, Youtube, Shield, Lock, CheckCircle, Award } from 'lucide-react'
 
 const FooterSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div>
