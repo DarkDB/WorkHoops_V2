@@ -193,25 +193,21 @@ export default function PerfilesPage() {
 
         {/* Profiles Grid */}
         {filteredProfiles.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <User className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No se encontraron perfiles
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Intenta ajustar los filtros de búsqueda
-              </p>
-              <Link href="/talento#formulario">
-                <Button>
-                  <Trophy className="w-4 h-4 mr-2" />
-                  Crear mi perfil
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Users}
+            title="No se encontraron perfiles"
+            description={
+              searchTerm || roleFilter !== 'all' || cityFilter
+                ? "Intenta ajustar los filtros de búsqueda para ver más perfiles"
+                : "Aún no hay perfiles de talento registrados. ¡Sé el primero en crear tu perfil!"
+            }
+            actionLabel="Crear mi perfil"
+            actionHref="/talento#formulario"
+            secondaryActionLabel="Limpiar filtros"
+            secondaryActionHref="/talento/perfiles"
+          />
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-stagger">
             {filteredProfiles.map((profile) => (
               <Card key={profile.id} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
