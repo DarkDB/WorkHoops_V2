@@ -162,6 +162,50 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Stats Section */}
+      <section className="py-16 bg-gradient-to-br from-workhoops-accent to-orange-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+              La comunidad crece cada día
+            </h2>
+            <p className="text-lg text-orange-100 max-w-2xl mx-auto">
+              Miles de jugadores, clubes y oportunidades activas en un solo lugar
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 fade-in-stagger">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
+              <div className="text-4xl lg:text-5xl font-black text-white mb-2">
+                <AnimatedCounter value={stats.opportunities} suffix="+" />
+              </div>
+              <div className="text-orange-100 font-medium">Oportunidades activas</div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
+              <div className="text-4xl lg:text-5xl font-black text-white mb-2">
+                <AnimatedCounter value={stats.users} suffix="+" />
+              </div>
+              <div className="text-orange-100 font-medium">Usuarios registrados</div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
+              <div className="text-4xl lg:text-5xl font-black text-white mb-2">
+                <AnimatedCounter value={stats.organizations} suffix="+" />
+              </div>
+              <div className="text-orange-100 font-medium">Clubes verificados</div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
+              <div className="text-4xl lg:text-5xl font-black text-white mb-2">
+                <AnimatedCounter value={stats.profiles} suffix="+" />
+              </div>
+              <div className="text-orange-100 font-medium">Perfiles de talento</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How it Works */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
