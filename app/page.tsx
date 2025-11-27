@@ -214,9 +214,9 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-stagger">
             {featuredOpportunities.map((opportunity) => (
-              <Card key={opportunity.id} className="hover:shadow-lg transition-shadow">
+              <Card key={opportunity.id} className="card-hover">
                 <CardHeader className="pb-4">
                   <div className="flex justify-between items-start mb-2">
                     <Badge className={getOpportunityTypeColor(opportunity.type)}>
