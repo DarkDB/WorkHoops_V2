@@ -115,8 +115,53 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Trust Badges */}
+        <div className="mt-8 pt-8 border-t border-gray-700">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex items-center space-x-3 p-4 bg-gray-800/50 rounded-lg">
+              <div className="flex-shrink-0">
+                <Shield className="w-6 h-6 text-green-500" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-white">Ofertas Verificadas</p>
+                <p className="text-xs text-gray-400">Revisión manual</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 p-4 bg-gray-800/50 rounded-lg">
+              <div className="flex-shrink-0">
+                <Lock className="w-6 h-6 text-blue-500" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-white">Datos Seguros</p>
+                <p className="text-xs text-gray-400">RGPD compliant</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 p-4 bg-gray-800/50 rounded-lg">
+              <div className="flex-shrink-0">
+                <CheckCircle className="w-6 h-6 text-orange-500" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-white">100% Verificado</p>
+                <p className="text-xs text-gray-400">Cero spam</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 p-4 bg-gray-800/50 rounded-lg">
+              <div className="flex-shrink-0">
+                <Award className="w-6 h-6 text-yellow-500" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-white">Gratis para Jugadores</p>
+                <p className="text-xs text-gray-400">Sin comisiones</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-gray-700">
+        <div className="pt-8 border-t border-gray-700 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-gray-400">
               © 2025 WorkHoops SL. Todos los derechos reservados.
