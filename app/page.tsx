@@ -70,6 +70,8 @@ async function getHomeData() {
         opportunities: 0,
         organizations: 0,
         users: 0,
+        applications: 0,
+        profiles: 0,
       },
     }
   }
