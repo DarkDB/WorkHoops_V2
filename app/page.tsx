@@ -11,7 +11,14 @@ export const dynamic = 'force-dynamic'
 
 async function getHomeData() {
   try {
-    const [featuredOpportunities, totalOpportunities, totalOrganizations] = await Promise.all([
+    const [
+      featuredOpportunities, 
+      totalOpportunities, 
+      totalOrganizations,
+      totalUsers,
+      totalApplications,
+      totalTalentProfiles
+    ] = await Promise.all([
       prisma.opportunity.findMany({
         where: {
           status: 'publicada',
@@ -37,6 +44,11 @@ async function getHomeData() {
       prisma.organization.count({
         where: { verified: true },
       }),
+      prisma.user.count(),
+      prisma.application.count(),
+      prisma.talentProfile.count({
+        where: { profileCompletionPercentage: { gte: 50 } }
+      }),
     ])
 
     return {
@@ -44,7 +56,9 @@ async function getHomeData() {
       stats: {
         opportunities: totalOpportunities,
         organizations: totalOrganizations,
-        users: 150, // Placeholder - you could count actual users if needed
+        users: totalUsers,
+        applications: totalApplications,
+        profiles: totalTalentProfiles,
       },
     }
   } catch (error) {
