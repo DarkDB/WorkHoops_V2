@@ -142,20 +142,13 @@ export default async function HomePage() {
             </div>
 
             <div className="relative">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl image-zoom">
                 <img 
                   src="https://images.unsplash.com/photo-1546519638-68e109498ffc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsfGVufDB8fHx8MTc1OTA4ODc3OXww&ixlib=rb-4.1.0&q=85"
                   alt="Jugadores de baloncesto en acción"
                   className="w-full h-[400px] lg:h-[500px] object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-              </div>
-              
-              <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-lg border">
-                <div className="text-2xl font-bold text-workhoops-accent">
-                  <AnimatedCounter value={stats.opportunities} suffix="+" />
-                </div>
-                <div className="text-sm text-gray-600">Oportunidades activas</div>
               </div>
             </div>
           </div>
