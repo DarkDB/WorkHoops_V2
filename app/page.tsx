@@ -231,11 +231,13 @@ export default async function HomePage() {
                   </CardTitle>
                   <div className="text-sm text-gray-600 flex items-center space-x-2">
                     {opportunity.organization?.logo && (
-                      <img 
-                        src={opportunity.organization.logo}
-                        alt={opportunity.organization.name}
-                        className="w-4 h-4 rounded-full"
-                      />
+                      <div className="image-zoom w-4 h-4 rounded-full overflow-hidden">
+                        <img 
+                          src={opportunity.organization.logo}
+                          alt={opportunity.organization.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     )}
                     <span>{opportunity.organization?.name || 'Organizador individual'}</span>
                     {opportunity.organization?.verified && (
