@@ -307,7 +307,7 @@ export default async function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="card-hover">
               <CardContent className="pt-6">
                 <div className="flex items-center mb-3">
                   {[...Array(5)].map((_, i) => (
