@@ -1,10 +1,11 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { Search, Filter, MapPin, Clock, CheckCircle } from 'lucide-react'
+import { Search, Filter, MapPin, Clock, CheckCircle, Inbox } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/Navbar'
+import { EmptyState } from '@/components/EmptyState'
 import { prisma } from '@/lib/prisma'
 import { 
   getOpportunityTypeLabel, 
