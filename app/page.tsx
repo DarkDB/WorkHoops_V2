@@ -137,7 +137,9 @@ export default async function HomePage() {
               </div>
               
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-lg border">
-                <div className="text-2xl font-bold text-workhoops-accent">{stats.opportunities}+</div>
+                <div className="text-2xl font-bold text-workhoops-accent">
+                  <AnimatedCounter value={stats.opportunities} suffix="+" />
+                </div>
                 <div className="text-sm text-gray-600">Oportunidades activas</div>
               </div>
             </div>
