@@ -207,7 +207,7 @@ export default async function HomePage() {
               </p>
             </div>
             <Link href="/oportunidades">
-              <Button variant="outline" className="hidden sm:flex">
+              <Button variant="outline" className="hidden sm:flex button-press">
                 Ver todas
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
