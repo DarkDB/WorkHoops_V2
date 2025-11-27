@@ -75,7 +75,7 @@ Admin preservado: SÍ ✓
 
 ### **PASO 4: Verificar en la Aplicación**
 
-1. Ve a tu aplicación: https://workhoops-club.preview.emergentagent.com
+1. Ve a tu aplicación: https://blog-platform-9.preview.emergentagent.com
 2. Inicia sesión con el usuario admin (si no estás ya)
 3. Verifica:
    - **Oportunidades**: `/oportunidades` → Debería estar vacío

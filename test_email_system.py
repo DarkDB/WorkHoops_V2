@@ -13,7 +13,7 @@ import subprocess
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://workhoops-club.preview.emergentagent.com"
+BASE_URL = "https://blog-platform-9.preview.emergentagent.com"
 API_BASE = f"{BASE_URL}/api"
 
 class Colors:

@@ -12,7 +12,7 @@ from datetime import datetime
 import uuid
 
 # Configuration
-BASE_URL = "https://workhoops-club.preview.emergentagent.com"  # Next.js frontend URL
+BASE_URL = "https://blog-platform-9.preview.emergentagent.com"  # Next.js frontend URL
 API_BASE = f"{BASE_URL}/api"
 # For Next.js API routes, use localhost since external URL routes to FastAPI
 NEXTJS_API_BASE = "http://localhost:3000/api"
