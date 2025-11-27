@@ -223,7 +223,7 @@ export default async function HomePage() {
                       {getOpportunityTypeLabel(opportunity.type)}
                     </Badge>
                     {opportunity.verified && (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <CheckCircle className="w-4 h-4 text-green-500 badge-pulse" />
                     )}
                   </div>
                   <CardTitle className="text-lg line-clamp-2">
