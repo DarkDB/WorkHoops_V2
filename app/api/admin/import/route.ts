@@ -124,10 +124,10 @@ async function importEntrenadores(rows: any[]): Promise<ImportResult> {
           userId: user.id,
           fullName: row.nombre_completo || 'Sin nombre',
           city: row.ciudad || 'Madrid',
-          country: row.pais || 'España',
-          experience: row.experiencia_años ? parseInt(row.experiencia_años) : 0,
-          license: row.licencia || null,
-          specialty: row.especialidad || null,
+          nationality: row.pais || 'España',
+          totalExperience: row.experiencia_años ? parseInt(row.experiencia_años) : 0,
+          federativeLicense: row.licencia || null,
+          categoriesCoached: row.especialidad || null,
         },
       })
 
