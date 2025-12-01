@@ -117,7 +117,7 @@ export default function AdminDashboard({
       </div>
 
       {/* Main Actions */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-2 xl:grid-cols-4 gap-6">
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -170,6 +170,25 @@ export default function AdminDashboard({
             <Link href="/admin/recursos">
               <Button className="w-full bg-green-600 hover:bg-green-700">
                 Gestionar recursos
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow border-2 border-purple-200">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Upload className="w-5 h-5 mr-2 text-purple-600" />
+              Importación Masiva
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600 mb-4">
+              Importa jugadores, entrenadores, clubes y ofertas mediante CSV.
+            </p>
+            <Link href="/admin/importar">
+              <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                Importar datos
               </Button>
             </Link>
           </CardContent>
