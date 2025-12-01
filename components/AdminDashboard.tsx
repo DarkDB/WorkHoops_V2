@@ -10,7 +10,8 @@ import {
   FileText,
   Shield,
   TrendingUp,
-  Settings
+  Settings,
+  Upload
 } from 'lucide-react'
 
 interface AdminDashboardProps {
