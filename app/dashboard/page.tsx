@@ -355,6 +355,15 @@ export default async function DashboardPage() {
           )}
         </div>
 
+        {/* Analytics Section */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-workhoops-accent" />
+            Tu Actividad
+          </h2>
+          <DashboardAnalytics />
+        </div>
+
         {/* Conditional Dashboard based on user role */}
         {isClubOrAgency ? (
           <DashboardClubAgency 
