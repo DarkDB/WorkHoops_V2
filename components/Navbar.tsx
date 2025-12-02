@@ -140,6 +140,9 @@ export function Navbar() {
                   </Link>
                 )}
 
+                {/* Notification Bell */}
+                <NotificationBell />
+
                 {/* User menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
