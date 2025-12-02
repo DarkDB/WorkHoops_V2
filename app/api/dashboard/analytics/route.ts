@@ -92,10 +92,10 @@ export async function GET(request: NextRequest) {
       })
 
       const totalApplications = applications.length
-      const pendingApplications = applications.filter(a => a.state === 'pending').length
-      const acceptedApplications = applications.filter(a => a.state === 'accepted').length
-      const rejectedApplications = applications.filter(a => a.state === 'rejected').length
-      const viewedApplications = applications.filter(a => a.state === 'viewed').length
+      const pendingApplications = applications.filter(a => a.state === 'pendiente' || a.state === 'en_revision').length
+      const acceptedApplications = applications.filter(a => a.state === 'aceptada').length
+      const rejectedApplications = applications.filter(a => a.state === 'rechazada').length
+      const viewedApplications = applications.filter(a => a.state === 'vista').length
 
       // Tasa de éxito
       const successRate = totalApplications > 0
