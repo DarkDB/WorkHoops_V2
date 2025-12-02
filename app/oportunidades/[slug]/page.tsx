@@ -186,8 +186,8 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
                   </h1>
                   
                   <div className="flex items-center space-x-2 text-gray-600">
-                    <span className="font-medium">{opportunity.organization.name}</span>
-                    {opportunity.organization.verified && (
+                    <span className="font-medium">{opportunity.organization?.name || opportunity.author?.name || 'WorkHoops'}</span>
+                    {opportunity.organization?.verified && (
                       <CheckCircle className="w-4 h-4 text-blue-500" />
                     )}
                   </div>
