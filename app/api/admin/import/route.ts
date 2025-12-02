@@ -434,22 +434,44 @@ async function importOfertas(rows: any[]): Promise<ImportResult> {
       let remunerationMax = null
       
       if (row.salario_min && row.salario_min.trim()) {
-        // Normalizar: reemplazar coma por punto para parseFloat
-        const normalized = row.salario_min.trim().replace(',', '.')
-        const parsed = parseFloat(normalized)
-        if (!isNaN(parsed) && parsed > 0) {
-          remunerationMin = parsed
+        try {
+          // Limpiar el valor: remover espacios, símbolos de moneda, etc.
+          let normalized = row.salario_min.trim()
+            .replace(/[€$£¥\s]/g, '')  // Remover símbolos de moneda y espacios
+            .replace(/\./g, '')         // Remover separadores de miles (puntos)
+            .replace(',', '.')          // Cambiar coma decimal a punto
+          
+          const parsed = parseFloat(normalized)
+          if (!isNaN(parsed) && parsed > 0 && isFinite(parsed)) {
+            remunerationMin = parsed
+          } else {
+            console.log(`Row ${row._rowNumber}: Invalid salario_min "${row.salario_min}" -> "${normalized}" -> ${parsed}`)
+          }
+        } catch (e) {
+          console.log(`Row ${row._rowNumber}: Error parsing salario_min "${row.salario_min}"`, e)
         }
       }
       
       if (row.salario_max && row.salario_max.trim()) {
-        // Normalizar: reemplazar coma por punto para parseFloat
-        const normalized = row.salario_max.trim().replace(',', '.')
-        const parsed = parseFloat(normalized)
-        if (!isNaN(parsed) && parsed > 0) {
-          remunerationMax = parsed
+        try {
+          // Limpiar el valor: remover espacios, símbolos de moneda, etc.
+          let normalized = row.salario_max.trim()
+            .replace(/[€$£¥\s]/g, '')  // Remover símbolos de moneda y espacios
+            .replace(/\./g, '')         // Remover separadores de miles (puntos)
+            .replace(',', '.')          // Cambiar coma decimal a punto
+          
+          const parsed = parseFloat(normalized)
+          if (!isNaN(parsed) && parsed > 0 && isFinite(parsed)) {
+            remunerationMax = parsed
+          } else {
+            console.log(`Row ${row._rowNumber}: Invalid salario_max "${row.salario_max}" -> "${normalized}" -> ${parsed}`)
+          }
+        } catch (e) {
+          console.log(`Row ${row._rowNumber}: Error parsing salario_max "${row.salario_max}"`, e)
         }
       }
+      
+      console.log(`Row ${row._rowNumber}: Parsed salaries - min: ${remunerationMin}, max: ${remunerationMax}`)
 
       // Crear oportunidad
       await prisma.opportunity.create({
