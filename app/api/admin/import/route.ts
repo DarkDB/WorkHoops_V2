@@ -397,6 +397,11 @@ export async function POST(request: NextRequest) {
     const text = await file.text()
     const rows = parseCSV(text)
 
+    console.log(`Parsed ${rows.length} rows`)
+    if (rows.length > 0) {
+      console.log('First row sample:', rows[0])
+    }
+
     if (rows.length === 0) {
       return NextResponse.json({ error: 'Archivo CSV vacío o inválido' }, { status: 400 })
     }
