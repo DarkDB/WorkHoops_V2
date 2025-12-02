@@ -274,6 +274,75 @@ async function importClubes(rows: any[]): Promise<ImportResult> {
   return result
 }
 
+// Normalizar tipo de oportunidad
+function normalizeOpportunityType(type: string): string | null {
+  const normalized = type.toLowerCase().trim()
+  const mapping: Record<string, string> = {
+    'empleo': 'empleo',
+    'trabajo': 'empleo',
+    'job': 'empleo',
+    'prueba': 'prueba',
+    'tryout': 'prueba',
+    'torneo': 'torneo',
+    'tournament': 'torneo',
+    'clinica': 'clinica',
+    'clinic': 'clinica',
+    'beca': 'beca',
+    'scholarship': 'beca',
+    'patrocinio': 'patrocinio',
+    'sponsor': 'patrocinio',
+  }
+  return mapping[normalized] || null
+}
+
+// Normalizar nivel de oportunidad
+function normalizeOpportunityLevel(level: string): string | null {
+  const normalized = level.toLowerCase().trim()
+  
+  // Mapeo directo
+  if (['amateur', 'semi_profesional', 'profesional', 'cantera'].includes(normalized)) {
+    return normalized
+  }
+  
+  // Mapeo de aliases y variaciones
+  const mapping: Record<string, string> = {
+    'formacion': 'cantera',
+    'formación': 'cantera',
+    'base': 'cantera',
+    'youth': 'cantera',
+    'junior': 'cantera',
+    'juvenil': 'cantera',
+    'cadete': 'cantera',
+    'infantil': 'cantera',
+    'alevin': 'cantera',
+    'benjamin': 'cantera',
+    'escolar': 'cantera',
+    'semi profesional': 'semi_profesional',
+    'semiprofesional': 'semi_profesional',
+    'profesional': 'profesional',
+    'pro': 'profesional',
+    'amateur': 'amateur',
+    'aficionado': 'amateur',
+  }
+  
+  // Buscar en el string (para casos como "Cantera / Formación" o "1ª División Autonómica")
+  for (const [key, value] of Object.entries(mapping)) {
+    if (normalized.includes(key)) {
+      return value
+    }
+  }
+  
+  // Si contiene números o "división", probablemente es semi_profesional o profesional
+  if (normalized.includes('división') || normalized.includes('division')) {
+    if (normalized.includes('1ª') || normalized.includes('primera') || normalized.includes('acb') || normalized.includes('leb')) {
+      return 'profesional'
+    }
+    return 'semi_profesional'
+  }
+  
+  return null
+}
+
 // Importar ofertas
 async function importOfertas(rows: any[]): Promise<ImportResult> {
   const result: ImportResult = { success: 0, errors: 0, details: [] }
@@ -291,18 +360,34 @@ async function importOfertas(rows: any[]): Promise<ImportResult> {
     try {
       // Validar campos obligatorios con mejor debugging
       const titulo = row.titulo?.trim()
-      const tipo = row.tipo?.trim()
-      const nivel = row.nivel?.trim()
+      const tipoRaw = row.tipo?.trim()
+      const nivelRaw = row.nivel?.trim()
       
-      if (!titulo || !tipo || !nivel) {
+      if (!titulo || !tipoRaw || !nivelRaw) {
         result.errors++
         const missing = []
         if (!titulo) missing.push('titulo')
-        if (!tipo) missing.push('tipo')
-        if (!nivel) missing.push('nivel')
+        if (!tipoRaw) missing.push('tipo')
+        if (!nivelRaw) missing.push('nivel')
         
         console.log(`Row ${row._rowNumber} missing fields:`, missing, 'Row data:', row)
         result.details.push(`Fila ${row._rowNumber}: Faltan campos obligatorios (${missing.join(', ')})`)
+        continue
+      }
+      
+      // Normalizar tipo y nivel
+      const tipo = normalizeOpportunityType(tipoRaw)
+      const nivel = normalizeOpportunityLevel(nivelRaw)
+      
+      if (!tipo) {
+        result.errors++
+        result.details.push(`Fila ${row._rowNumber}: Tipo inválido "${tipoRaw}". Valores permitidos: empleo, prueba, torneo, clinica, beca, patrocinio`)
+        continue
+      }
+      
+      if (!nivel) {
+        result.errors++
+        result.details.push(`Fila ${row._rowNumber}: Nivel inválido "${nivelRaw}". Valores permitidos: amateur, semi_profesional, profesional, cantera`)
         continue
       }
 
