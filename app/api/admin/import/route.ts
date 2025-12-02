@@ -11,19 +11,53 @@ interface ImportResult {
   details: string[]
 }
 
-// Parse CSV text to array of objects
+// Parse CSV text to array of objects with auto-detection of delimiter
 function parseCSV(text: string): any[] {
+  // Normalizar saltos de línea y limpiar BOM
+  text = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+  
   const lines = text.split('\n').filter(line => line.trim())
   if (lines.length < 2) return []
 
-  const headers = lines[0].split(',').map(h => h.trim())
+  // Detectar separador (coma o punto y coma)
+  const firstLine = lines[0]
+  const delimiter = firstLine.includes(';') ? ';' : ','
   
+  console.log(`Detected CSV delimiter: "${delimiter}"`)
+  
+  // Parsear headers
+  const headers = firstLine.split(delimiter).map(h => 
+    h.trim().replace(/^["']|["']$/g, '') // Remover comillas
+  )
+  
+  console.log('Headers detected:', headers)
+  
+  // Parsear filas
   return lines.slice(1).map((line, index) => {
-    const values = line.split(',').map(v => v.trim())
+    // Split por el delimiter, manejando comillas
+    let values: string[]
+    
+    if (line.includes('"') || line.includes("'")) {
+      // Parsing avanzado para campos con comillas
+      const regex = delimiter === ';' 
+        ? /(?:^|;)(?:"([^"]*)"|'([^']*)'|([^;]*))/g
+        : /(?:^|,)(?:"([^"]*)"|'([^']*)'|([^,]*))/g
+      
+      values = []
+      let match
+      while ((match = regex.exec(line)) !== null) {
+        values.push((match[1] || match[2] || match[3] || '').trim())
+      }
+    } else {
+      // Split simple
+      values = line.split(delimiter).map(v => v.trim())
+    }
+    
     const row: any = { _rowNumber: index + 2 }
     headers.forEach((header, i) => {
       row[header] = values[i] || ''
     })
+    
     return row
   })
 }
