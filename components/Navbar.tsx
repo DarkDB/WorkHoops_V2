@@ -25,6 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { NotificationBell } from '@/components/NotificationBell'
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
