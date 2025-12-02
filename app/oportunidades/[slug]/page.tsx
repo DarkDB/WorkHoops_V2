@@ -158,7 +158,7 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4">
-                {opportunity.organization.logo && (
+                {opportunity.organization?.logo && (
                   <img 
                     src={opportunity.organization.logo}
                     alt={opportunity.organization.name}
