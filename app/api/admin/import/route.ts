@@ -340,6 +340,16 @@ function normalizeOpportunityLevel(level: string): string | null {
     return 'semi_profesional'
   }
   
+  // Ligas específicas profesionales
+  if (normalized.includes('acb') || normalized.includes('endesa') || normalized.includes('liga acb')) {
+    return 'profesional'
+  }
+  
+  // LEB Oro/Plata
+  if (normalized.includes('leb')) {
+    return 'semi_profesional'
+  }
+  
   return null
 }
 
