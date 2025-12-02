@@ -198,14 +198,6 @@ export default async function DashboardPage() {
   // Check if user is club/agency
   const isClubOrAgency = user.role === 'club' || user.role === 'agencia'
 
-  // Get statistics
-  const stats = {
-    applications: user.applications.length,
-    favorites: user.favorites.length,
-    profileViews: 0, // TODO: Implement view tracking
-    responseRate: 0 // TODO: Calculate from applications
-  }
-
   // Get recent opportunities for recommendations
   const recommendations = await prisma.opportunity.findMany({
     where: {
