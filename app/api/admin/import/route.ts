@@ -289,9 +289,20 @@ async function importOfertas(rows: any[]): Promise<ImportResult> {
 
   for (const row of rows) {
     try {
-      if (!row.titulo || !row.tipo || !row.nivel) {
+      // Validar campos obligatorios con mejor debugging
+      const titulo = row.titulo?.trim()
+      const tipo = row.tipo?.trim()
+      const nivel = row.nivel?.trim()
+      
+      if (!titulo || !tipo || !nivel) {
         result.errors++
-        result.details.push(`Fila ${row._rowNumber}: Faltan campos obligatorios (titulo, tipo, nivel)`)
+        const missing = []
+        if (!titulo) missing.push('titulo')
+        if (!tipo) missing.push('tipo')
+        if (!nivel) missing.push('nivel')
+        
+        console.log(`Row ${row._rowNumber} missing fields:`, missing, 'Row data:', row)
+        result.details.push(`Fila ${row._rowNumber}: Faltan campos obligatorios (${missing.join(', ')})`)
         continue
       }
 
