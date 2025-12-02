@@ -419,19 +419,24 @@ async function importOfertas(rows: any[]): Promise<ImportResult> {
       }
 
       // Parsear salarios (convertir strings vacíos en null)
+      // Manejar tanto punto como coma como separador decimal
       let remunerationMin = null
       let remunerationMax = null
       
       if (row.salario_min && row.salario_min.trim()) {
-        const parsed = parseFloat(row.salario_min)
-        if (!isNaN(parsed)) {
+        // Normalizar: reemplazar coma por punto para parseFloat
+        const normalized = row.salario_min.trim().replace(',', '.')
+        const parsed = parseFloat(normalized)
+        if (!isNaN(parsed) && parsed > 0) {
           remunerationMin = parsed
         }
       }
       
       if (row.salario_max && row.salario_max.trim()) {
-        const parsed = parseFloat(row.salario_max)
-        if (!isNaN(parsed)) {
+        // Normalizar: reemplazar coma por punto para parseFloat
+        const normalized = row.salario_max.trim().replace(',', '.')
+        const parsed = parseFloat(normalized)
+        if (!isNaN(parsed) && parsed > 0) {
           remunerationMax = parsed
         }
       }
