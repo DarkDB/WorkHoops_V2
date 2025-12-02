@@ -143,6 +143,7 @@ model User {
   clubAgencyProfile ClubAgencyProfile?
   interestNotifications InterestNotification[]
   resources     Resource[]
+  notifications Notification[]
 
   @@map("users")
 }
