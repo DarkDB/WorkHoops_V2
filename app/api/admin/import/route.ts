@@ -239,11 +239,32 @@ async function importOfertas(rows: any[]): Promise<ImportResult> {
 
       // Parsear fecha límite
       let deadline = null
-      if (row.fecha_limite) {
+      if (row.fecha_limite && row.fecha_limite.trim()) {
         try {
-          deadline = new Date(row.fecha_limite)
+          const parsedDate = new Date(row.fecha_limite)
+          if (!isNaN(parsedDate.getTime())) {
+            deadline = parsedDate
+          }
         } catch (e) {
           // Fecha inválida, se ignora
+        }
+      }
+
+      // Parsear salarios (convertir strings vacíos en null)
+      let remunerationMin = null
+      let remunerationMax = null
+      
+      if (row.salario_min && row.salario_min.trim()) {
+        const parsed = parseFloat(row.salario_min)
+        if (!isNaN(parsed)) {
+          remunerationMin = parsed
+        }
+      }
+      
+      if (row.salario_max && row.salario_max.trim()) {
+        const parsed = parseFloat(row.salario_max)
+        if (!isNaN(parsed)) {
+          remunerationMax = parsed
         }
       }
 
@@ -260,9 +281,9 @@ async function importOfertas(rows: any[]): Promise<ImportResult> {
           country: 'España',
           contactEmail: row.email_contacto || adminUser.email,
           deadline,
-          remunerationMin: row.salario_min ? parseFloat(row.salario_min) : null,
-          remunerationMax: row.salario_max ? parseFloat(row.salario_max) : null,
-          remunerationType: row.salario_min || row.salario_max ? 'monthly' : null,
+          remunerationMin,
+          remunerationMax,
+          remunerationType: remunerationMin || remunerationMax ? 'monthly' : null,
           authorId: adminUser.id,
           publishedAt: new Date(),
         },
