@@ -226,43 +226,45 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
             </Card>
 
             {/* Organization */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Sobre la organización</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-start space-x-4">
-                  {opportunity.organization.logo && (
-                    <img 
-                      src={opportunity.organization.logo}
-                      alt={opportunity.organization.name}
-                      className="w-12 h-12 rounded-lg object-cover"
-                    />
-                  )}
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <h3 className="font-semibold text-gray-900">
-                        {opportunity.organization.name}
-                      </h3>
-                      {opportunity.organization.verified && (
-                        <CheckCircle className="w-4 h-4 text-blue-500" />
+            {opportunity.organization && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sobre la organización</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-start space-x-4">
+                    {opportunity.organization.logo && (
+                      <img 
+                        src={opportunity.organization.logo}
+                        alt={opportunity.organization.name}
+                        className="w-12 h-12 rounded-lg object-cover"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <h3 className="font-semibold text-gray-900">
+                          {opportunity.organization.name}
+                        </h3>
+                        {opportunity.organization.verified && (
+                          <CheckCircle className="w-4 h-4 text-blue-500" />
+                        )}
+                      </div>
+                      <p className="text-gray-600 mb-3">
+                        {opportunity.organization.description}
+                      </p>
+                      {opportunity.organization.website && (
+                        <Link href={opportunity.organization.website} target="_blank">
+                          <Button variant="outline" size="sm">
+                            <ExternalLink className="w-4 h-4 mr-2" />
+                            Visitar web
+                          </Button>
+                        </Link>
                       )}
                     </div>
-                    <p className="text-gray-600 mb-3">
-                      {opportunity.organization.description}
-                    </p>
-                    {opportunity.organization.website && (
-                      <Link href={opportunity.organization.website} target="_blank">
-                        <Button variant="outline" size="sm">
-                          <ExternalLink className="w-4 h-4 mr-2" />
-                          Visitar web
-                        </Button>
-                      </Link>
-                    )}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Sidebar */}
