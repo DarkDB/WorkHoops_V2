@@ -147,6 +147,15 @@ async function importEntrenadores(rows: any[]): Promise<ImportResult> {
         },
       })
 
+      // Parsear experiencia
+      let totalExperience = 0
+      if (row.experiencia_años && row.experiencia_años.trim()) {
+        const parsed = parseInt(row.experiencia_años)
+        if (!isNaN(parsed)) {
+          totalExperience = parsed
+        }
+      }
+      
       // Crear perfil de entrenador
       await prisma.coachProfile.create({
         data: {
@@ -154,7 +163,7 @@ async function importEntrenadores(rows: any[]): Promise<ImportResult> {
           fullName: row.nombre_completo || 'Sin nombre',
           city: row.ciudad || 'Madrid',
           nationality: row.pais || 'España',
-          totalExperience: row.experiencia_años ? parseInt(row.experiencia_años) : 0,
+          totalExperience,
           federativeLicense: row.licencia || null,
           categoriesCoached: row.especialidad || null,
         },
