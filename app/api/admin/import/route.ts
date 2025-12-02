@@ -59,9 +59,38 @@ async function importJugadores(rows: any[]): Promise<ImportResult> {
         },
       })
 
-      // Crear perfil de talento
-      const birthDate = row.fecha_nacimiento ? new Date(row.fecha_nacimiento) : new Date('2000-01-01')
+      // Parsear fecha de nacimiento
+      let birthDate = new Date('2000-01-01')
+      if (row.fecha_nacimiento && row.fecha_nacimiento.trim()) {
+        try {
+          const parsed = new Date(row.fecha_nacimiento)
+          if (!isNaN(parsed.getTime())) {
+            birthDate = parsed
+          }
+        } catch (e) {
+          // Usar fecha por defecto
+        }
+      }
       
+      // Parsear altura y peso
+      let height = null
+      let weight = null
+      
+      if (row.altura && row.altura.trim()) {
+        const parsed = parseInt(row.altura)
+        if (!isNaN(parsed)) {
+          height = parsed
+        }
+      }
+      
+      if (row.peso && row.peso.trim()) {
+        const parsed = parseInt(row.peso)
+        if (!isNaN(parsed)) {
+          weight = parsed
+        }
+      }
+      
+      // Crear perfil de talento
       await prisma.talentProfile.create({
         data: {
           userId: user.id,
@@ -71,8 +100,8 @@ async function importJugadores(rows: any[]): Promise<ImportResult> {
           city: row.ciudad || 'Madrid',
           country: row.pais || 'España',
           position: row.posicion || null,
-          height: row.altura ? parseInt(row.altura) : null,
-          weight: row.peso ? parseInt(row.peso) : null,
+          height,
+          weight,
           currentLevel: row.nivel_actual || 'Amateur',
         },
       })
