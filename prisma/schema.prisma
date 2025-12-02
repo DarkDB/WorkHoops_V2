@@ -589,3 +589,22 @@ model Resource {
   @@index([userId])
   @@map("resources")
 }
+
+model Notification {
+  id          String   @id @default(cuid())
+  type        String   // application_received, application_viewed, application_accepted, message_received, profile_saved
+  title       String
+  message     String
+  link        String?  // URL donde debe ir al hacer click
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@map("notifications")
+}
