@@ -474,27 +474,36 @@ async function importOfertas(rows: any[]): Promise<ImportResult> {
       console.log(`Row ${row._rowNumber}: Parsed salaries - min: ${remunerationMin}, max: ${remunerationMax}`)
 
       // Crear oportunidad
-      await prisma.opportunity.create({
-        data: {
-          title: titulo,
-          slug,
-          description: row.descripcion?.trim() || 'Sin descripción',
-          type: tipo as any,
-          level: nivel as any,
-          status: 'publicada',
-          city: row.ciudad || 'Madrid',
-          country: 'España',
-          contactEmail: row.email_contacto || adminUser.email,
-          deadline,
+      try {
+        await prisma.opportunity.create({
+          data: {
+            title: titulo,
+            slug,
+            description: row.descripcion?.trim() || 'Sin descripción',
+            type: tipo as any,
+            level: nivel as any,
+            status: 'publicada',
+            city: row.ciudad || 'Madrid',
+            country: 'España',
+            contactEmail: row.email_contacto || adminUser.email,
+            deadline,
+            remunerationMin,
+            remunerationMax,
+            remunerationType: remunerationMin || remunerationMax ? 'monthly' : null,
+            authorId: adminUser.id,
+            publishedAt: new Date(),
+          },
+        })
+        result.success++
+      } catch (dbError: any) {
+        console.error(`Row ${row._rowNumber} DB error:`, {
+          titulo,
           remunerationMin,
           remunerationMax,
-          remunerationType: remunerationMin || remunerationMax ? 'monthly' : null,
-          authorId: adminUser.id,
-          publishedAt: new Date(),
-        },
-      })
-
-      result.success++
+          error: dbError.message
+        })
+        throw dbError
+      }
     } catch (error: any) {
       result.errors++
       result.details.push(`Fila ${row._rowNumber}: ${error.message}`)
