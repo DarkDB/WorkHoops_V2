@@ -307,7 +307,7 @@ async function importOfertas(rows: any[]): Promise<ImportResult> {
       }
 
       // Crear slug único
-      const baseSlug = row.titulo
+      const baseSlug = titulo
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '')
@@ -354,11 +354,11 @@ async function importOfertas(rows: any[]): Promise<ImportResult> {
       // Crear oportunidad
       await prisma.opportunity.create({
         data: {
-          title: row.titulo,
+          title: titulo,
           slug,
-          description: row.descripcion || 'Sin descripción',
-          type: row.tipo,
-          level: row.nivel,
+          description: row.descripcion?.trim() || 'Sin descripción',
+          type: tipo,
+          level: nivel,
           status: 'publicada',
           city: row.ciudad || 'Madrid',
           country: 'España',
