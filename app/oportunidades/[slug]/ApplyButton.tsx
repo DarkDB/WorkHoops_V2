@@ -36,8 +36,7 @@ export default function ApplyButton({
 
   const handleApply = async () => {
     if (!session) {
-      toast.error('Inicia sesión para aplicar')
-      router.push('/auth/login')
+      router.push('/auth/register')
       return
     }
 
