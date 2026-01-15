@@ -332,31 +332,41 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
               </CardContent>
             </Card>
 
-            {/* Contact */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Contacto</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div>
-                    <dt className="text-sm font-medium text-gray-600">Email</dt>
-                    <dd className="text-sm text-gray-900 mt-1">
-                      {opportunity.contactEmail}
-                    </dd>
-                  </div>
-                  
-                  {opportunity.contactPhone && (
+            {/* Contact - Gated for non-authenticated users */}
+            {session ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Contacto</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
                     <div>
-                      <dt className="text-sm font-medium text-gray-600">Teléfono</dt>
-                      <dd className="text-sm text-gray-900 mt-1">
-                        {opportunity.contactPhone}
+                      <dt className="text-sm font-medium text-gray-600">Email</dt>
+                      <dd className="flex items-center text-sm text-gray-900 mt-1">
+                        <Mail className="w-4 h-4 mr-2 text-gray-400" />
+                        <a href={`mailto:${opportunity.contactEmail}`} className="text-blue-600 hover:underline">
+                          {opportunity.contactEmail}
+                        </a>
                       </dd>
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                    
+                    {opportunity.contactPhone && (
+                      <div>
+                        <dt className="text-sm font-medium text-gray-600">Teléfono</dt>
+                        <dd className="flex items-center text-sm text-gray-900 mt-1">
+                          <Phone className="w-4 h-4 mr-2 text-gray-400" />
+                          <a href={`tel:${opportunity.contactPhone}`} className="text-blue-600 hover:underline">
+                            {opportunity.contactPhone}
+                          </a>
+                        </dd>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <RegistrationGate />
+            )}
           </div>
         </div>
       </div>
