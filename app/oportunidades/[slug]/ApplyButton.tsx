@@ -102,12 +102,12 @@ export default function ApplyButton({
 
   return (
     <Button 
-      className="w-full" 
+      className="w-full bg-workhoops-accent hover:bg-orange-600" 
       size="lg" 
       onClick={handleApply}
       disabled={isApplying}
     >
-      {isApplying ? 'Aplicando...' : applicationUrl ? 'Aplicar en web externa' : 'Aplicar ahora'}
+      {isApplying ? 'Aplicando...' : !session ? '🔒 Regístrate para Aplicar' : applicationUrl ? 'Aplicar en web externa' : 'Aplicar ahora'}
     </Button>
   )
 }
