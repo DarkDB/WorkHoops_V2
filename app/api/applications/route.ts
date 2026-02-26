@@ -184,14 +184,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create application
-    // Note: Using 'pendiente' as default state (matches DB enum)
+    // Create application using Prisma enum for type safety
     const application = await prisma.application.create({
       data: {
         userId: session.user.id,
         opportunityId,
         message: sanitizeInput(message),
-        state: 'pendiente' as any, // Cast to bypass TypeScript, DB will validate
+        state: ApplicationState.pendiente,
       },
       include: {
         user: {
