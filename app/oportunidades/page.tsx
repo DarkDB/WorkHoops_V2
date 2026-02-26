@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { Search, Filter, MapPin, Clock, CheckCircle, Inbox } from 'lucide-react'
+import { Search, Filter, MapPin, Clock, CheckCircle, Inbox, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -23,17 +23,33 @@ interface OpportunitiesPageProps {
     city?: string
     search?: string
     page?: string
+    includeExpired?: string
   }
+}
+
+// Helper to check if deadline has passed
+function isExpired(deadline: Date | null): boolean {
+  if (!deadline) return false
+  return new Date(deadline) < new Date()
 }
 
 async function getOpportunities(searchParams: OpportunitiesPageProps['searchParams']) {
   const page = Math.max(1, parseInt(searchParams.page || '1'))
   const limit = 12
   const skip = (page - 1) * limit
+  const includeExpired = searchParams.includeExpired === 'true'
 
   const where: any = {
     status: 'publicada',
     publishedAt: { not: null },
+  }
+
+  // Only filter by deadline if NOT including expired
+  if (!includeExpired) {
+    where.OR = [
+      { deadline: null },
+      { deadline: { gte: new Date() } }
+    ]
   }
 
   if (searchParams.type) where.type = searchParams.type
@@ -42,11 +58,23 @@ async function getOpportunities(searchParams: OpportunitiesPageProps['searchPara
     where.city = { contains: searchParams.city }
   }
   if (searchParams.search) {
-    where.OR = [
+    // Combine with existing OR conditions
+    const searchConditions = [
       { title: { contains: searchParams.search } },
       { description: { contains: searchParams.search } },
       { tags: { contains: searchParams.search } },
     ]
+    
+    if (where.OR && !includeExpired) {
+      // Wrap both conditions with AND
+      where.AND = [
+        { OR: where.OR },
+        { OR: searchConditions }
+      ]
+      delete where.OR
+    } else {
+      where.OR = searchConditions
+    }
   }
 
   try {
