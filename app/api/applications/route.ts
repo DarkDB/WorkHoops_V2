@@ -15,7 +15,6 @@ import { applicationCreateSchema } from '@/lib/validations'
 import { sanitizeInput } from '@/lib/sanitize'
 import { rateLimitByIP } from '@/lib/rate-limit'
 import { sendApplicationNotificationEmail } from '@/lib/email'
-import { ApplicationState } from '@prisma/client'
 
 export const dynamic = 'force-dynamic'
 
