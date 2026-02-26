@@ -205,6 +205,16 @@ function LoginContent() {
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>
+              
+              <div className="text-sm text-center pt-2 border-t mt-2">
+                <span className="text-gray-500">¿Usuario sin contraseña? </span>
+                <Link 
+                  href="/auth/otp" 
+                  className="text-orange-600 hover:underline font-medium"
+                >
+                  Accede con código
+                </Link>
+              </div>
             </CardFooter>
           </Card>
 
