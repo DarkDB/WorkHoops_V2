@@ -225,8 +225,8 @@ export async function POST(request: NextRequest) {
     })
     */
 
-    // Send notification email to organization
-    if (opportunity.organization.owner.email) {
+    // Send notification email to organization (only if organization exists)
+    if (opportunity.organization?.owner?.email) {
       try {
         await sendApplicationNotificationEmail(
           opportunity.organization.owner.email,
