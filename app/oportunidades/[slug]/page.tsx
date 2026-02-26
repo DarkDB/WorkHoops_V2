@@ -171,7 +171,7 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
                   />
                 )}
                 <div>
-                  <div className="flex items-center space-x-2 mb-2">
+                  <div className="flex items-center flex-wrap gap-2 mb-2">
                     <Badge variant="secondary">
                       {getTypeLabel(opportunity.type)}
                     </Badge>
@@ -182,6 +182,12 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
                       <Badge className="bg-green-100 text-green-800">
                         <CheckCircle className="w-3 h-3 mr-1" />
                         Verificada
+                      </Badge>
+                    )}
+                    {isExpired && (
+                      <Badge className="bg-red-100 text-red-800 border-red-200">
+                        <Clock className="w-3 h-3 mr-1" />
+                        Plazo cerrado
                       </Badge>
                     )}
                   </div>
