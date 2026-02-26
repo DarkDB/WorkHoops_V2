@@ -132,12 +132,16 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
   }
 
   const daysUntilDeadline = () => {
+    if (!opportunity.deadline) return null
     const now = new Date()
     const deadline = new Date(opportunity.deadline)
     const diffTime = deadline.getTime() - now.getTime()
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     return diffDays
   }
+
+  // Check if deadline has passed
+  const isExpired = opportunity.deadline && new Date(opportunity.deadline) < new Date()
 
   return (
     <div className="min-h-screen bg-gray-50">
