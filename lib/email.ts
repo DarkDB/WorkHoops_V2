@@ -13,6 +13,63 @@ function getResendClient() {
   return resend
 }
 
+// ========== OTP EMAIL FOR MIGRATION ==========
+export async function sendOtpEmail(email: string, name: string, otpCode: string) {
+  try {
+    const { data, error } = await getResendClient().emails.send({
+      from: 'WorkHoops <hola@workhoops.com>',
+      to: [email],
+      subject: 'Tu código de acceso - WorkHoops',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #FF6A00 0%, #e55a00 100%); padding: 40px 20px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">WorkHoops</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Tu plataforma de oportunidades de baloncesto</p>
+          </div>
+          
+          <div style="padding: 40px 20px; background: white;">
+            <h2 style="color: #111111; margin: 0 0 20px 0;">Hola ${name},</h2>
+            <p style="color: #666; margin: 0 0 20px 0; line-height: 1.6;">
+              Hemos actualizado nuestro sistema de seguridad. Usa el siguiente código para acceder a tu cuenta:
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <div style="background: #f8f9fa; border: 2px dashed #FF6A00; border-radius: 12px; padding: 20px; display: inline-block;">
+                <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #FF6A00;">${otpCode}</span>
+              </div>
+            </div>
+            
+            <p style="color: #666; margin: 20px 0; line-height: 1.6;">
+              Este código es válido por <strong>10 minutos</strong>. Después de acceder, se te pedirá que crees una contraseña nueva.
+            </p>
+            
+            <p style="color: #999; font-size: 14px; margin: 30px 0 0 0;">
+              Si no solicitaste este código, puedes ignorar este email de forma segura.
+            </p>
+          </div>
+          
+          <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
+            <p style="color: #666; font-size: 14px; margin: 0;">
+              © 2024 WorkHoops. Todos los derechos reservados.
+            </p>
+          </div>
+        </div>
+      `,
+    })
+
+    if (error) {
+      console.error('Error sending OTP email:', error)
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error in sendOtpEmail:', error)
+    throw error
+  }
+}
+
+
 export async function sendMagicLinkEmail(email: string, url: string) {
   try {
     const { data, error } = await getResendClient().emails.send({
