@@ -280,13 +280,16 @@ export default async function OpportunitiesPage({ searchParams }: OpportunitiesP
       {/* Main content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Results header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div className="text-sm text-gray-600">
             {pagination.total} oportunidades encontradas
+            {searchParams.includeExpired !== 'true' && (
+              <span className="text-gray-400 ml-1">(activas)</span>
+            )}
           </div>
           
           {/* Quick filters */}
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Filter className="w-4 h-4 text-gray-400" />
             <Link href="/oportunidades?type=empleo">
               <Badge variant={searchParams.type === 'empleo' ? 'default' : 'outline'}>
@@ -301,6 +304,15 @@ export default async function OpportunitiesPage({ searchParams }: OpportunitiesP
             <Link href="/oportunidades?type=torneo">
               <Badge variant={searchParams.type === 'torneo' ? 'default' : 'outline'}>
                 Torneos
+              </Badge>
+            </Link>
+            <span className="text-gray-300 mx-1">|</span>
+            <Link href={searchParams.includeExpired === 'true' ? '/oportunidades' : '/oportunidades?includeExpired=true'}>
+              <Badge 
+                variant={searchParams.includeExpired === 'true' ? 'default' : 'outline'}
+                className={searchParams.includeExpired === 'true' ? 'bg-gray-600' : ''}
+              >
+                {searchParams.includeExpired === 'true' ? 'Ocultando vencidas' : 'Ver vencidas'}
               </Badge>
             </Link>
           </div>
