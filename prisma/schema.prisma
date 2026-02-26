@@ -48,11 +48,11 @@ enum Modality {
 }
 
 enum ApplicationState {
-  pendiente
+  enviada
   en_revision
-  vista
-  rechazada
   aceptada
+  rechazada
+  finalizada
 }
 
 enum ResourceStatus {
