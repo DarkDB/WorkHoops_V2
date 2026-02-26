@@ -44,10 +44,10 @@ export async function GET(request: NextRequest) {
 
       opportunities.forEach(opp => {
         opp.applications.forEach(app => {
-          // Map Spanish enum values to English keys
-          if (app.state === 'pendiente' || app.state === 'en_revision') {
+          // Map Spanish enum values to English keys (synced with DB enum)
+          if (app.state === 'enviada' || app.state === 'en_revision') {
             applicationsByState.pending++
-          } else if (app.state === 'vista') {
+          } else if (app.state === 'finalizada') {
             applicationsByState.viewed++
           } else if (app.state === 'aceptada') {
             applicationsByState.accepted++
