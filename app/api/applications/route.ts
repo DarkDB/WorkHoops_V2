@@ -184,13 +184,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create application using Prisma enum for type safety
+    // Create application - omit state to use DB default value
+    // This avoids enum mismatch issues between Prisma schema and actual DB
     const application = await prisma.application.create({
       data: {
         userId: session.user.id,
         opportunityId,
         message: sanitizeInput(message),
-        state: ApplicationState.pendiente,
+        // state: omitted intentionally - DB will use its default value
       },
       include: {
         user: {
