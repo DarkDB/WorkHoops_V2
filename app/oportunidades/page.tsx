@@ -123,13 +123,23 @@ async function getOpportunities(searchParams: OpportunitiesPageProps['searchPara
 }
 
 function OpportunityCard({ opportunity }: { opportunity: any }) {
+  const expired = isExpired(opportunity.deadline)
+  
   return (
-    <Card className="hover:shadow-lg transition-shadow">
+    <Card className={`hover:shadow-lg transition-shadow ${expired ? 'opacity-75 bg-gray-50' : ''}`}>
       <CardHeader className="pb-4">
         <div className="flex justify-between items-start mb-2">
-          <Badge className={getOpportunityTypeColor(opportunity.type)}>
-            {getOpportunityTypeLabel(opportunity.type)}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge className={getOpportunityTypeColor(opportunity.type)}>
+              {getOpportunityTypeLabel(opportunity.type)}
+            </Badge>
+            {expired && (
+              <Badge variant="secondary" className="bg-gray-200 text-gray-600">
+                <AlertCircle className="w-3 h-3 mr-1" />
+                Plazo cerrado
+              </Badge>
+            )}
+          </div>
           <div className="flex items-center space-x-1">
             {opportunity.featured && (
               <Badge variant="outline" className="text-orange-600 border-orange-300">
@@ -142,7 +152,7 @@ function OpportunityCard({ opportunity }: { opportunity: any }) {
           </div>
         </div>
         
-        <CardTitle className="text-lg line-clamp-2 mb-2">
+        <CardTitle className={`text-lg line-clamp-2 mb-2 ${expired ? 'text-gray-600' : ''}`}>
           {opportunity.title}
         </CardTitle>
         
@@ -181,9 +191,9 @@ function OpportunityCard({ opportunity }: { opportunity: any }) {
           )}
           
           {opportunity.deadline && (
-            <div className="flex items-center text-sm text-orange-600">
+            <div className={`flex items-center text-sm ${expired ? 'text-gray-500' : 'text-orange-600'}`}>
               <Clock className="w-4 h-4 mr-2" />
-              Hasta {formatRelativeTime(opportunity.deadline)}
+              {expired ? 'Cerrado' : 'Hasta'} {formatRelativeTime(opportunity.deadline)}
             </div>
           )}
           
@@ -193,8 +203,8 @@ function OpportunityCard({ opportunity }: { opportunity: any }) {
         </div>
         
         <Link href={`/oportunidades/${opportunity.slug}`}>
-          <Button className="w-full">
-            Ver detalles
+          <Button className="w-full" variant={expired ? 'outline' : 'default'}>
+            {expired ? 'Ver detalles' : 'Ver detalles'}
           </Button>
         </Link>
       </CardContent>
