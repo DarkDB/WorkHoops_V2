@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
     const application = await prisma.application.create({
       data: {
         message: 'Estoy muy interesado en formar parte de la cantera del FC Barcelona. Tengo experiencia jugando como base.',
-        state: 'pendiente',
+        state: 'enviada',
         opportunityId: opportunity1.id,
         userId: player.id,
       }
