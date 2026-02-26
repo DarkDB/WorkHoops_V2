@@ -33,6 +33,26 @@ export async function POST(request: NextRequest) {
     const validatedData = checkoutSchema.parse(body)
     const { planType, billingCycle, returnUrl } = validatedData
 
+    // ✅ VERIFICAR SI YA TIENE SUSCRIPCIÓN ACTIVA
+    const { prisma } = await import('@/lib/prisma')
+    const existingSubscription = await prisma.subscription.findFirst({
+      where: {
+        userId: session.user.id,
+        status: 'active',
+        planType: planType,
+      }
+    })
+
+    if (existingSubscription) {
+      return NextResponse.json(
+        { 
+          message: 'Ya tienes una suscripción activa a este plan',
+          error: 'ALREADY_SUBSCRIBED'
+        },
+        { status: 400 }
+      )
+    }
+
     // Get the origin from the request or use provided returnUrl
     const origin = returnUrl || request.headers.get('origin') || process.env.APP_URL
     
