@@ -53,7 +53,7 @@ export const applicationCreateSchema = z.object({
 })
 
 export const applicationUpdateSchema = z.object({
-  state: z.enum(["pendiente", "en_revision", "vista", "rechazada", "aceptada"]),
+  state: z.enum(["enviada", "en_revision", "aceptada", "rechazada", "finalizada"]),
 })
 
 export const organizationCreateSchema = z.object({
