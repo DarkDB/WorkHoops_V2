@@ -219,7 +219,7 @@ model Opportunity {
 
 model Application {
   id        String           @id @default(cuid())
-  state     ApplicationState @default(pendiente)
+  state     ApplicationState @default(enviada)
   message   String?
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
