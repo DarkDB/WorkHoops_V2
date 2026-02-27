@@ -86,9 +86,27 @@ function LoginContent() {
             </CardHeader>
 
             <CardContent className="space-y-4">
+              {/* Error message with OTP suggestion for legacy users */}
               {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
+                <Alert variant="destructive" className="border-red-200 bg-red-50">
+                  <AlertDescription className="space-y-3">
+                    <p>{error}</p>
+                    <div className="pt-2 border-t border-red-200">
+                      <p className="text-sm text-red-700">
+                        Si tu cuenta es anterior a la actualización de seguridad y no puedes entrar con tu contraseña, 
+                        entra con código (OTP) y crea una nueva contraseña.
+                      </p>
+                      <Link href="/auth/otp">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="mt-2 border-red-300 text-red-700 hover:bg-red-100"
+                        >
+                          Entrar con código
+                        </Button>
+                      </Link>
+                    </div>
+                  </AlertDescription>
                 </Alert>
               )}
 
