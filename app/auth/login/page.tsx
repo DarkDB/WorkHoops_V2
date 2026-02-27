@@ -153,6 +153,27 @@ function LoginContent() {
                 </Button>
               </form>
 
+              {/* OTP Login Button - visible for all users */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-gray-500">¿Primera vez tras la actualización?</span>
+                </div>
+              </div>
+
+              <Link href="/auth/otp" className="block">
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  className="w-full border-orange-300 text-orange-600 hover:bg-orange-50"
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  Entrar con código (OTP)
+                </Button>
+              </Link>
+
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
