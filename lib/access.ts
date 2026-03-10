@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { Session } from 'next-auth'
+import { resolveEntitlements } from '@/lib/entitlements'
 
 // ========== TYPES ==========
 
@@ -79,9 +80,10 @@ export function isClubOrAgency(session: Session | null): boolean {
  * Check if user has premium plan
  */
 export function isPremiumUser(session: Session | null): boolean {
+  const role = (session?.user as SessionUser)?.role
   const planType = (session?.user as SessionUser)?.planType
-  const freePlans = ['free_amateur', 'gratis', 'free']
-  return planType ? !freePlans.includes(planType) : false
+  const entitlements = resolveEntitlements(role, planType)
+  return entitlements.tier === 'player_premium' || entitlements.tier === 'club_pro_premium'
 }
 
 // ========== OPPORTUNITY PERMISSION HELPERS ==========

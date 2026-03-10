@@ -31,6 +31,12 @@ const roles = [
     label: 'Club/Agencia', 
     icon: <Trophy className="w-4 h-4" />,
     description: 'Busco jugadores y entrenadores'
+  },
+  {
+    value: 'agencia',
+    label: 'Agencia',
+    icon: <Trophy className="w-4 h-4" />,
+    description: 'Gestiono scouting y reclutamiento'
   }
 ]
 
@@ -89,8 +95,8 @@ function RegisterContent() {
         setError('Las contraseñas no coinciden')
         return
       }
-      if (formData.password.length < 6) {
-        setError('La contraseña debe tener al menos 6 caracteres')
+      if (formData.password.length < 8) {
+        setError('La contraseña debe tener al menos 8 caracteres')
         return
       }
       setStep(2)
@@ -249,7 +255,7 @@ function RegisterContent() {
                       <Input
                         id="password"
                         type="password"
-                        placeholder="Mínimo 6 caracteres"
+                        placeholder="Mínimo 8 caracteres"
                         value={formData.password}
                         onChange={(e) => handleInputChange('password', e.target.value)}
                         className="pl-10"

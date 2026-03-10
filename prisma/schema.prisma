@@ -180,6 +180,7 @@ model User {
   otpTokens     OtpToken[]
   talentShortlists TalentShortlist[]
   sentTalentInvitations TalentInvitation[]
+  funnelEvents FunnelEvent[]
 
   @@map("users")
 }
@@ -338,7 +339,7 @@ model Subscription {
 model TalentProfile {
   id          String   @id @default(cuid())
   fullName    String
-  birthDate   DateTime
+  birthDate   DateTime?
   role        String   // jugador, entrenador, staff
   city        String
   country     String   @default("España")
@@ -706,4 +707,19 @@ model Notification {
   @@index([read])
   @@index([createdAt])
   @@map("notifications")
+}
+
+model FunnelEvent {
+  id        String   @id @default(cuid())
+  eventName String
+  userId    String?
+  role      String?
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([eventName, createdAt])
+  @@index([userId, createdAt])
+  @@map("funnel_events")
 }

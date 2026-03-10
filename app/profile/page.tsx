@@ -6,6 +6,7 @@ import { Navbar } from '@/components/Navbar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { getPlanLabel } from '@/lib/entitlements'
 import { 
   User, 
   Mail, 
@@ -49,16 +50,6 @@ export default async function ProfilePage() {
       admin: 'Administrador'
     }
     return labels[role] || role
-  }
-
-  const getPlanLabel = (planType: string) => {
-    const labels: Record<string, string> = {
-      free_amateur: 'Free Amateur',
-      pro_semipro: 'Pro Semipro',
-      club_agencia: 'Club/Agencia',
-      destacado: 'Destacado'
-    }
-    return labels[planType] || planType
   }
 
   return (

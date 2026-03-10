@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { createNotification } from '@/lib/notifications'
+import { trackFunnelEvent } from '@/lib/funnel-events'
 
 export const dynamic = 'force-dynamic'
 
@@ -149,6 +150,16 @@ export async function POST(request: NextRequest) {
         title: 'Un club guardó tu perfil',
         message: `${session.user.name || 'Un club'} te añadió a su shortlist`,
         link: `/talento/perfiles/${profileId}`
+      })
+
+      await trackFunnelEvent({
+        eventName: 'talent_shortlisted',
+        userId: session.user.id,
+        role: session.user.role,
+        metadata: {
+          profileId,
+          status: nextStatus
+        }
       })
     }
 

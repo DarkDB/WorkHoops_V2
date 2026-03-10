@@ -15,6 +15,7 @@ import { applicationCreateSchema } from '@/lib/validations'
 import { sanitizeInput } from '@/lib/sanitize'
 import { rateLimitByIP } from '@/lib/rate-limit'
 import { sendApplicationNotificationEmail } from '@/lib/email'
+import { trackFunnelEvent } from '@/lib/funnel-events'
 
 export const dynamic = 'force-dynamic'
 
@@ -239,6 +240,16 @@ export async function POST(request: NextRequest) {
         // Don't fail the application creation if email fails
       }
     }
+
+    await trackFunnelEvent({
+      eventName: 'application_sent',
+      userId: session.user.id,
+      role: session.user.role,
+      metadata: {
+        opportunityId,
+        applicationId: application.id
+      }
+    })
 
     return NextResponse.json(application, { status: 201 })
 

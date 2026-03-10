@@ -15,6 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/Navbar'
 import { toast } from 'sonner'
+import { getPlanPriceLabel, resolveEntitlements } from '@/lib/entitlements'
 
 const opportunityTypes = [
   { value: 'empleo', label: 'Empleo', description: 'Posición profesional permanente o temporal' },
@@ -146,10 +147,9 @@ export default function PublicarPage() {
     }
   }, [session])
 
-  // Determinar si el usuario tiene plan premium
-  const freePlans = ['free_amateur', 'gratis', 'free', null]
-  const hasPremiumPlan = !freePlans.includes(userPlan)
-  const maxOpportunities = hasPremiumPlan ? 3 : 1
+  const entitlements = resolveEntitlements(session?.user?.role, userPlan)
+  const hasPremiumPlan = entitlements.tier === 'club_pro_premium'
+  const maxOpportunities = entitlements.maxActiveOpportunities
   const remainingOpportunities = maxOpportunities - opportunitiesCount
 
   // Check if user is logged in
@@ -189,13 +189,13 @@ export default function PublicarPage() {
                     Encuentra el talento perfecto para tu club
                   </h2>
                   <p className="text-gray-600 mb-6">
-                    Publica ofertas ilimitadas y conecta con jugadores y entrenadores verificados en toda España. 
+                    Publica ofertas rápidamente y conecta con jugadores y entrenadores verificados en toda España. 
                     Simplifica tu proceso de reclutamiento con nuestra plataforma especializada.
                   </p>
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      <span>2.500+ perfiles activos</span>
+                      <span>Miles de perfiles activos</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <CheckCircle2 className="w-5 h-5 text-green-500" />
@@ -265,20 +265,20 @@ export default function PublicarPage() {
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-workhoops-accent mb-2">2.500+</div>
-                <p className="text-gray-600">Perfiles de talento</p>
+                <div className="text-3xl font-bold text-workhoops-accent mb-2">Scouting</div>
+                <p className="text-gray-600">Base activa de talento</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-workhoops-accent mb-2">500+</div>
-                <p className="text-gray-600">Clubes activos</p>
+                <div className="text-3xl font-bold text-workhoops-accent mb-2">Match</div>
+                <p className="text-gray-600">Conexión club-jugador</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-workhoops-accent mb-2">1.200+</div>
-                <p className="text-gray-600">Ofertas publicadas</p>
+                <div className="text-3xl font-bold text-workhoops-accent mb-2">Rápido</div>
+                <p className="text-gray-600">Publicación inmediata</p>
               </CardContent>
             </Card>
           </div>
@@ -341,13 +341,13 @@ export default function PublicarPage() {
                     Encuentra el talento perfecto para tu club
                   </h2>
                   <p className="text-gray-600 mb-6">
-                    Publica ofertas ilimitadas y conecta con jugadores y entrenadores verificados en toda España. 
+                    Publica ofertas rápidamente y conecta con jugadores y entrenadores verificados en toda España. 
                     Simplifica tu proceso de reclutamiento con nuestra plataforma especializada.
                   </p>
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      <span>2.500+ perfiles activos</span>
+                      <span>Miles de perfiles activos</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <CheckCircle2 className="w-5 h-5 text-green-500" />
@@ -417,20 +417,20 @@ export default function PublicarPage() {
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-workhoops-accent mb-2">2.500+</div>
-                <p className="text-gray-600">Perfiles de talento</p>
+                <div className="text-3xl font-bold text-workhoops-accent mb-2">Scouting</div>
+                <p className="text-gray-600">Base activa de talento</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-workhoops-accent mb-2">500+</div>
-                <p className="text-gray-600">Clubes activos</p>
+                <div className="text-3xl font-bold text-workhoops-accent mb-2">Match</div>
+                <p className="text-gray-600">Conexión club-jugador</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-workhoops-accent mb-2">1.200+</div>
-                <p className="text-gray-600">Ofertas publicadas</p>
+                <div className="text-3xl font-bold text-workhoops-accent mb-2">Rápido</div>
+                <p className="text-gray-600">Publicación inmediata</p>
               </CardContent>
             </Card>
           </div>
@@ -525,7 +525,7 @@ export default function PublicarPage() {
       }
 
       toast.success('¡Oportunidad creada!', {
-        description: 'Tu oferta está pendiente de revisión por el administrador. Te notificaremos cuando sea aprobada.'
+        description: 'Tu oferta ya está publicada y visible para los jugadores.'
       })
 
       router.push('/dashboard')
@@ -573,7 +573,7 @@ export default function PublicarPage() {
               <span>Aumenta la visibilidad de tu oferta</span>
             </CardTitle>
             <CardDescription>
-              Las ofertas destacadas reciben 5x más candidatos qualificados
+              Las ofertas destacadas reciben más visibilidad y respuesta
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -584,7 +584,7 @@ export default function PublicarPage() {
                 <p className="text-sm text-gray-600">Aparece en listados generales</p>
               </div>
               <div className="flex-1 bg-white rounded-lg p-4 border-2 border-workhoops-accent">
-                <Badge className="mb-2 bg-workhoops-accent">Destacado - 49€</Badge>
+                <Badge className="mb-2 bg-workhoops-accent">Destacado - {getPlanPriceLabel('destacado')}</Badge>
                 <h3 className="font-medium">Publicación destacada</h3>
                 <p className="text-sm text-gray-600">
                   • Posición premium por 60 días<br/>

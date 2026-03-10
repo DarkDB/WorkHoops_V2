@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { rateLimitByUser, getRateLimitHeaders } from '@/lib/rate-limit'
 import { z } from 'zod'
+import { trackFunnelEvent } from '@/lib/funnel-events'
 
 export const dynamic = 'force-dynamic'
 
@@ -151,6 +152,15 @@ export async function POST(request: NextRequest) {
     //     status: 'sent'
     //   }
     // })
+
+    await trackFunnelEvent({
+      eventName: 'talent_contacted',
+      userId: session.user.id,
+      role: session.user.role,
+      metadata: {
+        profileId
+      }
+    })
 
     return NextResponse.json(
       {

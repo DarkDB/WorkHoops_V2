@@ -41,7 +41,7 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
     <div className="space-y-6">
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
         <p className="text-sm text-blue-800">
-          <strong>Campos obligatorios:</strong> Los campos marcados con * son necesarios para crear tu perfil básico.
+          <strong>Perfil mínimo visible:</strong> Nombre, posición, ciudad y altura. Puedes completar el resto después.
         </p>
       </div>
 
@@ -61,13 +61,12 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
           </div>
           
           <div>
-            <Label htmlFor="birthDate">Fecha de nacimiento *</Label>
+            <Label htmlFor="birthDate">Fecha de nacimiento</Label>
             <Input
               id="birthDate"
               type="date"
               value={formData.birthDate}
               onChange={(e) => updateFormData({ birthDate: e.target.value })}
-              required
             />
           </div>
 
@@ -142,7 +141,7 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
           </div>
 
           <div>
-            <Label htmlFor="weight">Peso (kg) *</Label>
+            <Label htmlFor="weight">Peso (kg)</Label>
             <Input
               id="weight"
               type="number"
@@ -151,7 +150,6 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               placeholder="Ej: 80"
               min="50"
               max="150"
-              required
             />
           </div>
 

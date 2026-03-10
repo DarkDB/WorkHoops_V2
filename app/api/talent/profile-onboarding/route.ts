@@ -3,16 +3,17 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { trackFunnelEvent } from '@/lib/funnel-events'
 
 // Esquema de validación para el onboarding
 const profileOnboardingSchema = z.object({
   // Paso 1: Datos técnicos
   fullName: z.string().min(1, 'Nombre completo es requerido'),
-  birthDate: z.string().min(1, 'Fecha de nacimiento es requerida'),
+  birthDate: z.string().optional(),
   city: z.string().min(1, 'Ciudad es requerida'),
   position: z.string().min(1, 'Posición es requerida'),
   secondaryPosition: z.string().optional(),
-  height: z.union([z.string(), z.number()]).optional(),
+  height: z.union([z.string().min(1, 'La altura es requerida'), z.number()]),
   weight: z.union([z.string(), z.number()]).optional(),
   wingspan: z.union([z.string(), z.number()]).optional(),
   dominantHand: z.string().optional(),
@@ -37,7 +38,7 @@ const profileOnboardingSchema = z.object({
     endurance: z.number().min(1).max(5),
     leadership: z.number().min(1).max(5),
     decisionMaking: z.number().min(1).max(5)
-  }),
+  }).optional(),
   
   // Paso 3: Estilo de juego
   playingStyle: z.array(z.string()).optional(),
@@ -91,26 +92,42 @@ export async function POST(request: NextRequest) {
         ? new Date(validatedData.availableFrom)
         : null
 
+    const defaultSkills = {
+      threePointShot: 3,
+      midRangeShot: 3,
+      finishing: 3,
+      ballHandling: 3,
+      playmaking: 3,
+      offBallMovement: 3,
+      individualDefense: 3,
+      teamDefense: 3,
+      offensiveRebound: 3,
+      defensiveRebound: 3,
+      speed: 3,
+      athleticism: 3,
+      endurance: 3,
+      leadership: 3,
+      decisionMaking: 3
+    }
+
+    const validatedSkills = validatedData.skills || defaultSkills
+
     // Convertir birthDate a DateTime
-    const birthDateObj = new Date(validatedData.birthDate)
+    const birthDateObj = validatedData.birthDate ? new Date(validatedData.birthDate) : null
 
     // Calculate profile completion percentage - weighted by importance
     const weightedFields = [
-      { value: validatedData.fullName, weight: 10 },
-      { value: validatedData.birthDate, weight: 10 },
-      { value: validatedData.city, weight: 10 },
-      { value: validatedData.position, weight: 10 },
-      { value: validatedData.height, weight: 5 },
-      { value: validatedData.weight, weight: 5 },
+      { value: validatedData.fullName, weight: 20 },
+      { value: validatedData.city, weight: 15 },
+      { value: validatedData.position, weight: 15 },
+      { value: validatedData.height, weight: 10 },
+      { value: availabilityStatus !== 'NOT_AVAILABLE', weight: 10 },
       { value: validatedData.currentLevel, weight: 8 },
-      { value: validatedData.bio, weight: 10 },
-      { value: validatedData.videoUrl, weight: 10 },
-      { value: validatedData.currentGoal, weight: 10 },
-      { value: validatedData.secondaryPosition, weight: 3 },
-      { value: validatedData.playingStyle && validatedData.playingStyle.length > 0, weight: 7 },
-      { value: validatedData.languages && validatedData.languages.length > 0, weight: 5 },
-      { value: validatedData.fullGameUrl, weight: 5 },
-      { value: validatedData.socialUrl, weight: 2 }
+      { value: validatedData.bio, weight: 8 },
+      { value: validatedData.videoUrl, weight: 6 },
+      { value: validatedData.currentGoal, weight: 3 },
+      { value: validatedData.playingStyle && validatedData.playingStyle.length > 0, weight: 3 },
+      { value: validatedData.languages && validatedData.languages.length > 0, weight: 2 }
     ]
     
     const totalWeight = weightedFields.reduce((sum, field) => sum + field.weight, 0)
@@ -174,12 +191,24 @@ export async function POST(request: NextRequest) {
         where: { talentProfileId: updatedProfile.id },
         create: {
           talentProfileId: updatedProfile.id,
-          ...validatedData.skills
+          ...validatedSkills
         },
         update: {
-          ...validatedData.skills
+          ...validatedSkills
         }
       })
+
+      if (availabilityChanged && availabilityStatus !== 'NOT_AVAILABLE') {
+        await trackFunnelEvent({
+          eventName: 'availability_enabled',
+          userId: session.user.id,
+          role: session.user.role,
+          metadata: {
+            profileId: updatedProfile.id,
+            availabilityStatus
+          }
+        })
+      }
 
       // Send profile completed email if 100% (non-blocking)
       if (profileCompletionPercentage === 100 && existingProfile.profileCompletionPercentage < 100) {
@@ -244,9 +273,31 @@ export async function POST(request: NextRequest) {
       await prisma.playerSkills.create({
         data: {
           talentProfileId: newProfile.id,
-          ...validatedData.skills
+          ...validatedSkills
         }
       })
+
+      await trackFunnelEvent({
+        eventName: 'profile_created',
+        userId: session.user.id,
+        role: session.user.role,
+        metadata: {
+          profileId: newProfile.id,
+          profileRole: session.user.role
+        }
+      })
+
+      if (availabilityStatus !== 'NOT_AVAILABLE') {
+        await trackFunnelEvent({
+          eventName: 'availability_enabled',
+          userId: session.user.id,
+          role: session.user.role,
+          metadata: {
+            profileId: newProfile.id,
+            availabilityStatus
+          }
+        })
+      }
 
       // Send profile completed email if 100% (non-blocking)
       if (profileCompletionPercentage === 100) {

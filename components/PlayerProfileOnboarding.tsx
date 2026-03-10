@@ -182,8 +182,8 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
   // Validar campos obligatorios del paso actual
   const validateCurrentStep = () => {
     if (currentStep === 1) {
-      // Campos obligatorios del paso 1
-      const required = ['fullName', 'birthDate', 'city', 'position', 'height', 'weight']
+      // Perfil mínimo visible para reclutamiento: nombre, posición, ciudad, altura
+      const required = ['fullName', 'city', 'position', 'height']
       return required.every(field => formData[field as keyof typeof formData])
     }
     // Pasos 2, 3 y 4 son opcionales

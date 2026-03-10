@@ -3,6 +3,7 @@ import { hash } from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { rateLimitByIP } from '@/lib/rate-limit'
+import { normalizePlanType } from '@/lib/entitlements'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,7 +16,8 @@ const registerSchema = z.object({
     .regex(/[A-Z]/, 'Debe contener al menos una mayúscula')
     .regex(/[a-z]/, 'Debe contener al menos una minúscula')
     .regex(/[0-9]/, 'Debe contener al menos un número'),
-  role: z.enum(['jugador', 'entrenador', 'club']).default('jugador'),
+  role: z.enum(['jugador', 'entrenador', 'club', 'agencia']).default('jugador'),
+  planType: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -49,8 +51,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { name, email, password, role } = validation.data
+    const { name, email, password, role, planType } = validation.data
     const normalizedEmail = email.toLowerCase().trim()
+    const normalizedPlanType = normalizePlanType(planType, role)
 
     // ========== CHECK EXISTING USER ==========
     const existingUser = await prisma.user.findUnique({
@@ -80,7 +83,7 @@ export async function POST(request: NextRequest) {
         mustResetPassword: false,
         failedLoginAttempts: 0,
         role,
-        planType: 'free_amateur',
+        planType: normalizedPlanType,
       },
       select: {
         id: true,

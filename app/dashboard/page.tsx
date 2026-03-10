@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { Navbar } from '@/components/Navbar'
 import DashboardClubAgency from '@/components/DashboardClubAgency'
 import { DashboardAnalytics } from '@/components/DashboardAnalytics'
+import { getPlanLabel } from '@/lib/entitlements'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -123,7 +124,6 @@ export default async function DashboardPage() {
         
         // Identify missing critical fields
         if (!user.talentProfile.fullName) missingItems.push('Nombre completo')
-        if (!user.talentProfile.birthDate) missingItems.push('Fecha de nacimiento')
         if (!user.talentProfile.city) missingItems.push('Ciudad')
         if (!user.talentProfile.position) missingItems.push('Posición')
         if (!user.talentProfile.bio) missingItems.push('Biografía')
@@ -235,16 +235,6 @@ export default async function DashboardPage() {
       finalizada: 'Finalizada'
     }
     return labels[status] || status
-  }
-
-  const getPlanLabel = (planType: string) => {
-    const labels: Record<string, string> = {
-      free_amateur: 'Free Amateur',
-      pro_semipro: 'Pro Semipro',
-      club_agencia: 'Club/Agencia',
-      destacado: 'Destacado'
-    }
-    return labels[planType] || planType
   }
 
   const getTypeIcon = (type: string) => {

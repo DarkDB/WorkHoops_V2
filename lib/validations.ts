@@ -34,7 +34,7 @@ export const opportunityCreateSchema = z.object({
   remunerationMin: z.union([z.string(), z.number()]).optional(),
   remunerationMax: z.union([z.string(), z.number()]).optional(),
   benefits: z.string().optional(),
-  description: z.string().min(50, "La descripción debe tener al menos 50 caracteres"),
+  description: z.string().min(20, "La descripción debe tener al menos 20 caracteres"),
   requirements: z.string().optional(),
   deadline: z.union([z.string(), z.date()]).optional(),
   startDate: z.union([z.string(), z.date()]).optional(),

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { resolveEntitlements } from '@/lib/entitlements'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,7 +11,7 @@ const opportunityCreateSchema = z.object({
   title: z.string().min(5, 'El título debe tener al menos 5 caracteres'),
   type: z.string().min(1, 'El tipo es requerido'),
   level: z.string().min(1, 'El nivel es requerido'),
-  description: z.string().min(50, 'La descripción debe tener al menos 50 caracteres'),
+  description: z.string().min(20, 'La descripción debe tener al menos 20 caracteres'),
   city: z.string().min(1, 'La ciudad es requerida'),
   country: z.string().default('España'),
   deadline: z.string().optional().or(z.literal('')),
@@ -100,6 +101,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (session.user.role !== 'club' && session.user.role !== 'agencia' && session.user.role !== 'admin') {
+      return NextResponse.json(
+        { message: 'Solo clubes y agencias pueden publicar oportunidades.' },
+        { status: 403 }
+      )
+    }
+
     const body = await request.json()
     console.log('Received opportunity data:', JSON.stringify(body, null, 2))
     
@@ -111,8 +119,9 @@ export async function POST(request: NextRequest) {
       select: { planType: true }
     })
 
-    const userPlanType = user?.planType || 'free_amateur'
-    console.log('User plan type:', userPlanType)
+    const userPlanType = user?.planType || null
+    const entitlements = resolveEntitlements(session.user.role, userPlanType)
+    console.log('User plan type:', userPlanType, 'tier:', entitlements.tier)
 
     // Get user's current opportunities count
     const userOpportunities = await prisma.opportunity.count({
@@ -124,28 +133,20 @@ export async function POST(request: NextRequest) {
 
     console.log('User has', userOpportunities, 'opportunities, plan:', userPlanType)
 
-    // Check limits based on user's plan type
-    // Plans: 'free_amateur' (1 oferta), 'pro_semipro' (3 ofertas), 'club_agencia' (3 ofertas), 'destacado' (3 ofertas)
-    // Also support legacy plan names: 'gratis', 'pro', 'destacado'
-    const freePlans = ['free_amateur', 'gratis', 'free']
-    const isPremiumPlan = !freePlans.includes(userPlanType)
-    
-    if (isPremiumPlan) {
-      // Premium plans: up to 3 opportunities
-      if (userOpportunities >= 3) {
-        return NextResponse.json(
-          { message: 'Has alcanzado el límite de 3 ofertas con tu plan. Elimina una oferta existente o espera a que expiren.' },
-          { status: 403 }
-        )
-      }
-    } else {
-      // Free plan: only 1 opportunity
-      if (userOpportunities >= 1) {
-        return NextResponse.json(
-          { message: 'Ya tienes una oferta publicada. Con el plan gratis solo puedes tener 1 oferta activa. Actualiza al plan Pro para publicar hasta 3 ofertas.' },
-          { status: 403 }
-        )
-      }
+    if (!entitlements.canPublishOpportunities) {
+      return NextResponse.json(
+        { message: 'Tu plan actual no permite publicar oportunidades.' },
+        { status: 403 }
+      )
+    }
+
+    if (userOpportunities >= entitlements.maxActiveOpportunities) {
+      return NextResponse.json(
+        {
+          message: `Has alcanzado el límite de ${entitlements.maxActiveOpportunities} ofertas activas para tu plan.`
+        },
+        { status: 403 }
+      )
     }
 
     // Get or create organization for the user
@@ -199,6 +200,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const requiresReview = entitlements.requiresOpportunityReview
+
     // Create opportunity
     const opportunity = await prisma.opportunity.create({
       data: {
@@ -218,8 +221,8 @@ export async function POST(request: NextRequest) {
         contactPhone: validatedData.contactPhone || null,
         applicationUrl: validatedData.applicationUrl || null,
         benefits: validatedData.benefits || null,
-        status: 'borrador' as any, // Nueva oferta en borrador para revisión del admin
-        publishedAt: null, // No publicada hasta que el admin la apruebe
+        status: (requiresReview ? 'borrador' : 'publicada') as any,
+        publishedAt: requiresReview ? null : new Date(),
         authorId: session.user.id,
         organizationId: organization.id
       }
@@ -227,7 +230,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Oportunidad creada exitosamente. Está pendiente de revisión por el administrador.',
+      message: requiresReview
+        ? 'Oportunidad creada. Está pendiente de revisión.'
+        : 'Oportunidad publicada exitosamente.',
       opportunity
     }, { status: 201 })
 

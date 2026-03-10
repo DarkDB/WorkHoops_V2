@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { createNotification } from '@/lib/notifications'
+import { trackFunnelEvent } from '@/lib/funnel-events'
 
 export const dynamic = 'force-dynamic'
 
@@ -99,6 +100,16 @@ export async function POST(request: NextRequest) {
     } catch (emailError) {
       console.error('Error sending invitation email:', emailError)
     }
+
+    await trackFunnelEvent({
+      eventName: 'invitation_sent',
+      userId: session.user.id,
+      role: session.user.role,
+      metadata: {
+        profileId,
+        type
+      }
+    })
 
     return NextResponse.json({
       message: 'Invitación enviada',
