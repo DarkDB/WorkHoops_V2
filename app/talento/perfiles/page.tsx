@@ -441,24 +441,26 @@ export default function PerfilesPage() {
                   </Link>
 
                   {isClubOrAgency && profile.role === 'jugador' && (
-                    <ClubRecruitmentActions
-                      profileId={profile.id}
-                      profileName={profile.fullName}
-                      initialShortlisted={!!shortlistMap[profile.id]}
-                      initialPipelineStatus={shortlistMap[profile.id]?.status || null}
-                      compact
-                      onStateChange={(next) => {
-                        setShortlistMap((prev) => {
-                          const copy = { ...prev }
-                          if (!next.shortlisted) {
-                            delete copy[profile.id]
-                          } else if (next.pipelineStatus) {
-                            copy[profile.id] = { status: next.pipelineStatus }
-                          }
-                          return copy
-                        })
-                      }}
-                    />
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <ClubRecruitmentActions
+                        profileId={profile.id}
+                        profileName={profile.fullName}
+                        initialShortlisted={!!shortlistMap[profile.id]}
+                        initialPipelineStatus={shortlistMap[profile.id]?.status || null}
+                        compact
+                        onStateChange={(next) => {
+                          setShortlistMap((prev) => {
+                            const copy = { ...prev }
+                            if (!next.shortlisted) {
+                              delete copy[profile.id]
+                            } else if (next.pipelineStatus) {
+                              copy[profile.id] = { status: next.pipelineStatus }
+                            }
+                            return copy
+                          })
+                        }}
+                      />
+                    </div>
                   )}
                 </CardContent>
               </Card>

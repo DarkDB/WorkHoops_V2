@@ -126,12 +126,12 @@ export default function ClubRecruitmentActions({
   }
 
   return (
-    <div className={`space-y-2 ${compact ? '' : 'mt-3'}`}>
+    <div className={`${compact ? 'rounded-md border border-gray-200 bg-gray-50 px-2.5 py-2 space-y-2' : 'space-y-2 mt-3'}`}>
       <div className="flex items-center gap-2">
         <Button
           size={compact ? 'sm' : 'default'}
           variant={shortlisted ? 'outline' : 'default'}
-          className={compact ? 'h-8' : ''}
+          className={compact ? 'h-7 px-2 text-xs' : ''}
           onClick={handleToggleShortlist}
           disabled={isSaving}
         >
@@ -145,7 +145,7 @@ export default function ClubRecruitmentActions({
         <Button
           size={compact ? 'sm' : 'default'}
           variant="outline"
-          className={compact ? 'h-8' : ''}
+          className={compact ? 'h-7 px-2 text-xs' : ''}
           onClick={() => setInviteDialogOpen(true)}
         >
           <Send className="w-4 h-4 mr-2" />
@@ -154,8 +154,8 @@ export default function ClubRecruitmentActions({
       </div>
 
       {pipelineStatus && (
-        <Badge variant="secondary" className="text-xs">
-          Pipeline: {statusLabels[pipelineStatus]}
+        <Badge variant="secondary" className="text-[11px]">
+          {compact ? statusLabels[pipelineStatus] : `Pipeline: ${statusLabels[pipelineStatus]}`}
         </Badge>
       )}
 
