@@ -49,6 +49,8 @@ const profileOnboardingSchema = z.object({
   injuryHistory: z.string().optional(),
   currentGoal: z.string().optional(),
   bio: z.string().optional(),
+  availabilityStatus: z.enum(['AVAILABLE', 'OPEN_TO_OFFERS', 'NOT_AVAILABLE']).optional(),
+  availableFrom: z.string().optional(),
   
   // Paso 4: Multimedia
   videoUrl: z.string().optional(),
@@ -83,6 +85,11 @@ export async function POST(request: NextRequest) {
     const weightKg = validatedData.weight ? parseInt(validatedData.weight.toString()) : null
     const wingspanCm = validatedData.wingspan ? parseInt(validatedData.wingspan.toString()) : null
     const weeklyCommitmentNum = validatedData.weeklyCommitment ? parseInt(validatedData.weeklyCommitment.toString()) : null
+    const availabilityStatus = validatedData.availabilityStatus || 'OPEN_TO_OFFERS'
+    const availableFromDate =
+      availabilityStatus !== 'NOT_AVAILABLE' && validatedData.availableFrom
+        ? new Date(validatedData.availableFrom)
+        : null
 
     // Convertir birthDate a DateTime
     const birthDateObj = new Date(validatedData.birthDate)
@@ -118,6 +125,12 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingProfile) {
+      const availabilityChanged =
+        existingProfile.availabilityStatus !== availabilityStatus ||
+        ((existingProfile.availableFrom && availableFromDate)
+          ? existingProfile.availableFrom.getTime() !== availableFromDate.getTime()
+          : existingProfile.availableFrom !== availableFromDate)
+
       // Actualizar perfil existente
       const updatedProfile = await prisma.talentProfile.update({
         where: { userId: session.user.id },
@@ -144,6 +157,9 @@ export async function POST(request: NextRequest) {
           injuryHistory: validatedData.injuryHistory || null,
           currentGoal: validatedData.currentGoal || null,
           bio: validatedData.bio || null,
+          availabilityStatus,
+          availableFrom: availableFromDate,
+          availabilityUpdatedAt: availabilityChanged ? new Date() : existingProfile.availabilityUpdatedAt,
           videoUrl: validatedData.videoUrl || null,
           fullGameUrl: validatedData.fullGameUrl || null,
           socialUrl: validatedData.socialUrl || null,
@@ -212,6 +228,9 @@ export async function POST(request: NextRequest) {
           injuryHistory: validatedData.injuryHistory || null,
           currentGoal: validatedData.currentGoal || null,
           bio: validatedData.bio || null,
+          availabilityStatus,
+          availableFrom: availableFromDate,
+          availabilityUpdatedAt: new Date(),
           videoUrl: validatedData.videoUrl || null,
           fullGameUrl: validatedData.fullGameUrl || null,
           socialUrl: validatedData.socialUrl || null,

@@ -47,6 +47,12 @@ export default function PlayingStyleStep({ formData, updateFormData }: PlayingSt
     'Otro'
   ]
 
+  const availabilityOptions = [
+    { value: 'AVAILABLE', label: 'Disponible ahora' },
+    { value: 'OPEN_TO_OFFERS', label: 'Abierto a ofertas' },
+    { value: 'NOT_AVAILABLE', label: 'No disponible' }
+  ]
+
   const toggleStyle = (style: string) => {
     const current = formData.playingStyle || []
     if (current.includes(style)) {
@@ -156,6 +162,38 @@ export default function PlayingStyleStep({ formData, updateFormData }: PlayingSt
               ))}
             </div>
           </div>
+
+          {/* Disponibilidad para viajar */}
+          <div>
+            <Label htmlFor="availabilityStatus">Estado de disponibilidad</Label>
+            <Select
+              value={formData.availabilityStatus || 'OPEN_TO_OFFERS'}
+              onValueChange={(value) => updateFormData({ availabilityStatus: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona tu disponibilidad" />
+              </SelectTrigger>
+              <SelectContent>
+                {availabilityOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {(formData.availabilityStatus === 'AVAILABLE' || formData.availabilityStatus === 'OPEN_TO_OFFERS') && (
+            <div>
+              <Label htmlFor="availableFrom">Disponible a partir de (opcional)</Label>
+              <Input
+                id="availableFrom"
+                type="date"
+                value={formData.availableFrom || ''}
+                onChange={(e) => updateFormData({ availableFrom: e.target.value })}
+              />
+            </div>
+          )}
 
           {/* Disponibilidad para viajar */}
           <div className="flex items-center space-x-2">

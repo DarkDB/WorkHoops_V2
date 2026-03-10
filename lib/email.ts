@@ -720,3 +720,57 @@ export async function sendAdminWelcomeEmail(
     throw error
   }
 }
+
+export async function sendTalentInvitationEmail(
+  talentEmail: string,
+  talentName: string,
+  clubName: string,
+  inviteType: 'INVITE_TO_APPLY' | 'INVITE_TO_TRYOUT',
+  message: string | null,
+  profileUrl: string
+) {
+  if (!talentEmail) return null
+
+  const inviteLabel = inviteType === 'INVITE_TO_APPLY' ? 'Invitación para aplicar' : 'Invitación a tryout'
+
+  try {
+    const { data, error } = await getResendClient().emails.send({
+      from: 'WorkHoops <hola@workhoops.com>',
+      to: [talentEmail],
+      subject: `${inviteLabel} en WorkHoops`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #FF6A00 0%, #e55a00 100%); padding: 32px 20px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 26px; font-weight: bold;">WorkHoops</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0;">Nueva invitación de scouting</p>
+          </div>
+          <div style="padding: 32px 20px; background: white;">
+            <h2 style="color: #111111; margin: 0 0 16px 0;">Hola ${talentName}</h2>
+            <p style="color: #666; margin: 0 0 16px 0; line-height: 1.6;">
+              <strong>${clubName}</strong> te envió una <strong>${inviteLabel.toLowerCase()}</strong>.
+            </p>
+            ${message ? `
+              <div style="background: #f8f9fa; border-left: 4px solid #FF6A00; padding: 16px; margin: 20px 0; border-radius: 4px;">
+                <p style="color: #666; margin: 0; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+              </div>
+            ` : ''}
+            <div style="text-align: center; margin-top: 24px;">
+              <a href="${profileUrl}" style="background: #FF6A00; color: white; padding: 14px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                Ver mi perfil en WorkHoops
+              </a>
+            </div>
+          </div>
+        </div>
+      `
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error sending talent invitation email:', error)
+    throw new Error('Failed to send talent invitation email')
+  }
+}

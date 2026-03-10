@@ -12,7 +12,8 @@ import {
   FileText,
   PlusCircle,
   Calendar,
-  MapPin
+  MapPin,
+  Bookmark
 } from 'lucide-react'
 
 interface Opportunity {
@@ -265,6 +266,12 @@ export default function DashboardClubAgency({
                 <Button className="w-full justify-start" variant="outline">
                   <Users className="w-4 h-4 mr-2" />
                   Buscar talento
+                </Button>
+              </Link>
+              <Link href="/dashboard/shortlist" className="block">
+                <Button className="w-full justify-start" variant="outline">
+                  <Bookmark className="w-4 h-4 mr-2" />
+                  Ver shortlist
                 </Button>
               </Link>
               <Link href="/profile/edit" className="block">

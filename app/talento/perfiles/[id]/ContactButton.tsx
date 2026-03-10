@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { 
   Dialog, 
@@ -14,44 +13,35 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Mail, Lock, Loader2, Zap, CheckCircle, Star } from 'lucide-react'
+import { Mail, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface ContactButtonProps {
   profileId: string
   profileUserId: string
   profileName: string
-  canContact: boolean
   isLoggedIn: boolean
   userRole?: string
-  currentUserId?: string  // Para saber si es el propio perfil
   isOwnProfile?: boolean  // Indicador directo
-  userPlanType?: string   // Plan del usuario actual
 }
 
 export default function ContactButton({ 
   profileId, 
   profileUserId,
   profileName,
-  canContact, 
   isLoggedIn,
   userRole,
-  currentUserId,
-  isOwnProfile,
-  userPlanType
+  isOwnProfile
 }: ContactButtonProps) {
   const router = useRouter()
   const [isContacting, setIsContacting] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false)
-  const [interestDialogOpen, setInterestDialogOpen] = useState(false)
   const [contactData, setContactData] = useState({
     name: '',
     email: '',
     message: ''
   })
   
-  // Check if current user is club/agency or player/coach
   const isClubOrAgency = userRole === 'club' || userRole === 'agencia'
   const isPlayerOrCoach = userRole === 'jugador' || userRole === 'entrenador'
 
@@ -62,7 +52,7 @@ export default function ContactButton({
       return false
     }
     
-    // Caso 1: Jugador/Entrenador en su propio perfil -> Mostrar (para informar sobre plan)
+    // Jugador/Entrenador en su propio perfil -> Mostrar aviso informativo
     if (isPlayerOrCoach && isOwnProfile) {
       return true
     }
@@ -82,35 +72,17 @@ export default function ContactButton({
 
   // Determinar el texto y comportamiento del botón
   const getButtonConfig = () => {
-    // Caso 1: Jugador/Entrenador en su propio perfil SIN plan pro
-    if (isPlayerOrCoach && isOwnProfile && !canContact) {
+    // Jugador/Entrenador en su propio perfil
+    if (isPlayerOrCoach && isOwnProfile) {
       return {
-        text: 'Activar Plan Pro',
-        icon: <Zap className="w-4 h-4 mr-2" />,
-        variant: 'default' as const
-      }
-    }
-    
-    // Jugador/Entrenador en su propio perfil CON plan pro
-    if (isPlayerOrCoach && isOwnProfile && canContact) {
-      return {
-        text: 'Plan Pro Activo',
-        icon: <CheckCircle className="w-4 h-4 mr-2" />,
+        text: 'Este es tu perfil',
+        icon: <Mail className="w-4 h-4 mr-2" />,
         variant: 'outline' as const
       }
     }
     
-    // Caso 3: Club/Agencia en perfil de jugador/entrenador SIN plan pro
-    if (isClubOrAgency && !canContact) {
-      return {
-        text: 'Notificar interés',
-        icon: <Star className="w-4 h-4 mr-2" />,
-        variant: 'outline' as const
-      }
-    }
-    
-    // Caso 4: Club/Agencia en perfil de jugador/entrenador CON plan pro
-    if (isClubOrAgency && canContact) {
+    // Club/Agencia en perfil de jugador/entrenador
+    if (isClubOrAgency) {
       return {
         text: 'Contactar',
         icon: <Mail className="w-4 h-4 mr-2" />,
@@ -139,28 +111,15 @@ export default function ContactButton({
       return
     }
 
-    // Caso 1: Jugador/Entrenador en su propio perfil SIN plan pro
-    if (isPlayerOrCoach && isOwnProfile && !canContact) {
-      setUpgradeDialogOpen(true)
-      return
-    }
-    
-    // Jugador/Entrenador en su propio perfil CON plan pro
-    if (isPlayerOrCoach && isOwnProfile && canContact) {
-      toast.success('Plan Pro Activo', {
-        description: 'Los clubs y agencias pueden contactarte directamente'
+    // Jugador/Entrenador en su propio perfil
+    if (isPlayerOrCoach && isOwnProfile) {
+      toast.message('Este es tu perfil público', {
+        description: 'Los clubs y agencias pueden contactarte desde aquí.'
       })
       return
     }
 
-    // Caso 3: Club/Agencia viendo perfil SIN plan pro -> Notificar interés
-    if (isClubOrAgency && !canContact) {
-      setInterestDialogOpen(true)
-      return
-    }
-
-    // Caso 4: Club/Agencia viendo perfil CON plan pro -> Contactar
-    if (isClubOrAgency && canContact) {
+    if (isClubOrAgency) {
       setDialogOpen(true)
       return
     }
@@ -224,41 +183,6 @@ export default function ContactButton({
     }
   }
 
-  const handleNotifyInterest = async () => {
-    setIsContacting(true)
-    
-    try {
-      const response = await fetch('/api/talent/notify-interest', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          profileId,
-          profileUserId
-        })
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al enviar notificación')
-      }
-
-      toast.success('¡Interés registrado!', {
-        description: 'Notificaremos a este usuario que hay interés en su perfil'
-      })
-
-      setInterestDialogOpen(false)
-    } catch (error) {
-      toast.error('Error', {
-        description: error instanceof Error ? error.message : 'Error al notificar'
-      })
-    } finally {
-      setIsContacting(false)
-    }
-  }
-
   const buttonConfig = getButtonConfig()
   
   // No mostrar el botón en ciertos casos
@@ -272,12 +196,13 @@ export default function ContactButton({
         variant={buttonConfig.variant}
         className="w-full"
         onClick={handleOpenDialog}
+        disabled={isPlayerOrCoach && !!isOwnProfile}
       >
         {buttonConfig.icon}
         {buttonConfig.text}
       </Button>
 
-      {/* Contact Dialog - When user has Pro plan */}
+      {/* Contact Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -352,161 +277,6 @@ export default function ContactButton({
         </DialogContent>
       </Dialog>
 
-      {/* Upgrade Dialog - For players/coaches */}
-      <Dialog open={upgradeDialogOpen} onOpenChange={setUpgradeDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2">
-              <Star className="w-5 h-5 text-workhoops-accent" />
-              <span>Activa Plan Pro para ser contactado</span>
-            </DialogTitle>
-            <DialogDescription>
-              Con el Plan Pro, clubs y agencias pueden contactarte directamente
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div className="bg-orange-50 rounded-lg p-4 space-y-3">
-              <h4 className="font-semibold text-gray-900">Beneficios del Plan Pro:</h4>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li className="flex items-start space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <span>Recibe solicitudes de contacto directo de clubs</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <span>Perfil destacado en búsquedas</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <span>Acceso a todas las ofertas premium</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <span>Estadísticas avanzadas de perfil</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-2xl font-bold text-gray-900">4.99€<span className="text-sm font-normal text-gray-600">/mes</span></p>
-              <p className="text-xs text-gray-600 mt-1">Cancela cuando quieras</p>
-            </div>
-          </div>
-
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setUpgradeDialogOpen(false)}
-              className="w-full sm:w-auto"
-            >
-              Ahora no
-            </Button>
-            <Link href="/planes" className="w-full sm:w-auto">
-              <Button className="w-full bg-workhoops-accent hover:bg-orange-600">
-                <Zap className="w-4 h-4 mr-2" />
-                Activar Plan Pro
-              </Button>
-            </Link>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Interest Dialog - When user doesn't have Pro plan */}
-      <Dialog open={interestDialogOpen} onOpenChange={setInterestDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2">
-              <Star className="w-5 h-5 text-workhoops-accent" />
-              <span>Plan Pro requerido</span>
-            </DialogTitle>
-            <DialogDescription>
-              {isClubOrAgency 
-                ? 'Este talento aún no tiene Plan Pro activo. Puedes notificarle tu interés.'
-                : 'Activa el Plan Pro para recibir solicitudes de contacto directo de clubs y agencias.'}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div className="bg-orange-50 rounded-lg p-4 space-y-3">
-              <h4 className="font-semibold text-gray-900">Beneficios del Plan Pro:</h4>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li className="flex items-start space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <span>Recibe solicitudes de contacto directo</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <span>Perfil destacado en búsquedas</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <span>Acceso a todas las ofertas premium</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                  <span>Estadísticas avanzadas de perfil</span>
-                </li>
-              </ul>
-            </div>
-
-            {isClubOrAgency ? (
-              <p className="text-sm text-gray-600">
-                Puedes notificar a <strong>{profileName}</strong> que hay interés en su perfil 
-                y sugerirle activar el Plan Pro para que puedan contactarse.
-              </p>
-            ) : (
-              <div className="bg-blue-50 rounded-lg p-4">
-                <p className="text-sm text-gray-700 mb-2">
-                  <strong>Solo 4.99€/mes</strong> para desbloquear todas las funciones Pro
-                </p>
-                <p className="text-xs text-gray-600">
-                  Cancela cuando quieras. Sin compromisos.
-                </p>
-              </div>
-            )}
-          </div>
-
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setInterestDialogOpen(false)}
-              disabled={isContacting}
-              className="w-full sm:w-auto"
-            >
-              Cancelar
-            </Button>
-            
-            {isClubOrAgency ? (
-              <Button
-                variant="outline"
-                onClick={handleNotifyInterest}
-                disabled={isContacting}
-                className="w-full sm:w-auto"
-              >
-                {isContacting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Notificando...
-                  </>
-                ) : (
-                  <>
-                    <Mail className="w-4 h-4 mr-2" />
-                    Notificar interés
-                  </>
-                )}
-              </Button>
-            ) : (
-              <Link href="/planes" className="w-full sm:w-auto">
-                <Button className="w-full bg-workhoops-accent hover:bg-orange-600">
-                  <Zap className="w-4 h-4 mr-2" />
-                  Activar Plan Pro
-                </Button>
-              </Link>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   )
 }

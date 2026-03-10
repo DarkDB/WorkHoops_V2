@@ -124,6 +124,10 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
     injuryHistory: existingProfile?.injuryHistory || '',
     currentGoal: existingProfile?.currentGoal || '',
     bio: existingProfile?.bio || '',
+    availabilityStatus: existingProfile?.availabilityStatus || 'OPEN_TO_OFFERS',
+    availableFrom: existingProfile?.availableFrom
+      ? new Date(existingProfile.availableFrom).toISOString().split('T')[0]
+      : '',
     
     // Paso 4: Multimedia
     videoUrl: existingProfile?.videoUrl || '',

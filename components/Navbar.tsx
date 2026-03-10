@@ -14,7 +14,8 @@ import {
   BarChart3,
   FileText,
   Heart,
-  Shield
+  Shield,
+  Bookmark
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -176,6 +177,14 @@ export function Navbar() {
                         <Link href="/dashboard/applications" className="cursor-pointer">
                           <FileText className="mr-2 h-4 w-4" />
                           Mis Aplicaciones
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/shortlist" className="cursor-pointer">
+                          <Bookmark className="mr-2 h-4 w-4" />
+                          Shortlist
                         </Link>
                       </DropdownMenuItem>
                     )}
@@ -343,6 +352,15 @@ export function Navbar() {
                         onClick={() => setIsOpen(false)}
                       >
                         Publicar Oportunidad
+                      </Link>
+                    )}
+                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
+                      <Link
+                        href="/dashboard/shortlist"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Shortlist
                       </Link>
                     )}
                     <button

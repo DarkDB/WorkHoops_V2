@@ -26,6 +26,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (session.user.role !== 'club' && session.user.role !== 'agencia' && session.user.role !== 'admin') {
+      return NextResponse.json(
+        { message: 'Solo clubes y agencias pueden contactar perfiles de talento' },
+        { status: 403 }
+      )
+    }
+
     // Rate limiting: 5 contact requests per user per hour
     const rateLimitResult = await rateLimitByUser(
       session.user.id,
@@ -50,13 +57,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { profileId, profileUserId, contactName, contactEmail, contactMessage } = contactSchema.parse(body)
 
-    // Fetch the profile to verify user has pro plan
+    // Fetch target profile for contact details
     const profile = await prisma.talentProfile.findUnique({
       where: { id: profileId },
       include: {
         user: {
           select: {
-            planType: true,
+            id: true,
             email: true,
             name: true
           }
@@ -71,11 +78,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if user has pro plan
-    if (profile.user.planType !== 'pro_semipro' && profile.user.planType !== 'destacado') {
+    if (profile.user.id !== profileUserId) {
       return NextResponse.json(
-        { message: 'Este usuario necesita actualizar su plan a Pro Semipro para recibir contactos' },
-        { status: 403 }
+        { message: 'Datos de perfil inválidos' },
+        { status: 400 }
+      )
+    }
+
+    if (session.user.id === profile.user.id) {
+      return NextResponse.json(
+        { message: 'No puedes enviarte una solicitud de contacto a ti mismo' },
+        { status: 400 }
       )
     }
 
@@ -95,6 +108,37 @@ export async function POST(request: NextRequest) {
     } catch (emailError) {
       console.error('Error sending contact email:', emailError)
       // Don't fail the request if email fails, just log it
+    }
+
+    // Pipeline tracking: mark as CONTACTED for the club/agency
+    if (session.user.role === 'club' || session.user.role === 'agencia' || session.user.role === 'admin') {
+      const existingShortlist = await prisma.talentShortlist.findUnique({
+        where: {
+          clubUserId_talentProfileId: {
+            clubUserId: session.user.id,
+            talentProfileId: profileId
+          }
+        }
+      })
+
+      if (!existingShortlist) {
+        await prisma.talentShortlist.create({
+          data: {
+            clubUserId: session.user.id,
+            talentProfileId: profileId,
+            status: 'CONTACTED',
+            lastStatusAt: new Date()
+          }
+        })
+      } else if (existingShortlist.status === 'SAVED' || existingShortlist.status === 'CONTACTED') {
+        await prisma.talentShortlist.update({
+          where: { id: existingShortlist.id },
+          data: {
+            status: 'CONTACTED',
+            lastStatusAt: new Date()
+          }
+        })
+      }
     }
 
     // You could create a ContactRequest model to store these in the database

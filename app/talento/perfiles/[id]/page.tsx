@@ -17,7 +17,6 @@ import {
   Youtube,
   Instagram,
   Mail,
-  Lock,
   Activity,
   Target,
   Globe,
@@ -28,6 +27,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import ContactButton from './ContactButton'
+import ClubRecruitmentActions from '@/components/talent/ClubRecruitmentActions'
 
 interface PageProps {
   params: {
@@ -46,8 +46,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
         select: {
           id: true,
           email: true,
-          image: true,
-          planType: true
+          image: true
         }
       },
       playerSkills: true
@@ -62,8 +61,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
         select: {
           id: true,
           email: true,
-          image: true,
-          planType: true
+          image: true
         }
       }
     }
@@ -85,12 +83,25 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
   // Determine which profile to use
   const profile = talentProfile || coachProfile
   const isCoach = !!coachProfile
+  const isClubOrAgencyViewer = session?.user?.role === 'club' || session?.user?.role === 'agencia'
   
   if (!profile) {
     notFound()
   }
 
-  const canContact = profile.user.planType === 'pro_semipro' || profile.user.planType === 'destacado'
+  const clubShortlistItem = isClubOrAgencyViewer && !isCoach
+    ? await prisma.talentShortlist.findUnique({
+        where: {
+          clubUserId_talentProfileId: {
+            clubUserId: session.user.id,
+            talentProfileId: profile.id
+          }
+        },
+        select: {
+          status: true
+        }
+      })
+    : null
 
   const calculateAge = (birthDate?: Date | null, birthYear?: number | null) => {
     if (birthDate) {
@@ -116,6 +127,28 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
       staff: 'Staff Técnico'
     }
     return labels[role] || role
+  }
+
+  const getAvailabilityBadge = (status?: string | null) => {
+    if (status === 'AVAILABLE') {
+      return <Badge className="bg-green-100 text-green-800">Disponible</Badge>
+    }
+    if (status === 'OPEN_TO_OFFERS') {
+      return <Badge className="bg-blue-100 text-blue-800">Abierto a ofertas</Badge>
+    }
+    if (status === 'NOT_AVAILABLE') {
+      return <Badge className="bg-gray-100 text-gray-700">No disponible</Badge>
+    }
+    return null
+  }
+
+  const formatAvailableFrom = (date?: Date | null) => {
+    if (!date) return null
+    try {
+      return new Date(date).toLocaleDateString('es-ES')
+    } catch {
+      return null
+    }
   }
 
   const getPositionLabel = (position: string | null) => {
@@ -254,6 +287,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                       <Badge variant="outline" className="mb-2">
                         {getRoleLabel(isCoach ? 'entrenador' : (profile as any).role)}
                       </Badge>
+                      {!isCoach && getAvailabilityBadge((profile as any).availabilityStatus)}
                       {(profile as any).currentLevel && (
                         <Badge className="bg-orange-100 text-orange-800 mb-2">
                           {(profile as any).currentLevel}
@@ -266,6 +300,11 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                         {(profile as any).secondaryPosition && (profile as any).secondaryPosition !== 'none' && (
                           <span> / {getPositionLabel((profile as any).secondaryPosition)}</span>
                         )}
+                      </p>
+                    )}
+                    {!isCoach && (profile as any).availableFrom && (
+                      <p className="text-xs text-gray-500">
+                        Disponible desde: {formatAvailableFrom((profile as any).availableFrom)}
                       </p>
                     )}
                     {isCoach && (profile as any).roleExperience && (
@@ -734,26 +773,22 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                 <p className="text-sm text-gray-600 mb-4">
                   ¿Interesado en este perfil? Contacta directamente
                 </p>
+                {isClubOrAgencyViewer && !isCoach && (
+                  <ClubRecruitmentActions
+                    profileId={profile.id}
+                    profileName={profile.fullName}
+                    initialShortlisted={!!clubShortlistItem}
+                    initialPipelineStatus={clubShortlistItem?.status || null}
+                  />
+                )}
                 <ContactButton 
                   profileId={profile.id}
                   profileUserId={profile.user.id}
                   profileName={profile.fullName}
-                  canContact={canContact}
                   isLoggedIn={!!session}
                   userRole={session?.user?.role}
-                  currentUserId={session?.user?.id}
                   isOwnProfile={session?.user?.id === profile.user.id}
-                  userPlanType={session?.user?.planType}
                 />
-                {/* Mostrar mensaje solo si es Club/Agencia viendo perfil sin plan pro */}
-                {session?.user?.role && ['club', 'agencia'].includes(session.user.role) && 
-                 session.user.id !== profile.user.id && 
-                 !canContact && (
-                  <p className="text-xs text-gray-500 mt-2 text-center">
-                    <Lock className="w-3 h-3 inline mr-1" />
-                    Este usuario necesita plan Pro para recibir contactos directos
-                  </p>
-                )}
               </CardContent>
             </Card>
 

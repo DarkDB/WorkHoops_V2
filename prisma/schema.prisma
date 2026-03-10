@@ -69,6 +69,32 @@ enum ResourceCategory {
   mental
 }
 
+enum AvailabilityStatus {
+  AVAILABLE
+  OPEN_TO_OFFERS
+  NOT_AVAILABLE
+}
+
+enum TalentPipelineStatus {
+  SAVED
+  CONTACTED
+  INVITED
+  SIGNED
+  REJECTED
+}
+
+enum TalentInviteType {
+  INVITE_TO_APPLY
+  INVITE_TO_TRYOUT
+}
+
+enum TalentInviteStatus {
+  SENT
+  VIEWED
+  ACCEPTED
+  DECLINED
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -152,6 +178,8 @@ model User {
   resources     Resource[]
   notifications Notification[]
   otpTokens     OtpToken[]
+  talentShortlists TalentShortlist[]
+  sentTalentInvitations TalentInvitation[]
 
   @@map("users")
 }
@@ -353,6 +381,9 @@ model TalentProfile {
   // Profile status
   isPublic    Boolean  @default(true)
   verified    Boolean  @default(false)
+  availabilityStatus   AvailabilityStatus @default(OPEN_TO_OFFERS)
+  availableFrom        DateTime?
+  availabilityUpdatedAt DateTime?
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -366,6 +397,8 @@ model TalentProfile {
   
   // Interest notifications
   interestNotifications InterestNotification[]
+  shortlists TalentShortlist[]
+  invitations TalentInvitation[]
   
   @@map("talent_profiles")
 }
@@ -578,6 +611,47 @@ model InterestNotification {
   @@index([status])
   @@index([createdAt])
   @@map("interest_notifications")
+}
+
+model TalentShortlist {
+  id              String               @id @default(cuid())
+  clubUserId      String
+  talentProfileId String
+  status          TalentPipelineStatus @default(SAVED)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  lastStatusAt    DateTime?
+
+  clubUser      User          @relation(fields: [clubUserId], references: [id], onDelete: Cascade)
+  talentProfile TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
+  invitations   TalentInvitation[]
+
+  @@unique([clubUserId, talentProfileId])
+  @@index([clubUserId, status])
+  @@index([talentProfileId])
+  @@map("talent_shortlists")
+}
+
+model TalentInvitation {
+  id              String            @id @default(cuid())
+  shortlistId     String?
+  clubUserId      String
+  talentProfileId String
+  type            TalentInviteType
+  status          TalentInviteStatus @default(SENT)
+  message         String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  respondedAt     DateTime?
+
+  shortlist     TalentShortlist? @relation(fields: [shortlistId], references: [id], onDelete: SetNull)
+  clubUser      User             @relation(fields: [clubUserId], references: [id], onDelete: Cascade)
+  talentProfile TalentProfile    @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([clubUserId, createdAt])
+  @@index([talentProfileId, createdAt])
+  @@index([status])
+  @@map("talent_invitations")
 }
 
 model Resource {
