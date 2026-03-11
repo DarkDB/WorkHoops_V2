@@ -42,14 +42,14 @@ export function normalizePlanType(inputPlanType: string | null | undefined, role
   return 'free_amateur'
 }
 
-export function getPlanLabel(planType: string | null | undefined): string {
-  if (!planType) return 'Sin plan'
-  return PLAN_INFO[planType]?.label || planType
+export function getPlanLabel(planType: string | null | undefined, role?: string | null): string {
+  const normalizedPlan = normalizePlanType(planType, role)
+  return PLAN_INFO[normalizedPlan]?.label || normalizedPlan
 }
 
-export function getPlanPriceLabel(planType: string | null | undefined): string {
-  if (!planType) return 'Gratis'
-  return PLAN_INFO[planType]?.priceLabel || 'Gratis'
+export function getPlanPriceLabel(planType: string | null | undefined, role?: string | null): string {
+  const normalizedPlan = normalizePlanType(planType, role)
+  return PLAN_INFO[normalizedPlan]?.priceLabel || 'Gratis'
 }
 
 export function resolveEntitlements(role: string | null | undefined, planType: string | null | undefined) {

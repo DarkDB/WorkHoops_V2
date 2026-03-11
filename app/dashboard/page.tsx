@@ -271,7 +271,7 @@ export default async function DashboardPage() {
             
             <div className="flex items-center space-x-3">
               <Badge variant="outline" className="bg-orange-50 text-workhoops-accent border-workhoops-accent">
-                {getPlanLabel(user.planType)}
+                {getPlanLabel(user.planType, user.role)}
               </Badge>
               {(user.role === 'jugador' || user.role === 'entrenador') && (
                 <Link href="/profile/complete">

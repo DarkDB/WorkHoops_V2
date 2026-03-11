@@ -116,7 +116,7 @@ export default async function ProfilePage() {
                     <h3 className="text-sm font-medium text-gray-500 mb-2">Plan actual</h3>
                     <div className="flex items-center space-x-2">
                       <Crown className="w-5 h-5 text-workhoops-accent" />
-                      <span className="font-semibold text-gray-900">{getPlanLabel(user.planType)}</span>
+                      <span className="font-semibold text-gray-900">{getPlanLabel(user.planType, user.role)}</span>
                     </div>
                     {user.planEnd && (
                       <p className="text-sm text-gray-500 mt-1">
