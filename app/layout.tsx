@@ -1,14 +1,18 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import dynamic from 'next/dynamic'
 import { NextAuthProvider } from '@/components/providers/NextAuthProvider'
 import { Footer } from '@/components/Footer'
-import { CookieBanner } from '@/components/CookieBanner'
 import { Toaster } from 'sonner'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
+const CookieBanner = dynamic(
+  () => import('@/components/CookieBanner').then((m) => m.CookieBanner),
+  { ssr: false }
+)
 
 export const metadata: Metadata = {
   title: 'WorkHoops - Tu plataforma de oportunidades de baloncesto',
@@ -65,6 +69,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="//images.unsplash.com" />
+      </head>
       <body className={inter.className}>
         <NextAuthProvider>
           <div className="min-h-screen flex flex-col">

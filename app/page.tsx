@@ -285,9 +285,11 @@ export default async function HomePage() {
                   <div className="text-sm text-gray-600 flex items-center space-x-2">
                     {opportunity.organization?.logo && (
                       <div className="image-zoom w-4 h-4 rounded-full overflow-hidden">
-                        <img 
+                        <Image
                           src={opportunity.organization.logo}
                           alt={opportunity.organization.name}
+                          width={16}
+                          height={16}
                           className="w-full h-full object-cover"
                         />
                       </div>

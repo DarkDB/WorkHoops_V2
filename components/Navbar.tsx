@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import { 
   Menu, 
   X, 
@@ -26,12 +26,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { NotificationBell } from '@/components/NotificationBell'
+const NotificationBell = dynamic(
+  () => import('@/components/NotificationBell').then((m) => m.NotificationBell),
+  {
+    ssr: false,
+    loading: () => <div className="w-8 h-8 rounded-full bg-gray-100 animate-pulse" />
+  }
+)
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const { data: session, status } = useSession()
-  const router = useRouter()
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' })
