@@ -142,7 +142,7 @@ export default async function HomePage() {
             <div className="relative">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl image-zoom">
                 <Image
-                  src="https://images.unsplash.com/photo-1546519638-68e109498ffc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsfGVufDB8fHx8MTc1OTA4ODc3OXww&ixlib=rb-4.1.0&q=85"
+                  src="/images/hero-basketball.svg"
                   alt="Jugadores de baloncesto en acción"
                   width={1200}
                   height={900}

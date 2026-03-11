@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
@@ -208,9 +209,11 @@ export default function PublicarPage() {
                   </div>
                 </div>
                 <div className="relative">
-                  <img 
-                    src="https://images.unsplash.com/photo-1546519638-68e109498ffc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwY29hY2h8ZW58MHx8fHwxNzYxMjI5MjYyfDA&ixlib=rb-4.1.0&q=85"
+                  <Image
+                    src="/images/hero-coach.svg"
                     alt="Entrenador dirigiendo equipo"
+                    width={960}
+                    height={640}
                     className="rounded-lg shadow-lg w-full h-64 object-cover"
                   />
                 </div>
@@ -360,9 +363,11 @@ export default function PublicarPage() {
                   </div>
                 </div>
                 <div className="relative">
-                  <img 
-                    src="https://images.unsplash.com/photo-1546519638-68e109498ffc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwY29hY2h8ZW58MHx8fHwxNzYxMjI5MjYyfDA&ixlib=rb-4.1.0&q=85"
+                  <Image
+                    src="/images/hero-coach.svg"
                     alt="Entrenador dirigiendo equipo"
+                    width={960}
+                    height={640}
                     className="rounded-lg shadow-lg w-full h-64 object-cover"
                   />
                 </div>

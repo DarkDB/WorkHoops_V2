@@ -1,0 +1,22 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="1000" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF4E6"/>
+      <stop offset="1" stop-color="#FFE0BF"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="400" y1="200" x2="1200" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF7A1A"/>
+      <stop offset="1" stop-color="#E55A00"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <circle cx="1180" cy="380" r="260" fill="url(#accent)" opacity="0.20"/>
+  <circle cx="470" cy="740" r="190" fill="#FFB273" opacity="0.22"/>
+  <rect x="240" y="180" width="1120" height="640" rx="32" fill="white" opacity="0.88"/>
+  <circle cx="800" cy="500" r="210" fill="#FF8A33"/>
+  <path d="M590 500H1010" stroke="#8A3200" stroke-width="16" stroke-linecap="round"/>
+  <path d="M800 290V710" stroke="#8A3200" stroke-width="16" stroke-linecap="round"/>
+  <path d="M680 310C760 390 760 610 680 690" stroke="#8A3200" stroke-width="16" stroke-linecap="round"/>
+  <path d="M920 310C840 390 840 610 920 690" stroke="#8A3200" stroke-width="16" stroke-linecap="round"/>
+  <text x="800" y="900" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="700" fill="#B34700">WorkHoops</text>
+</svg>

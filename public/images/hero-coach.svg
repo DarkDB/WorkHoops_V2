@@ -1,0 +1,21 @@
+<svg width="1400" height="900" viewBox="0 0 1400 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1400" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF7ED"/>
+      <stop offset="1" stop-color="#FFEAD5"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="220" y1="120" x2="1180" y2="780" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF8A33"/>
+      <stop offset="1" stop-color="#E55A00"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="900" fill="url(#bg2)"/>
+  <rect x="180" y="100" width="1040" height="700" rx="36" fill="white" opacity="0.9"/>
+  <rect x="260" y="190" width="880" height="480" rx="26" fill="url(#panel)" opacity="0.95"/>
+  <circle cx="700" cy="430" r="120" fill="#FFD0A6"/>
+  <circle cx="700" cy="410" r="52" fill="#1F2937"/>
+  <rect x="590" y="500" width="220" height="95" rx="40" fill="#1F2937"/>
+  <path d="M480 730L640 610" stroke="#1F2937" stroke-width="20" stroke-linecap="round"/>
+  <path d="M920 730L760 610" stroke="#1F2937" stroke-width="20" stroke-linecap="round"/>
+  <text x="700" y="760" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#B34700">Club Scouting</text>
+</svg>
