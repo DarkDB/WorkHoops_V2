@@ -29,9 +29,21 @@ const CLUB_TRIAL_PLANS = new Set(['club_trial', 'club_agencia', 'free_amateur', 
 
 export function normalizePlanType(inputPlanType: string | null | undefined, role?: string | null): string {
   if (role === 'club' || role === 'agencia') {
-    if (inputPlanType && (CLUB_TRIAL_PLANS.has(inputPlanType) || CLUB_PRO_PLANS.has(inputPlanType))) {
+    if (!inputPlanType) return 'club_trial'
+
+    if (CLUB_PRO_PLANS.has(inputPlanType)) {
       return inputPlanType
     }
+
+    // Legacy free-like plans for clubs/agencies map to the same club trial entitlement
+    if (inputPlanType === 'free_amateur' || inputPlanType === 'gratis' || inputPlanType === 'free' || inputPlanType === 'club_agencia') {
+      return 'club_trial'
+    }
+
+    if (CLUB_TRIAL_PLANS.has(inputPlanType)) {
+      return inputPlanType
+    }
+
     return 'club_trial'
   }
 
