@@ -1,13 +1,13 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Search, Target, Users, Shield, CheckCircle, Star, Award } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/Navbar'
-import { AnimatedCounter } from '@/components/AnimatedCounter'
 import { prisma } from '@/lib/prisma'
 import { getOpportunityTypeLabel, getOpportunityTypeColor, formatRelativeTime } from '@/lib/utils'
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 async function getHomeData() {
   try {
@@ -16,7 +16,6 @@ async function getHomeData() {
       totalOpportunities, 
       totalOrganizations,
       totalUsers,
-      totalApplications,
       totalTalentProfiles
     ] = await Promise.all([
       prisma.opportunity.findMany({
@@ -45,7 +44,6 @@ async function getHomeData() {
         where: { verified: true },
       }),
       prisma.user.count(),
-      prisma.application.count(),
       prisma.talentProfile.count({
         where: { profileCompletionPercentage: { gte: 50 } }
       }),
@@ -57,7 +55,6 @@ async function getHomeData() {
         opportunities: totalOpportunities,
         organizations: totalOrganizations,
         users: totalUsers,
-        applications: totalApplications,
         profiles: totalTalentProfiles,
       },
     }
@@ -70,7 +67,6 @@ async function getHomeData() {
         opportunities: 0,
         organizations: 0,
         users: 0,
-        applications: 0,
         profiles: 0,
       },
     }
@@ -145,9 +141,13 @@ export default async function HomePage() {
 
             <div className="relative">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl image-zoom">
-                <img 
+                <Image
                   src="https://images.unsplash.com/photo-1546519638-68e109498ffc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsfGVufDB8fHx8MTc1OTA4ODc3OXww&ixlib=rb-4.1.0&q=85"
                   alt="Jugadores de baloncesto en acción"
+                  width={1200}
+                  height={900}
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="w-full h-[400px] lg:h-[500px] object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
@@ -172,28 +172,28 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 fade-in-stagger">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                <AnimatedCounter value={stats.opportunities} suffix="+" />
+                {stats.opportunities.toLocaleString('es-ES')}+
               </div>
               <div className="text-orange-100 font-medium">Oportunidades activas</div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                <AnimatedCounter value={stats.users} suffix="+" />
+                {stats.users.toLocaleString('es-ES')}+
               </div>
               <div className="text-orange-100 font-medium">Usuarios registrados</div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                <AnimatedCounter value={stats.organizations} suffix="+" />
+                {stats.organizations.toLocaleString('es-ES')}+
               </div>
               <div className="text-orange-100 font-medium">Clubes verificados</div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                <AnimatedCounter value={stats.profiles} suffix="+" />
+                {stats.profiles.toLocaleString('es-ES')}+
               </div>
               <div className="text-orange-100 font-medium">Perfiles de talento</div>
             </div>

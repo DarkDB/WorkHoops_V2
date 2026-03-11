@@ -14,7 +14,7 @@ import {
   formatRelativeTime 
 } from '@/lib/utils'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 120
 
 interface OpportunitiesPageProps {
   searchParams: {
