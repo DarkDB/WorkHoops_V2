@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -22,6 +23,7 @@ interface ClubInterestFormProps {
 }
 
 export default function ClubInterestForm({ clubSlug, initialValues }: ClubInterestFormProps) {
+  const { data: session } = useSession()
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [formData, setFormData] = useState({
@@ -187,9 +189,11 @@ export default function ClubInterestForm({ clubSlug, initialValues }: ClubIntere
             'Enviar solicitud'
           )}
         </Button>
-        <a href="/auth/register" className="text-sm text-workhoops-accent hover:underline">
-          ¿Aún sin perfil? Crea tu cuenta en WorkHoops
-        </a>
+        {!session?.user && (
+          <a href="/auth/register" className="text-sm text-workhoops-accent hover:underline">
+            ¿Aún sin perfil? Crea tu cuenta en WorkHoops
+          </a>
+        )}
       </div>
     </form>
   )
