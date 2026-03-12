@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { generateUniqueClubSlug } from '@/lib/club-slug'
+import { calculateClubProfileCompletion } from '@/lib/club-profile-completion'
 import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
@@ -123,6 +124,15 @@ export async function POST(request: NextRequest) {
 
     const slugBase = validatedData.commercialName || validatedData.legalName
 
+    const completionFrom = {
+      legalName: validatedData.legalName,
+      entityType: validatedData.entityType,
+      city: validatedData.city,
+      description: validatedData.description || null,
+      logo: validatedData.logo || null
+    }
+    const profileCompletionPercentage = calculateClubProfileCompletion(completionFrom)
+
     if (existingProfile) {
       const slug = existingProfile.slug || await generateUniqueClubSlug(slugBase, existingProfile.id)
       // Update existing profile
@@ -130,6 +140,7 @@ export async function POST(request: NextRequest) {
         where: { userId: session.user.id },
         data: {
           ...(cleanedData as any),
+          profileCompletionPercentage,
           slug
         }
       })
@@ -139,6 +150,7 @@ export async function POST(request: NextRequest) {
       profile = await prisma.clubAgencyProfile.create({
         data: {
           ...cleanedData,
+          profileCompletionPercentage,
           slug,
           userId: session.user.id
         } as any

@@ -31,8 +31,8 @@ export default async function ClubesPage({ searchParams }: ClubesPageProps) {
       clubAgencyProfile: {
         is: {
           isPublic: true,
-          profileCompletionPercentage: {
-            gte: 60
+          slug: {
+            not: null
           },
           ...(city
             ? {

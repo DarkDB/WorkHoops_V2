@@ -16,8 +16,9 @@ export async function GET(request: NextRequest) {
         },
         clubAgencyProfile: {
           is: {
-            profileCompletionPercentage: {
-              gte: 60
+            isPublic: true,
+            slug: {
+              not: null
             },
             ...(city
               ? {

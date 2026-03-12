@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { generateUniqueClubSlug } from '@/lib/club-slug'
+import { calculateClubProfileCompletion } from '@/lib/club-profile-completion'
 import { z } from 'zod'
 
 const clubAgencyProfileOnboardingSchema = z.object({
@@ -77,28 +78,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = clubAgencyProfileOnboardingSchema.parse(body)
 
-    // Calculate profile completion percentage - weighted by importance
-    const weightedFields = [
-      { value: validatedData.legalName, weight: 10 },
-      { value: validatedData.entityType, weight: 10 },
-      { value: validatedData.city, weight: 10 },
-      { value: validatedData.contactEmail, weight: 8 },
-      { value: validatedData.description, weight: 10 },
-      { value: validatedData.logo, weight: 8 },
-      { value: validatedData.profilesNeeded && validatedData.profilesNeeded.length > 0, weight: 10 },
-      { value: validatedData.scoutingNotes, weight: 8 },
-      { value: validatedData.competitions && validatedData.competitions.length > 0, weight: 6 },
-      { value: validatedData.sections && validatedData.sections.length > 0, weight: 5 },
-      { value: validatedData.contactPerson, weight: 5 },
-      { value: validatedData.website, weight: 5 },
-      { value: validatedData.institutionalVideo, weight: 5 }
-    ]
-    
-    const totalWeight = weightedFields.reduce((sum, field) => sum + field.weight, 0)
-    const filledWeight = weightedFields.reduce((sum, field) => {
-      return sum + (field.value ? field.weight : 0)
-    }, 0)
-    const profileCompletionPercentage = Math.round((filledWeight / totalWeight) * 100)
+    const profileCompletionPercentage = calculateClubProfileCompletion({
+      legalName: validatedData.legalName || '',
+      entityType: validatedData.entityType || '',
+      city: validatedData.city || '',
+      description: validatedData.description || null,
+      logo: validatedData.logo || null
+    })
 
     // Check if profile exists
     const existingProfile = await prisma.clubAgencyProfile.findUnique({
