@@ -7,14 +7,16 @@ import { Badge } from '@/components/ui/badge'
 import {
   Briefcase,
   Users,
-  TrendingUp,
-  Eye,
   FileText,
   PlusCircle,
   Calendar,
   MapPin,
-  Bookmark
+  Bookmark,
+  Inbox,
+  Mail
 } from 'lucide-react'
+
+type LeadStatus = 'NEW' | 'REVIEWED' | 'CONTACTED' | 'REJECTED'
 
 interface Opportunity {
   id: string
@@ -30,20 +32,46 @@ interface Opportunity {
   }
 }
 
+interface RecentLead {
+  id: string
+  fullName: string
+  status: LeadStatus
+  email: string
+  createdAt: string
+}
+
 interface DashboardClubAgencyProps {
   userName: string
   opportunities: Opportunity[]
   totalApplications: number
+  totalLeads: number
+  newLeads: number
+  recentLeads: RecentLead[]
 }
 
-export default function DashboardClubAgency({ 
-  userName, 
+const leadStatusLabel: Record<LeadStatus, string> = {
+  NEW: 'Nuevo',
+  REVIEWED: 'Revisado',
+  CONTACTED: 'Contactado',
+  REJECTED: 'Rechazado'
+}
+
+const leadStatusClass: Record<LeadStatus, string> = {
+  NEW: 'bg-blue-100 text-blue-800',
+  REVIEWED: 'bg-yellow-100 text-yellow-800',
+  CONTACTED: 'bg-green-100 text-green-800',
+  REJECTED: 'bg-gray-100 text-gray-700'
+}
+
+export default function DashboardClubAgency({
   opportunities,
-  totalApplications 
+  totalApplications,
+  totalLeads,
+  newLeads,
+  recentLeads
 }: DashboardClubAgencyProps) {
-  const activeOpportunities = opportunities.filter(opp => opp.status === 'publicada').length
-  const pendingOpportunities = opportunities.filter(opp => opp.status === 'borrador').length
-  const totalPublished = opportunities.length
+  const activeOpportunities = opportunities.filter((opp) => opp.status === 'publicada').length
+  const draftOpportunities = opportunities.filter((opp) => opp.status === 'borrador').length
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -80,56 +108,19 @@ export default function DashboardClubAgency({
 
   return (
     <>
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total ofertas</p>
-                <p className="text-3xl font-bold text-gray-900">{totalPublished}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Briefcase className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-            <div className="mt-2 text-sm text-gray-500">
-              {activeOpportunities} publicadas
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pendientes de revisión</p>
-                <p className="text-3xl font-bold text-gray-900">{pendingOpportunities}</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                <FileText className="w-6 h-6 text-yellow-600" />
-              </div>
-            </div>
-            <div className="mt-2 text-sm text-yellow-600">
-              Esperando aprobación
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Candidatos recibidos</p>
-                <p className="text-3xl font-bold text-gray-900">{totalApplications}</p>
+                <p className="text-sm font-medium text-gray-600">Ofertas activas</p>
+                <p className="text-3xl font-bold text-gray-900">{activeOpportunities}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-green-600" />
+                <Briefcase className="w-6 h-6 text-green-600" />
               </div>
             </div>
-            <div className="mt-2 text-sm text-gray-500">
-              Total de solicitudes
-            </div>
+            <div className="mt-2 text-sm text-gray-500">{draftOpportunities} en borrador</div>
           </CardContent>
         </Card>
 
@@ -137,47 +128,56 @@ export default function DashboardClubAgency({
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Vistas totales</p>
-                <p className="text-3xl font-bold text-gray-900">0</p>
+                <p className="text-sm font-medium text-gray-600">Candidaturas</p>
+                <p className="text-3xl font-bold text-gray-900">{totalApplications}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+            <div className="mt-2 text-sm text-gray-500">Desde ofertas publicadas</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Leads nuevos</p>
+                <p className="text-3xl font-bold text-gray-900">{newLeads}</p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                <Inbox className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
+            <div className="mt-2 text-sm text-gray-500">Pendientes de revisión</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Leads totales</p>
+                <p className="text-3xl font-bold text-gray-900">{totalLeads}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <Eye className="w-6 h-6 text-purple-600" />
+                <Mail className="w-6 h-6 text-purple-600" />
               </div>
             </div>
-            <div className="mt-2 text-sm text-purple-600">
-              Próximamente
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Tasa de respuesta</p>
-                <p className="text-3xl font-bold text-gray-900">0%</p>
-              </div>
-              <div className="w-12 h-12 bg-workhoops-accent/10 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-workhoops-accent" />
-              </div>
-            </div>
-            <div className="mt-2 text-sm text-gray-500">
-              Próximamente
-            </div>
+            <div className="mt-2 text-sm text-gray-500">Formulario “Quiero jugar”</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Main Content */}
       <div className="grid lg:grid-cols-3 gap-8">
-        {/* My Opportunities */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center space-x-2">
                   <Briefcase className="w-5 h-5" />
-                  <span>Mis ofertas publicadas</span>
+                  <span>Mis ofertas</span>
                 </CardTitle>
                 <Link href="/publicar">
                   <Button size="sm" className="bg-workhoops-accent hover:bg-orange-600">
@@ -207,9 +207,7 @@ export default function DashboardClubAgency({
                           {getTypeIcon(opportunity.type)}
                           <h3 className="font-medium text-gray-900">{opportunity.title}</h3>
                         </div>
-                        <Badge className={getStatusColor(opportunity.status)}>
-                          {getStatusLabel(opportunity.status)}
-                        </Badge>
+                        <Badge className={getStatusColor(opportunity.status)}>{getStatusLabel(opportunity.status)}</Badge>
                       </div>
                       <div className="flex items-center text-sm text-gray-600 mb-2">
                         <MapPin className="w-4 h-4 mr-1" />
@@ -222,10 +220,10 @@ export default function DashboardClubAgency({
                         </div>
                         <div className="flex items-center space-x-2">
                           <Link href={`/dashboard/candidatos/${opportunity.id}`}>
-                            <Button 
-                              variant={opportunity._count.applications > 0 ? "default" : "ghost"} 
+                            <Button
+                              variant={opportunity._count.applications > 0 ? 'default' : 'ghost'}
                               size="sm"
-                              className={opportunity._count.applications > 0 ? "bg-workhoops-accent hover:bg-orange-600" : ""}
+                              className={opportunity._count.applications > 0 ? 'bg-workhoops-accent hover:bg-orange-600' : ''}
                             >
                               <Users className="w-4 h-4 mr-1" />
                               {opportunity._count.applications} candidato{opportunity._count.applications !== 1 ? 's' : ''}
@@ -249,8 +247,40 @@ export default function DashboardClubAgency({
           </Card>
         </div>
 
-        {/* Quick Actions */}
-        <div>
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">Jugadores interesados recientes</CardTitle>
+                <Link href="/dashboard/leads">
+                  <Button variant="ghost" size="sm">Ver todos</Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {recentLeads.length === 0 ? (
+                <p className="text-sm text-gray-500">Aún no has recibido leads desde tu página pública.</p>
+              ) : (
+                <div className="space-y-3">
+                  {recentLeads.map((lead) => (
+                    <div key={lead.id} className="border rounded-lg p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-medium text-sm text-gray-900">{lead.fullName}</p>
+                        <Badge className={leadStatusClass[lead.status]}>{leadStatusLabel[lead.status]}</Badge>
+                      </div>
+                      <a href={`mailto:${lead.email}`} className="text-xs text-workhoops-accent hover:underline mt-1 inline-block">
+                        {lead.email}
+                      </a>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {new Date(lead.createdAt).toLocaleDateString('es-ES')}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Acciones rápidas</CardTitle>
@@ -276,38 +306,16 @@ export default function DashboardClubAgency({
               </Link>
               <Link href="/dashboard/leads" className="block">
                 <Button className="w-full justify-start" variant="outline">
-                  <Users className="w-4 h-4 mr-2" />
+                  <Inbox className="w-4 h-4 mr-2" />
                   Jugadores interesados
                 </Button>
               </Link>
-              <Link href="/profile/edit" className="block">
+              <Link href="/profile/club/edit" className="block">
                 <Button className="w-full justify-start" variant="outline">
                   <FileText className="w-4 h-4 mr-2" />
-                  Editar perfil
+                  Editar página pública
                 </Button>
               </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle className="text-sm">Consejos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3 text-sm text-gray-600">
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <p className="font-medium text-blue-900 mb-1">💡 Destaca tu oferta</p>
-                  <p className="text-xs text-blue-700">
-                    Las ofertas con descripciones detalladas reciben un 3x más candidatos
-                  </p>
-                </div>
-                <div className="bg-green-50 p-3 rounded-lg">
-                  <p className="font-medium text-green-900 mb-1">🎯 Responde rápido</p>
-                  <p className="text-xs text-green-700">
-                    Los clubs que responden en 24h tienen 5x más conversiones
-                  </p>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>

@@ -6,6 +6,7 @@ import { Navbar } from '@/components/Navbar'
 import DashboardClubAgency from '@/components/DashboardClubAgency'
 import { DashboardAnalytics } from '@/components/DashboardAnalytics'
 import { getPlanLabel } from '@/lib/entitlements'
+import { calculateClubProfileCompletion } from '@/lib/club-profile-completion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -112,6 +113,8 @@ export default async function DashboardPage() {
     redirect('/profile/complete')
   }
 
+  const isClubOrAgency = user.role === 'club' || user.role === 'agencia'
+
   // Calculate profile completion using stored database values
   const calculateProfileCompletion = () => {
     const missingItems: string[] = []
@@ -165,16 +168,21 @@ export default async function DashboardPage() {
     // For clubs and agencies
     else if (user.role === 'club' || user.role === 'agencia') {
       if (user.clubAgencyProfile) {
-        percentage = user.clubAgencyProfile.profileCompletionPercentage || 0
+        percentage = calculateClubProfileCompletion({
+          legalName: user.clubAgencyProfile.legalName,
+          entityType: user.clubAgencyProfile.entityType,
+          city: user.clubAgencyProfile.city,
+          description: user.clubAgencyProfile.description,
+          logo: user.clubAgencyProfile.logo
+        })
         
         // Identify missing critical fields
         if (!user.clubAgencyProfile.legalName) missingItems.push('Nombre legal')
         if (!user.clubAgencyProfile.entityType) missingItems.push('Tipo de entidad')
         if (!user.clubAgencyProfile.city) missingItems.push('Ciudad')
-        if (!user.clubAgencyProfile.contactEmail) missingItems.push('Email de contacto')
         if (!user.clubAgencyProfile.description) missingItems.push('Descripción')
         if (!user.clubAgencyProfile.logo) missingItems.push('Logo')
-        if (!user.clubAgencyProfile.profilesNeeded) missingItems.push('Perfiles buscados')
+        if (!user.clubAgencyProfile.slug) missingItems.push('URL pública del club')
       } else {
         missingItems.push('Completar perfil de club/agencia')
       }
@@ -195,23 +203,46 @@ export default async function DashboardPage() {
   // Check if user needs to complete talent profile
   const needsTalentProfile = (user.role === 'jugador' || user.role === 'entrenador') && !user.talentProfile
   
-  // Check if user is club/agency
-  const isClubOrAgency = user.role === 'club' || user.role === 'agencia'
+  const recommendations = !isClubOrAgency
+    ? await prisma.opportunity.findMany({
+        where: {
+          status: 'publicada',
+          deadline: {
+            gte: new Date()
+          }
+        },
+        include: {
+          organization: true
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 2
+      })
+    : []
 
-  // Get recent opportunities for recommendations
-  const recommendations = await prisma.opportunity.findMany({
-    where: {
-      status: 'publicada',
-      deadline: {
-        gte: new Date()
-      }
-    },
-    include: {
-      organization: true
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 2
-  })
+  const [clubLeadCounts, recentClubLeads] = isClubOrAgency
+    ? await Promise.all([
+        prisma.clubLead.groupBy({
+          by: ['status'],
+          where: { clubUserId: user.id },
+          _count: { _all: true }
+        }),
+        prisma.clubLead.findMany({
+          where: { clubUserId: user.id },
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+          select: {
+            id: true,
+            fullName: true,
+            status: true,
+            email: true,
+            createdAt: true
+          }
+        })
+      ])
+    : [[], []]
+
+  const totalLeads = clubLeadCounts.reduce((acc, row) => acc + row._count._all, 0)
+  const newLeads = clubLeadCounts.find((row) => row.status === 'NEW')?._count._all || 0
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -281,10 +312,10 @@ export default async function DashboardPage() {
                   </Button>
                 </Link>
               )}
-              <Link href="/profile">
+              <Link href={isClubOrAgency ? '/profile/club/edit' : '/profile'}>
                 <Button variant="outline">
                   <User className="w-4 h-4 mr-2" />
-                  Cuenta
+                  {isClubOrAgency ? 'Perfil público' : 'Cuenta'}
                 </Button>
               </Link>
             </div>
@@ -295,15 +326,17 @@ export default async function DashboardPage() {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="text-sm font-medium text-yellow-800">
-                    Completa tu perfil ({profileCompletion.percentage}%)
+                    {isClubOrAgency ? 'Completa tu página pública' : 'Completa tu perfil'} ({profileCompletion.percentage}%)
                   </h3>
                   <p className="text-sm text-yellow-700">
-                    {needsTalentProfile 
+                    {isClubOrAgency
+                      ? 'Un perfil público completo mejora captación de jugadores y confianza del club.'
+                      : needsTalentProfile 
                       ? 'Completa tu perfil de talento para recibir más oportunidades' 
                       : 'Un perfil completo recibe 3x más visualizaciones'}
                   </p>
                 </div>
-                <Link href={needsTalentProfile ? '/profile/complete' : '/profile/edit'}>
+                <Link href={isClubOrAgency ? '/profile/club/edit' : (needsTalentProfile ? '/profile/complete' : '/profile/edit')}>
                   <Button size="sm" variant="outline" className="border-yellow-300 text-yellow-800 hover:bg-yellow-100">
                     {needsTalentProfile ? 'Completar perfil' : 'Completar'}
                   </Button>
@@ -337,14 +370,15 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* Analytics Section */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-workhoops-accent" />
-            Tu Actividad
-          </h2>
-          <DashboardAnalytics />
-        </div>
+        {!isClubOrAgency && (
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-workhoops-accent" />
+              Tu Actividad
+            </h2>
+            <DashboardAnalytics />
+          </div>
+        )}
 
         {/* Conditional Dashboard based on user role */}
         {isClubOrAgency ? (
@@ -352,6 +386,12 @@ export default async function DashboardPage() {
             userName={user.name || 'Usuario'}
             opportunities={user.opportunities}
             totalApplications={user.opportunities.reduce((sum, opp) => sum + opp._count.applications, 0)}
+            totalLeads={totalLeads}
+            newLeads={newLeads}
+            recentLeads={recentClubLeads.map((lead) => ({
+              ...lead,
+              createdAt: lead.createdAt.toISOString()
+            }))}
           />
         ) : (
           <>
