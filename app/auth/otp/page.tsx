@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
@@ -14,13 +14,22 @@ function OtpForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+  const initialEmail = searchParams.get('email') || ''
   
-  const [step, setStep] = useState<'email' | 'otp'>('email')
-  const [email, setEmail] = useState('')
+  const [step, setStep] = useState<'email' | 'otp'>(initialEmail ? 'otp' : 'email')
+  const [email, setEmail] = useState(initialEmail)
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+
+  useEffect(() => {
+    if (initialEmail) {
+      setEmail(initialEmail)
+      setStep('otp')
+      setMessage('Si el email existe, ya se ha enviado un código. Revisa tu bandeja.')
+    }
+  }, [initialEmail])
 
   const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault()
