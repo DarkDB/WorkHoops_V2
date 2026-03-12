@@ -837,3 +837,62 @@ export async function sendClubLeadReceivedEmail(params: {
     throw new Error('Failed to send club lead email')
   }
 }
+
+export async function sendClubWeeklyRecruitingSummaryEmail(params: {
+  clubEmail: string
+  clubName: string
+  newLeads: number
+  pendingInvitations: number
+  pendingShortlist: number
+  dashboardUrl: string
+}) {
+  const { clubEmail, clubName, newLeads, pendingInvitations, pendingShortlist, dashboardUrl } = params
+
+  if (!clubEmail) return null
+
+  try {
+    const { data, error } = await getResendClient().emails.send({
+      from: 'WorkHoops <hola@workhoops.com>',
+      to: [clubEmail],
+      subject: `Resumen semanal de reclutamiento - ${clubName}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #FF6A00 0%, #e55a00 100%); padding: 30px 20px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">WorkHoops</h1>
+            <p style="color: rgba(255,255,255,0.9); margin-top: 8px;">Resumen semanal de reclutamiento</p>
+          </div>
+
+          <div style="padding: 24px 20px; background: white;">
+            <h2 style="margin: 0 0 12px 0; color: #111;">Hola, ${clubName}</h2>
+            <p style="color: #555; margin: 0 0 16px 0; line-height: 1.6;">Este es tu estado actual para no perder oportunidades esta semana:</p>
+
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 14px; margin-bottom: 12px;">
+              <p style="margin: 0; color: #111;"><strong>Leads nuevos:</strong> ${newLeads}</p>
+            </div>
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 14px; margin-bottom: 12px;">
+              <p style="margin: 0; color: #111;"><strong>Invitaciones pendientes:</strong> ${pendingInvitations}</p>
+            </div>
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 14px; margin-bottom: 20px;">
+              <p style="margin: 0; color: #111;"><strong>Shortlist por trabajar:</strong> ${pendingShortlist}</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+              <a href="${dashboardUrl}" style="background: #FF6A00; color: white; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; display: inline-block;">
+                Abrir inbox de reclutamiento
+              </a>
+            </div>
+          </div>
+        </div>
+      `
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error sending weekly recruiting summary:', error)
+    throw new Error('Failed to send weekly recruiting summary email')
+  }
+}

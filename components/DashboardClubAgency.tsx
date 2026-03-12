@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -13,10 +14,14 @@ import {
   MapPin,
   Bookmark,
   Inbox,
-  Mail
+  Mail,
+  Check,
+  ArrowRight
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 type LeadStatus = 'NEW' | 'REVIEWED' | 'CONTACTED' | 'REJECTED'
+type PipelineStatus = 'SAVED' | 'CONTACTED' | 'INVITED' | 'SIGNED' | 'REJECTED'
 
 interface Opportunity {
   id: string
@@ -40,6 +45,33 @@ interface RecentLead {
   createdAt: string
 }
 
+interface LeadInboxItem {
+  id: string
+  fullName: string
+  email: string
+  createdAt: string
+}
+
+interface InvitationInboxItem {
+  id: string
+  type: 'INVITE_TO_APPLY' | 'INVITE_TO_TRYOUT'
+  status: 'SENT' | 'VIEWED' | 'ACCEPTED' | 'DECLINED'
+  createdAt: string
+  talentProfileId: string
+  talentProfile: {
+    fullName: string
+  }
+}
+
+interface ShortlistInboxItem {
+  talentProfileId: string
+  status: PipelineStatus
+  updatedAt: string
+  talentProfile: {
+    fullName: string
+  }
+}
+
 interface DashboardClubAgencyProps {
   userName: string
   opportunities: Opportunity[]
@@ -49,6 +81,9 @@ interface DashboardClubAgencyProps {
   pendingInvitations: number
   pendingShortlist: number
   recentLeads: RecentLead[]
+  leadInboxItems: LeadInboxItem[]
+  invitationInboxItems: InvitationInboxItem[]
+  shortlistInboxItems: ShortlistInboxItem[]
 }
 
 const leadStatusLabel: Record<LeadStatus, string> = {
@@ -65,6 +100,41 @@ const leadStatusClass: Record<LeadStatus, string> = {
   REJECTED: 'bg-gray-100 text-gray-700'
 }
 
+type InboxItem =
+  | {
+      kind: 'lead'
+      key: string
+      priority: number
+      at: string
+      title: string
+      subtitle: string
+      actionLabel: string
+      onQuickAction: () => Promise<void>
+      href: string
+    }
+  | {
+      kind: 'invitation'
+      key: string
+      priority: number
+      at: string
+      title: string
+      subtitle: string
+      actionLabel: string
+      onQuickAction: () => Promise<void>
+      href: string
+    }
+  | {
+      kind: 'shortlist'
+      key: string
+      priority: number
+      at: string
+      title: string
+      subtitle: string
+      actionLabel: string
+      onQuickAction: () => Promise<void>
+      href: string
+    }
+
 export default function DashboardClubAgency({
   opportunities,
   totalApplications,
@@ -72,10 +142,111 @@ export default function DashboardClubAgency({
   newLeads,
   pendingInvitations,
   pendingShortlist,
-  recentLeads
+  recentLeads,
+  leadInboxItems,
+  invitationInboxItems,
+  shortlistInboxItems
 }: DashboardClubAgencyProps) {
+  const [leadItems, setLeadItems] = useState(leadInboxItems)
+  const [inviteItems, setInviteItems] = useState(invitationInboxItems)
+  const [shortlistItems, setShortlistItems] = useState(shortlistInboxItems)
+  const [loadingTaskKey, setLoadingTaskKey] = useState<string | null>(null)
+
   const activeOpportunities = opportunities.filter((opp) => opp.status === 'publicada').length
   const draftOpportunities = opportunities.filter((opp) => opp.status === 'borrador').length
+
+  const runQuickAction = async (key: string, fn: () => Promise<void>) => {
+    setLoadingTaskKey(key)
+    try {
+      await fn()
+      toast.success('Inbox actualizada')
+    } catch (error) {
+      toast.error('No se pudo actualizar', {
+        description: error instanceof Error ? error.message : 'Inténtalo de nuevo.'
+      })
+    } finally {
+      setLoadingTaskKey(null)
+    }
+  }
+
+  const inboxItems = useMemo<InboxItem[]>(() => {
+    const fromLeads: InboxItem[] = leadItems.map((item) => ({
+      kind: 'lead',
+      key: `lead-${item.id}`,
+      priority: 100,
+      at: item.createdAt,
+      title: `${item.fullName} quiere jugar en tu club`,
+      subtitle: item.email,
+      actionLabel: 'Marcar revisado',
+      onQuickAction: async () => {
+        const response = await fetch(`/api/club/leads/${item.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'REVIEWED' })
+        })
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}))
+          throw new Error(data.message || 'Error actualizando lead')
+        }
+        setLeadItems((prev) => prev.filter((lead) => lead.id !== item.id))
+      },
+      href: '/dashboard/leads'
+    }))
+
+    const fromInvites: InboxItem[] = inviteItems.map((item) => ({
+      kind: 'invitation',
+      key: `inv-${item.id}`,
+      priority: 70,
+      at: item.createdAt,
+      title: `Invitación pendiente: ${item.talentProfile.fullName}`,
+      subtitle: item.type === 'INVITE_TO_TRYOUT' ? 'Tipo: Tryout' : 'Tipo: Aplicar',
+      actionLabel: 'Marcar contactado',
+      onQuickAction: async () => {
+        const response = await fetch('/api/talent/shortlist', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profileId: item.talentProfileId, status: 'CONTACTED' })
+        })
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}))
+          throw new Error(data.message || 'Error actualizando shortlist')
+        }
+        setInviteItems((prev) => prev.filter((inv) => inv.id !== item.id))
+      },
+      href: `/talento/perfiles/${item.talentProfileId}`
+    }))
+
+    const fromShortlist: InboxItem[] = shortlistItems.map((item) => ({
+      kind: 'shortlist',
+      key: `short-${item.talentProfileId}`,
+      priority: item.status === 'SAVED' ? 60 : 50,
+      at: item.updatedAt,
+      title: `Seguimiento pendiente: ${item.talentProfile.fullName}`,
+      subtitle: item.status === 'SAVED' ? 'Estado: Guardado' : 'Estado: Contactado',
+      actionLabel: item.status === 'SAVED' ? 'Marcar contactado' : 'Marcar invitado',
+      onQuickAction: async () => {
+        const nextStatus = item.status === 'SAVED' ? 'CONTACTED' : 'INVITED'
+        const response = await fetch('/api/talent/shortlist', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profileId: item.talentProfileId, status: nextStatus })
+        })
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}))
+          throw new Error(data.message || 'Error actualizando shortlist')
+        }
+        setShortlistItems((prev) => prev.filter((s) => s.talentProfileId !== item.talentProfileId))
+      },
+      href: '/dashboard/shortlist'
+    }))
+
+    return [...fromLeads, ...fromInvites, ...fromShortlist]
+      .sort((a, b) => {
+        if (b.priority !== a.priority) return b.priority - a.priority
+        return new Date(a.at).getTime() - new Date(b.at).getTime()
+      })
+      .slice(0, 8)
+  }, [leadItems, inviteItems, shortlistItems])
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -179,6 +350,55 @@ export default function DashboardClubAgency({
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
+                <CardTitle className="text-base">Inbox de reclutamiento</CardTitle>
+                <div className="text-xs text-gray-500">
+                  {newLeads} nuevos • {pendingInvitations} invitaciones • {pendingShortlist} shortlist
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {inboxItems.length === 0 ? (
+                <p className="text-sm text-gray-500">Sin pendientes. Buen ritmo de seguimiento.</p>
+              ) : (
+                <div className="space-y-3">
+                  {inboxItems.map((item) => (
+                    <div key={item.key} className="border rounded-lg p-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-gray-900">{item.title}</p>
+                          <p className="text-xs text-gray-600 mt-1">{item.subtitle}</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {new Date(item.at).toLocaleDateString('es-ES')} {new Date(item.at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                        <div className="flex flex-col gap-2 items-end">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => runQuickAction(item.key, item.onQuickAction)}
+                            disabled={loadingTaskKey === item.key}
+                          >
+                            <Check className="w-4 h-4 mr-1" />
+                            {item.actionLabel}
+                          </Button>
+                          <Link href={item.href}>
+                            <Button size="sm" variant="ghost" className="text-workhoops-accent">
+                              Ver
+                              <ArrowRight className="w-4 h-4 ml-1" />
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center space-x-2">
                   <Briefcase className="w-5 h-5" />
                   <span>Mis ofertas</span>
@@ -246,49 +466,6 @@ export default function DashboardClubAgency({
                     </div>
                   ))
                 )}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Inbox de reclutamiento</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between border rounded-md p-3">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Leads nuevos</p>
-                  <p className="text-xs text-gray-500">Jugadores que enviaron “Quiero jugar”</p>
-                </div>
-                <Link href="/dashboard/leads">
-                  <Button size="sm" variant={newLeads > 0 ? 'default' : 'outline'} className={newLeads > 0 ? 'bg-workhoops-accent hover:bg-orange-600' : ''}>
-                    {newLeads}
-                  </Button>
-                </Link>
-              </div>
-
-              <div className="flex items-center justify-between border rounded-md p-3">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Invitaciones pendientes</p>
-                  <p className="text-xs text-gray-500">Sin respuesta del jugador</p>
-                </div>
-                <Link href="/dashboard/shortlist">
-                  <Button size="sm" variant={pendingInvitations > 0 ? 'default' : 'outline'} className={pendingInvitations > 0 ? 'bg-workhoops-accent hover:bg-orange-600' : ''}>
-                    {pendingInvitations}
-                  </Button>
-                </Link>
-              </div>
-
-              <div className="flex items-center justify-between border rounded-md p-3">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Shortlist por trabajar</p>
-                  <p className="text-xs text-gray-500">Perfiles guardados/contactados</p>
-                </div>
-                <Link href="/dashboard/shortlist">
-                  <Button size="sm" variant={pendingShortlist > 0 ? 'default' : 'outline'} className={pendingShortlist > 0 ? 'bg-workhoops-accent hover:bg-orange-600' : ''}>
-                    {pendingShortlist}
-                  </Button>
-                </Link>
               </div>
             </CardContent>
           </Card>

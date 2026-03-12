@@ -219,7 +219,7 @@ export default async function DashboardPage() {
       })
     : []
 
-  const [clubLeadCounts, recentClubLeads, pendingInvitations, pendingShortlist] = isClubOrAgency
+  const [clubLeadCounts, recentClubLeads, pendingInvitations, pendingShortlist, leadInboxItems, invitationInboxItems, shortlistInboxItems] = isClubOrAgency
     ? await Promise.all([
         prisma.clubLead.groupBy({
           by: ['status'],
@@ -253,9 +253,71 @@ export default async function DashboardPage() {
               in: ['SAVED', 'CONTACTED']
             }
           }
+        }),
+        prisma.clubLead.findMany({
+          where: {
+            clubUserId: user.id,
+            status: 'NEW'
+          },
+          orderBy: {
+            createdAt: 'asc'
+          },
+          take: 8,
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            createdAt: true
+          }
+        }),
+        prisma.talentInvitation.findMany({
+          where: {
+            clubUserId: user.id,
+            status: {
+              in: ['SENT', 'VIEWED']
+            }
+          },
+          orderBy: {
+            createdAt: 'asc'
+          },
+          take: 8,
+          select: {
+            id: true,
+            type: true,
+            status: true,
+            createdAt: true,
+            talentProfileId: true,
+            talentProfile: {
+              select: {
+                fullName: true
+              }
+            }
+          }
+        }),
+        prisma.talentShortlist.findMany({
+          where: {
+            clubUserId: user.id,
+            status: {
+              in: ['SAVED', 'CONTACTED']
+            }
+          },
+          orderBy: {
+            updatedAt: 'asc'
+          },
+          take: 8,
+          select: {
+            talentProfileId: true,
+            status: true,
+            updatedAt: true,
+            talentProfile: {
+              select: {
+                fullName: true
+              }
+            }
+          }
         })
       ])
-    : [[], [], 0, 0]
+    : [[], [], 0, 0, [], [], []]
 
   const totalLeads = clubLeadCounts.reduce((acc, row) => acc + row._count._all, 0)
   const newLeads = clubLeadCounts.find((row) => row.status === 'NEW')?._count._all || 0
@@ -409,6 +471,18 @@ export default async function DashboardPage() {
             recentLeads={recentClubLeads.map((lead) => ({
               ...lead,
               createdAt: lead.createdAt.toISOString()
+            }))}
+            leadInboxItems={leadInboxItems.map((item) => ({
+              ...item,
+              createdAt: item.createdAt.toISOString()
+            }))}
+            invitationInboxItems={invitationInboxItems.map((item) => ({
+              ...item,
+              createdAt: item.createdAt.toISOString()
+            }))}
+            shortlistInboxItems={shortlistInboxItems.map((item) => ({
+              ...item,
+              updatedAt: item.updatedAt.toISOString()
             }))}
           />
         ) : (
