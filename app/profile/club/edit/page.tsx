@@ -1,54 +1,40 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 import { Navbar } from '@/components/Navbar'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Loader2, Save, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
-import { Loader2, Save, X, Building2, MapPin, Users, Award, Globe, Phone, Mail } from 'lucide-react'
-import Link from 'next/link'
 
-export default function EditClubAgencyProfilePage() {
+const defaultFormData = {
+  legalName: '',
+  commercialName: '',
+  entityType: 'club',
+  city: '',
+  description: '',
+  logo: '',
+  website: '',
+  instagramUrl: '',
+  twitterUrl: '',
+  linkedinUrl: '',
+  youtubeUrl: ''
+}
+
+export default function EditClubProfilePage() {
   const router = useRouter()
   const { data: session, status } = useSession()
+
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
-  const [formData, setFormData] = useState({
-    organizationName: '',
-    organizationType: 'club',
-    foundedYear: new Date().getFullYear(),
-    description: '',
-    logo: '',
-    coverImage: '',
-    country: 'España',
-    city: '',
-    address: '',
-    categories: [] as string[],
-    divisions: [] as string[],
-    contactPerson: '',
-    contactEmail: '',
-    contactPhone: '',
-    website: '',
-    facebookUrl: '',
-    twitterUrl: '',
-    instagramUrl: '',
-    linkedinUrl: '',
-    facilities: '',
-    achievements: '',
-    isPublic: true
-  })
-
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [selectedDivisions, setSelectedDivisions] = useState<string[]>([])
-
-  const availableCategories = ['Base', 'Junior', 'Senior', 'Veteranos', 'Femenino', 'Masculino']
-  const availableDivisions = ['ACB', 'LEB Oro', 'LEB Plata', 'EBA', 'Liga Femenina', 'Liga Femenina 2', 'Primera Nacional', 'Segunda Nacional']
+  const [formData, setFormData] = useState(defaultFormData)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -56,100 +42,62 @@ export default function EditClubAgencyProfilePage() {
       return
     }
 
-    if (session?.user?.role !== 'club' && session?.user?.role !== 'agencia') {
-      toast.error('Acceso denegado', {
-        description: 'Solo clubs y agencias pueden acceder a esta página'
-      })
+    if (status === 'authenticated' && session?.user.role !== 'club' && session?.user.role !== 'agencia') {
       router.push('/dashboard')
       return
     }
 
-    fetchProfile()
-  }, [session, status, router])
+    if (status === 'authenticated') {
+      fetchProfile()
+    }
+  }, [status, session, router])
 
   const fetchProfile = async () => {
     try {
       const response = await fetch('/api/club-agency/profile')
-      
+
       if (response.status === 404) {
-        // Profile doesn't exist yet - that's okay
         setFetching(false)
         return
       }
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error('Error al cargar el perfil')
+        throw new Error(data.message || 'No se pudo cargar el perfil')
       }
 
-      const data = await response.json()
-      
       setFormData({
-        organizationName: data.organizationName || '',
-        organizationType: data.organizationType || 'club',
-        foundedYear: data.foundedYear || new Date().getFullYear(),
+        legalName: data.legalName || '',
+        commercialName: data.commercialName || '',
+        entityType: data.entityType || 'club',
+        city: data.city || '',
         description: data.description || '',
         logo: data.logo || '',
-        coverImage: data.coverImage || '',
-        country: data.country || 'España',
-        city: data.city || '',
-        address: data.address || '',
-        categories: data.categories || [],
-        divisions: data.divisions || [],
-        contactPerson: data.contactPerson || '',
-        contactEmail: data.contactEmail || '',
-        contactPhone: data.contactPhone || '',
         website: data.website || '',
-        facebookUrl: data.facebookUrl || '',
-        twitterUrl: data.twitterUrl || '',
         instagramUrl: data.instagramUrl || '',
+        twitterUrl: data.twitterUrl || '',
         linkedinUrl: data.linkedinUrl || '',
-        facilities: data.facilities || '',
-        achievements: data.achievements || '',
-        isPublic: data.isPublic !== undefined ? data.isPublic : true
+        youtubeUrl: data.youtubeUrl || ''
       })
-
-      setSelectedCategories(data.categories || [])
-      setSelectedDivisions(data.divisions || [])
-      
-      setFetching(false)
     } catch (error) {
-      console.error('Error fetching profile:', error)
-      toast.error('Error', {
-        description: 'No se pudo cargar el perfil'
-      })
+      console.error('Error loading club profile:', error)
+      toast.error('No se pudo cargar el perfil')
+    } finally {
       setFetching(false)
     }
   }
 
-  const toggleCategory = (category: string) => {
-    const updated = selectedCategories.includes(category)
-      ? selectedCategories.filter(c => c !== category)
-      : [...selectedCategories, category]
-    
-    setSelectedCategories(updated)
-    setFormData({ ...formData, categories: updated })
-  }
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
 
-  const toggleDivision = (division: string) => {
-    const updated = selectedDivisions.includes(division)
-      ? selectedDivisions.filter(d => d !== division)
-      : [...selectedDivisions, division]
-    
-    setSelectedDivisions(updated)
-    setFormData({ ...formData, divisions: updated })
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    // Validaciones básicas
-    if (!formData.organizationName.trim()) {
-      toast.error('Error', { description: 'El nombre de la organización es requerido' })
+    if (!formData.legalName.trim()) {
+      toast.error('El nombre legal es obligatorio')
       return
     }
 
     if (!formData.city.trim()) {
-      toast.error('Error', { description: 'La ciudad es requerida' })
+      toast.error('La ciudad es obligatoria')
       return
     }
 
@@ -161,27 +109,32 @@ export default function EditClubAgencyProfilePage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          legalName: formData.legalName,
+          commercialName: formData.commercialName || null,
+          entityType: formData.entityType,
+          city: formData.city,
+          description: formData.description || null,
+          logo: formData.logo || null,
+          website: formData.website || null,
+          instagramUrl: formData.instagramUrl || null,
+          twitterUrl: formData.twitterUrl || null,
+          linkedinUrl: formData.linkedinUrl || null,
+          youtubeUrl: formData.youtubeUrl || null
+        })
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error al guardar el perfil')
+        throw new Error(data.message || 'No se pudo guardar el perfil')
       }
 
-      toast.success('¡Perfil guardado!', {
-        description: data.message
-      })
-
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 1500)
-
+      toast.success('Perfil actualizado correctamente')
+      router.push('/dashboard')
     } catch (error) {
-      console.error('Error saving profile:', error)
-      toast.error('Error', {
-        description: error instanceof Error ? error.message : 'Error al guardar el perfil'
+      toast.error('Error al guardar', {
+        description: error instanceof Error ? error.message : 'Inténtalo de nuevo.'
       })
     } finally {
       setLoading(false)
@@ -192,7 +145,7 @@ export default function EditClubAgencyProfilePage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-8 h-8 animate-spin text-workhoops-accent" />
         </div>
       </div>
@@ -202,64 +155,81 @@ export default function EditClubAgencyProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Editar perfil de organización</h1>
-          <p className="text-gray-600 mt-2">Completa la información de tu club o agencia</p>
-        </div>
+        <Link href="/dashboard">
+          <Button variant="ghost" size="sm" className="mb-4">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver al dashboard
+          </Button>
+        </Link>
+
+        <h1 className="text-3xl font-bold text-gray-900">Editar perfil de club</h1>
+        <p className="text-gray-600 mt-2 mb-8">
+          Esta información se mostrará en tu página pública del club.
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Información Básica */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Building2 className="w-5 h-5" />
-                <span>Información básica</span>
-              </CardTitle>
-              <CardDescription>Datos principales de tu organización</CardDescription>
+              <CardTitle>Información principal</CardTitle>
+              <CardDescription>Datos básicos visibles en tu página pública.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="organizationName">Nombre de la organización *</Label>
+                  <Label htmlFor="legalName">Nombre legal *</Label>
                   <Input
-                    id="organizationName"
-                    value={formData.organizationName}
-                    onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
-                    placeholder="CB Madrid"
+                    id="legalName"
+                    value={formData.legalName}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, legalName: e.target.value }))}
                     required
                   />
                 </div>
-
                 <div>
-                  <Label htmlFor="organizationType">Tipo de organización *</Label>
-                  <Select 
-                    value={formData.organizationType}
-                    onValueChange={(value) => setFormData({ ...formData, organizationType: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona tipo" />
+                  <Label htmlFor="commercialName">Nombre comercial</Label>
+                  <Input
+                    id="commercialName"
+                    value={formData.commercialName}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, commercialName: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="entityType">Tipo de entidad *</Label>
+                  <Select value={formData.entityType} onValueChange={(value) => setFormData((prev) => ({ ...prev, entityType: value }))}>
+                    <SelectTrigger id="entityType">
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="club">Club</SelectItem>
                       <SelectItem value="agencia">Agencia</SelectItem>
-                      <SelectItem value="escuela">Escuela</SelectItem>
-                      <SelectItem value="federacion">Federación</SelectItem>
+                      <SelectItem value="academia">Academia</SelectItem>
+                      <SelectItem value="programa_universitario">Programa universitario</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                <div>
+                  <Label htmlFor="city">Ciudad *</Label>
+                  <Input
+                    id="city"
+                    value={formData.city}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, city: e.target.value }))}
+                    required
+                  />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="foundedYear">Año de fundación</Label>
+                <Label htmlFor="logo">Logo (URL)</Label>
                 <Input
-                  id="foundedYear"
-                  type="number"
-                  min="1900"
-                  max={new Date().getFullYear()}
-                  value={formData.foundedYear}
-                  onChange={(e) => setFormData({ ...formData, foundedYear: parseInt(e.target.value) })}
+                  id="logo"
+                  type="url"
+                  value={formData.logo}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, logo: e.target.value }))}
+                  placeholder="https://..."
                 />
               </div>
 
@@ -267,155 +237,19 @@ export default function EditClubAgencyProfilePage() {
                 <Label htmlFor="description">Descripción</Label>
                 <Textarea
                   id="description"
+                  rows={6}
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Describe tu organización, historia, valores..."
-                  rows={4}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe tu club, proyecto deportivo y objetivos de reclutamiento."
                 />
               </div>
             </CardContent>
           </Card>
 
-          {/* Ubicación */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MapPin className="w-5 h-5" />
-                <span>Ubicación</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="country">País</Label>
-                  <Input
-                    id="country"
-                    value={formData.country}
-                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="city">Ciudad *</Label>
-                  <Input
-                    id="city"
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    placeholder="Madrid"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="address">Dirección completa</Label>
-                <Input
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder="Calle Example, 123"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Categorías y Divisiones */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="w-5 h-5" />
-                <span>Categorías y Divisiones</span>
-              </CardTitle>
-              <CardDescription>Selecciona las categorías y divisiones que manejas</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label>Categorías</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {availableCategories.map((category) => (
-                    <Button
-                      key={category}
-                      type="button"
-                      variant={selectedCategories.includes(category) ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => toggleCategory(category)}
-                    >
-                      {category}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <Label>Divisiones</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {availableDivisions.map((division) => (
-                    <Button
-                      key={division}
-                      type="button"
-                      variant={selectedDivisions.includes(division) ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => toggleDivision(division)}
-                    >
-                      {division}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Información de Contacto */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Phone className="w-5 h-5" />
-                <span>Información de contacto</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="contactPerson">Persona de contacto</Label>
-                  <Input
-                    id="contactPerson"
-                    value={formData.contactPerson}
-                    onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
-                    placeholder="Juan Pérez"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="contactEmail">Email de contacto</Label>
-                  <Input
-                    id="contactEmail"
-                    type="email"
-                    value={formData.contactEmail}
-                    onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                    placeholder="contacto@club.com"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="contactPhone">Teléfono de contacto</Label>
-                <Input
-                  id="contactPhone"
-                  value={formData.contactPhone}
-                  onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                  placeholder="+34 600 000 000"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Redes Sociales */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Globe className="w-5 h-5" />
-                <span>Presencia online</span>
-              </CardTitle>
+              <CardTitle>Redes y enlaces</CardTitle>
+              <CardDescription>Opcional, para mejorar visibilidad de tu club.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -424,102 +258,57 @@ export default function EditClubAgencyProfilePage() {
                   id="website"
                   type="url"
                   value={formData.website}
-                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  placeholder="https://www.tuclub.com"
+                  onChange={(e) => setFormData((prev) => ({ ...prev, website: e.target.value }))}
+                  placeholder="https://..."
                 />
               </div>
-
               <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="facebookUrl">Facebook</Label>
-                  <Input
-                    id="facebookUrl"
-                    type="url"
-                    value={formData.facebookUrl}
-                    onChange={(e) => setFormData({ ...formData, facebookUrl: e.target.value })}
-                    placeholder="https://facebook.com/tuclub"
-                  />
-                </div>
-
                 <div>
                   <Label htmlFor="instagramUrl">Instagram</Label>
                   <Input
                     id="instagramUrl"
                     type="url"
                     value={formData.instagramUrl}
-                    onChange={(e) => setFormData({ ...formData, instagramUrl: e.target.value })}
-                    placeholder="https://instagram.com/tuclub"
+                    onChange={(e) => setFormData((prev) => ({ ...prev, instagramUrl: e.target.value }))}
+                    placeholder="https://instagram.com/..."
                   />
                 </div>
-
                 <div>
-                  <Label htmlFor="twitterUrl">Twitter/X</Label>
+                  <Label htmlFor="twitterUrl">X / Twitter</Label>
                   <Input
                     id="twitterUrl"
                     type="url"
                     value={formData.twitterUrl}
-                    onChange={(e) => setFormData({ ...formData, twitterUrl: e.target.value })}
-                    placeholder="https://twitter.com/tuclub"
+                    onChange={(e) => setFormData((prev) => ({ ...prev, twitterUrl: e.target.value }))}
+                    placeholder="https://x.com/..."
                   />
                 </div>
-
                 <div>
                   <Label htmlFor="linkedinUrl">LinkedIn</Label>
                   <Input
                     id="linkedinUrl"
                     type="url"
                     value={formData.linkedinUrl}
-                    onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
-                    placeholder="https://linkedin.com/company/tuclub"
+                    onChange={(e) => setFormData((prev) => ({ ...prev, linkedinUrl: e.target.value }))}
+                    placeholder="https://linkedin.com/..."
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="youtubeUrl">YouTube</Label>
+                  <Input
+                    id="youtubeUrl"
+                    type="url"
+                    value={formData.youtubeUrl}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, youtubeUrl: e.target.value }))}
+                    placeholder="https://youtube.com/..."
                   />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Información Adicional */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Award className="w-5 h-5" />
-                <span>Información adicional</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="facilities">Instalaciones</Label>
-                <Textarea
-                  id="facilities"
-                  value={formData.facilities}
-                  onChange={(e) => setFormData({ ...formData, facilities: e.target.value })}
-                  placeholder="Describe las instalaciones disponibles..."
-                  rows={3}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="achievements">Logros destacados</Label>
-                <Textarea
-                  id="achievements"
-                  value={formData.achievements}
-                  onChange={(e) => setFormData({ ...formData, achievements: e.target.value })}
-                  placeholder="Campeonatos, reconocimientos, hitos importantes..."
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Actions */}
-          <div className="flex items-center justify-between">
-            <Link href="/dashboard">
-              <Button type="button" variant="outline">
-                <X className="w-4 h-4 mr-2" />
-                Cancelar
-              </Button>
-            </Link>
-
-            <Button type="submit" disabled={loading} className="bg-workhoops-accent hover:bg-orange-600">
+          <div className="flex gap-3">
+            <Button type="submit" className="bg-workhoops-accent hover:bg-orange-600" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -528,10 +317,13 @@ export default function EditClubAgencyProfilePage() {
               ) : (
                 <>
                   <Save className="w-4 h-4 mr-2" />
-                  Guardar perfil
+                  Guardar cambios
                 </>
               )}
             </Button>
+            <Link href="/dashboard">
+              <Button type="button" variant="outline">Cancelar</Button>
+            </Link>
           </div>
         </form>
       </div>

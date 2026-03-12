@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma'
 
 interface CreateNotificationParams {
   userId: string
-  type: 'application_received' | 'application_viewed' | 'application_accepted' | 'application_rejected' | 'message_received' | 'profile_saved'
+  type: 'application_received' | 'application_viewed' | 'application_accepted' | 'application_rejected' | 'message_received' | 'profile_saved' | 'club_lead_received'
   title: string
   message: string
   link?: string

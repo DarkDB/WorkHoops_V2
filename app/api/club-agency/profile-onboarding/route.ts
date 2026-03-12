@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { generateUniqueClubSlug } from '@/lib/club-slug'
 import { z } from 'zod'
 
 const clubAgencyProfileOnboardingSchema = z.object({
@@ -160,9 +161,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (existingProfile) {
+      const slug = existingProfile.slug || await generateUniqueClubSlug(validatedData.commercialName || validatedData.legalName || 'club', existingProfile.id)
       const updatedProfile = await prisma.clubAgencyProfile.update({
         where: { userId: session.user.id },
-        data: profileData
+        data: {
+          ...profileData,
+          slug
+        }
       })
 
       // Send profile completed email if 100% (non-blocking)
@@ -171,7 +176,7 @@ export async function POST(request: NextRequest) {
           const user = await prisma.user.findUnique({ where: { id: session.user.id } })
           if (user) {
             const { sendProfileCompletedEmail } = await import('@/lib/email')
-            const profileUrl = `${process.env.APP_URL}/clubes/${updatedProfile.id}`
+            const profileUrl = `${process.env.APP_URL}/club/${updatedProfile.slug || updatedProfile.id}`
             await sendProfileCompletedEmail(user.name!, user.email!, user.role, profileUrl)
             console.log('[CLUB PROFILE] Profile completed email sent to:', user.email)
           }
@@ -186,10 +191,12 @@ export async function POST(request: NextRequest) {
         message: 'Perfil actualizado correctamente'
       })
     } else {
+      const slug = await generateUniqueClubSlug(validatedData.commercialName || validatedData.legalName || 'club')
       const newProfile = await prisma.clubAgencyProfile.create({
         data: {
           userId: session.user.id,
-          ...profileData
+          ...profileData,
+          slug
         }
       })
 
@@ -199,7 +206,7 @@ export async function POST(request: NextRequest) {
           const user = await prisma.user.findUnique({ where: { id: session.user.id } })
           if (user) {
             const { sendProfileCompletedEmail } = await import('@/lib/email')
-            const profileUrl = `${process.env.APP_URL}/clubes/${newProfile.id}`
+            const profileUrl = `${process.env.APP_URL}/club/${newProfile.slug || newProfile.id}`
             await sendProfileCompletedEmail(user.name!, user.email!, user.role, profileUrl)
             console.log('[CLUB PROFILE] Profile completed email sent to:', user.email)
           }

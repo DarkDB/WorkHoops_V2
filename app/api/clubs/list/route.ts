@@ -6,15 +6,34 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const city = searchParams.get('city')
-    const entityType = searchParams.get('entityType')
+    const city = searchParams.get('city')?.trim() || undefined
+    const entityType = searchParams.get('entityType')?.trim()
 
-    // Fetch all clubs/agencies with their profiles
-    const allClubs = await prisma.user.findMany({
+    const clubs = await prisma.user.findMany({
       where: {
         role: {
           in: ['club', 'agencia']
-        }
+        },
+        clubAgencyProfile: {
+          is: {
+            profileCompletionPercentage: {
+              gte: 60
+            },
+            ...(city
+              ? {
+                  city: {
+                    contains: city,
+                    mode: 'insensitive'
+                  }
+                }
+              : {}),
+            ...(entityType && entityType !== 'all'
+              ? {
+                  entityType
+                }
+              : {})
+          }
+        },
       },
       include: {
         clubAgencyProfile: true,
@@ -35,30 +54,9 @@ export async function GET(request: NextRequest) {
       ]
     })
 
-    // Filter clubs in JavaScript to ensure correct logic
-    let filteredClubs = allClubs.filter(club => {
-      // Must have a profile
-      if (!club.clubAgencyProfile) return false
-      
-      // Must have at least 60% completion
-      if (!club.clubAgencyProfile.profileCompletionPercentage || 
-          club.clubAgencyProfile.profileCompletionPercentage < 60) return false
-      
-      // Apply city filter if provided
-      if (city && !club.clubAgencyProfile.city?.toLowerCase().includes(city.toLowerCase())) {
-        return false
-      }
-      
-      // Apply entity type filter if provided
-      if (entityType && entityType !== 'all' && club.clubAgencyProfile.entityType !== entityType) {
-        return false
-      }
-      
-      return true
-    })
-
-    // Transform and sort by number of active opportunities
-    const clubsWithCount = filteredClubs.map(club => ({
+    const clubsWithCount = clubs
+      .filter((club) => !!club.clubAgencyProfile)
+      .map(club => ({
       id: club.id,
       name: club.name,
       email: club.email,
@@ -66,7 +64,7 @@ export async function GET(request: NextRequest) {
       role: club.role,
       planType: club.planType,
       verified: club.verified,
-      profile: club.clubAgencyProfile,
+      profile: club.clubAgencyProfile!,
       opportunitiesCount: club.opportunities.length
     }))
 

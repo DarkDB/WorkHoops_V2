@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { generateUniqueClubSlug } from '@/lib/club-slug'
 import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
@@ -12,15 +13,15 @@ const clubAgencyProfileSchema = z.object({
   entityType: z.enum(['club', 'agencia', 'academia', 'programa_universitario']),
   foundedYear: z.number().int().min(1900).max(new Date().getFullYear()).optional().nullable(),
   description: z.string().optional().nullable(),
-  logo: z.string().url().optional().nullable(),
+  logo: z.union([z.string().url(), z.literal('')]).optional().nullable(),
   country: z.string().default('España'),
   province: z.string().optional().nullable(),
   city: z.string().min(2, 'La ciudad es requerida'),
-  website: z.string().url().optional().nullable(),
-  instagramUrl: z.string().url().optional().nullable(),
-  twitterUrl: z.string().url().optional().nullable(),
-  linkedinUrl: z.string().url().optional().nullable(),
-  youtubeUrl: z.string().url().optional().nullable(),
+  website: z.union([z.string().url(), z.literal('')]).optional().nullable(),
+  instagramUrl: z.union([z.string().url(), z.literal('')]).optional().nullable(),
+  twitterUrl: z.union([z.string().url(), z.literal('')]).optional().nullable(),
+  linkedinUrl: z.union([z.string().url(), z.literal('')]).optional().nullable(),
+  youtubeUrl: z.union([z.string().url(), z.literal('')]).optional().nullable(),
   competitions: z.string().optional().nullable(), // JSON
   sections: z.string().optional().nullable(), // JSON
   rosterSize: z.number().int().optional().nullable(),
@@ -115,22 +116,30 @@ export async function POST(request: NextRequest) {
 
     let profile
 
-    // Convert null values to undefined for Prisma
+    // Convert empty/null values to undefined for Prisma
     const cleanedData = Object.fromEntries(
-      Object.entries(validatedData).map(([key, value]) => [key, value === null ? undefined : value])
+      Object.entries(validatedData).map(([key, value]) => [key, value === null || value === '' ? undefined : value])
     )
 
+    const slugBase = validatedData.commercialName || validatedData.legalName
+
     if (existingProfile) {
+      const slug = existingProfile.slug || await generateUniqueClubSlug(slugBase, existingProfile.id)
       // Update existing profile
       profile = await prisma.clubAgencyProfile.update({
         where: { userId: session.user.id },
-        data: cleanedData as any
+        data: {
+          ...(cleanedData as any),
+          slug
+        }
       })
     } else {
+      const slug = await generateUniqueClubSlug(slugBase)
       // Create new profile
       profile = await prisma.clubAgencyProfile.create({
         data: {
           ...cleanedData,
+          slug,
           userId: session.user.id
         } as any
       })

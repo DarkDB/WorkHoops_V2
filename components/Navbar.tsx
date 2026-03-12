@@ -15,7 +15,8 @@ import {
   FileText,
   Heart,
   Shield,
-  Bookmark
+  Bookmark,
+  Users
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -195,6 +196,14 @@ export function Navbar() {
                     )}
                     {(session.user.role === 'club' || session.user.role === 'agencia') && (
                       <DropdownMenuItem asChild>
+                        <Link href="/dashboard/leads" className="cursor-pointer">
+                          <Users className="mr-2 h-4 w-4" />
+                          Jugadores interesados
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
+                      <DropdownMenuItem asChild>
                         <Link href="/dashboard/opportunities" className="cursor-pointer">
                           <FileText className="mr-2 h-4 w-4" />
                           Mis Oportunidades
@@ -366,6 +375,15 @@ export function Navbar() {
                         onClick={() => setIsOpen(false)}
                       >
                         Shortlist
+                      </Link>
+                    )}
+                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
+                      <Link
+                        href="/dashboard/leads"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Jugadores interesados
                       </Link>
                     )}
                     <button

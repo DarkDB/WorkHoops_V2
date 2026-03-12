@@ -274,6 +274,12 @@ export default function DashboardClubAgency({
                   Ver shortlist
                 </Button>
               </Link>
+              <Link href="/dashboard/leads" className="block">
+                <Button className="w-full justify-start" variant="outline">
+                  <Users className="w-4 h-4 mr-2" />
+                  Jugadores interesados
+                </Button>
+              </Link>
               <Link href="/profile/edit" className="block">
                 <Button className="w-full justify-start" variant="outline">
                   <FileText className="w-4 h-4 mr-2" />

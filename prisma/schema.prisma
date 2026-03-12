@@ -95,6 +95,13 @@ enum TalentInviteStatus {
   DECLINED
 }
 
+enum ClubLeadStatus {
+  NEW
+  REVIEWED
+  CONTACTED
+  REJECTED
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -181,6 +188,8 @@ model User {
   talentShortlists TalentShortlist[]
   sentTalentInvitations TalentInvitation[]
   funnelEvents FunnelEvent[]
+  receivedClubLeads ClubLead[] @relation("ClubLeadClubUser")
+  submittedClubLeads ClubLead[] @relation("ClubLeadSourceUser")
 
   @@map("users")
 }
@@ -525,6 +534,7 @@ model ClubAgencyProfile {
   id                    String    @id @default(cuid())
   userId                String    @unique
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug                  String?   @unique
   
   // Perfil de la Entidad
   entityType            String    // club, agencia, academia, programa_universitario
@@ -591,8 +601,36 @@ model ClubAgencyProfile {
   
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  leads                 ClubLead[]
   
   @@map("club_agency_profiles")
+}
+
+model ClubLead {
+  id            String         @id @default(cuid())
+  clubUserId    String
+  clubProfileId String
+  fullName      String
+  age           Int?
+  position      String?
+  height        Int?
+  city          String?
+  email         String
+  phone         String?
+  message       String?
+  status        ClubLeadStatus @default(NEW)
+  sourceUserId  String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  clubUser    User              @relation("ClubLeadClubUser", fields: [clubUserId], references: [id], onDelete: Cascade)
+  clubProfile ClubAgencyProfile @relation(fields: [clubProfileId], references: [id], onDelete: Cascade)
+  sourceUser  User?             @relation("ClubLeadSourceUser", fields: [sourceUserId], references: [id], onDelete: SetNull)
+
+  @@index([clubUserId, createdAt])
+  @@index([clubProfileId, status])
+  @@index([sourceUserId, createdAt])
+  @@map("club_leads")
 }
 
 model InterestNotification {

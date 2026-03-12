@@ -774,3 +774,66 @@ export async function sendTalentInvitationEmail(
     throw new Error('Failed to send talent invitation email')
   }
 }
+
+export async function sendClubLeadReceivedEmail(params: {
+  clubEmail: string
+  clubName: string
+  playerName: string
+  playerEmail: string
+  playerPhone?: string | null
+  message: string
+  leadsUrl: string
+}) {
+  const { clubEmail, clubName, playerName, playerEmail, playerPhone, message, leadsUrl } = params
+
+  if (!clubEmail) return null
+
+  try {
+    const { data, error } = await getResendClient().emails.send({
+      from: 'WorkHoops <hola@workhoops.com>',
+      to: [clubEmail],
+      subject: `Nuevo jugador interesado en ${clubName}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #FF6A00 0%, #e55a00 100%); padding: 32px 20px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 26px; font-weight: bold;">WorkHoops</h1>
+            <p style="color: rgba(255,255,255,0.92); margin: 10px 0 0 0;">Nuevo jugador interesado</p>
+          </div>
+
+          <div style="padding: 28px 20px; background: white;">
+            <h2 style="margin: 0 0 14px 0; color: #111;">${playerName} quiere jugar en tu club</h2>
+            <p style="color: #666; margin: 0 0 14px 0; line-height: 1.6;">
+              Te han enviado una solicitud desde la página pública del club.
+            </p>
+
+            <div style="background: #f8f9fa; border-left: 4px solid #FF6A00; padding: 16px; border-radius: 4px; margin: 16px 0;">
+              <p style="margin: 0 0 8px 0; color: #111;"><strong>Contacto</strong></p>
+              <p style="margin: 0; color: #666; line-height: 1.5;">Email: <a href="mailto:${playerEmail}" style="color: #FF6A00;">${playerEmail}</a></p>
+              ${playerPhone ? `<p style="margin: 6px 0 0 0; color: #666;">Teléfono: ${playerPhone}</p>` : ''}
+            </div>
+
+            <div style="background: #f8f9fa; padding: 16px; border-radius: 6px; margin: 16px 0;">
+              <p style="margin: 0 0 8px 0; color: #111;"><strong>Mensaje</strong></p>
+              <p style="margin: 0; color: #666; white-space: pre-wrap; line-height: 1.6;">${message}</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+              <a href="${leadsUrl}" style="background: #FF6A00; color: white; padding: 12px 22px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                Ver jugadores interesados
+              </a>
+            </div>
+          </div>
+        </div>
+      `
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error sending club lead email:', error)
+    throw new Error('Failed to send club lead email')
+  }
+}
