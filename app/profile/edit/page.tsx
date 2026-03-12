@@ -22,6 +22,9 @@ export default function EditProfilePage() {
     email: '',
     image: ''
   })
+  const role = session?.user?.role
+  const isPlayer = role === 'jugador'
+  const isCoach = role === 'entrenador'
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -129,8 +132,14 @@ export default function EditProfilePage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Editar Perfil</h1>
-          <p className="text-gray-600 mt-1">Actualiza tu información personal</p>
+          <h1 className="text-3xl font-bold text-gray-900">Editar Cuenta</h1>
+          <p className="text-gray-600 mt-1">
+            {isCoach
+              ? 'Actualiza tus datos de cuenta. El perfil profesional de entrenador se edita aparte.'
+              : isPlayer
+                ? 'Actualiza tus datos de cuenta. El perfil de jugador se edita aparte.'
+                : 'Actualiza tu información personal'}
+          </p>
         </div>
 
         <Card>
@@ -226,11 +235,20 @@ export default function EditProfilePage() {
             <p className="text-sm text-gray-600 mb-4">
               Para cambiar tu plan, gestionar pagos o eliminar tu cuenta, contacta con soporte.
             </p>
-            <Link href="/contacto">
-              <Button variant="outline">
-                Contactar soporte
-              </Button>
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              {(isPlayer || isCoach) && (
+                <Link href="/profile/complete">
+                  <Button variant="outline">
+                    {isCoach ? 'Editar perfil entrenador' : 'Editar perfil jugador'}
+                  </Button>
+                </Link>
+              )}
+              <Link href="/contacto">
+                <Button variant="outline">
+                  Contactar soporte
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>

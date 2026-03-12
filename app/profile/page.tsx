@@ -33,7 +33,8 @@ export default async function ProfilePage() {
       favorites: true,
       opportunities: true,
       organizations: true,
-      talentProfile: true
+      talentProfile: true,
+      coachProfile: true
     }
   })
 
@@ -51,6 +52,10 @@ export default async function ProfilePage() {
     }
     return labels[role] || role
   }
+
+  const isPlayer = user.role === 'jugador'
+  const isCoach = user.role === 'entrenador'
+  const inReviewCount = user.applications.filter((app) => app.state === 'en_revision').length
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -137,25 +142,25 @@ export default async function ProfilePage() {
                 <div className="grid grid-cols-3 gap-6">
                   <div className="text-center">
                     <p className="text-3xl font-bold text-workhoops-accent">{user.applications.length}</p>
-                    <p className="text-sm text-gray-600 mt-1">Aplicaciones</p>
+                    <p className="text-sm text-gray-600 mt-1">{isCoach ? 'Procesos' : 'Aplicaciones'}</p>
                   </div>
                   <div className="text-center">
                     <p className="text-3xl font-bold text-workhoops-accent">{user.favorites.length}</p>
-                    <p className="text-sm text-gray-600 mt-1">Favoritos</p>
+                    <p className="text-sm text-gray-600 mt-1">{isCoach ? 'Guardadas' : 'Favoritos'}</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-3xl font-bold text-workhoops-accent">{user.opportunities.length}</p>
-                    <p className="text-sm text-gray-600 mt-1">Publicadas</p>
+                    <p className="text-3xl font-bold text-workhoops-accent">{inReviewCount}</p>
+                    <p className="text-sm text-gray-600 mt-1">En revisión</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Talent Profile Section */}
-            {user.talentProfile && (
+            {/* Player Profile Section */}
+            {isPlayer && user.talentProfile && (
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle>Perfil de Talento</CardTitle>
+                  <CardTitle>Perfil de Jugador</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -188,10 +193,15 @@ export default async function ProfilePage() {
                       </div>
                     )}
 
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">Disponibilidad</p>
+                      <p className="text-sm text-gray-700">{user.talentProfile.availabilityStatus}</p>
+                    </div>
+
                     <div className="pt-4 border-t">
-                      <Link href="/talento#formulario">
+                      <Link href="/profile/complete">
                         <Button variant="outline" size="sm">
-                          Editar perfil de talento
+                          Editar perfil de jugador
                         </Button>
                       </Link>
                     </div>
@@ -200,18 +210,72 @@ export default async function ProfilePage() {
               </Card>
             )}
 
-            {!user.talentProfile && (user.role === 'jugador' || user.role === 'entrenador') && (
+            {/* Coach Profile Section */}
+            {isCoach && user.coachProfile && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>Perfil de Entrenador</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-500">Nivel actual</p>
+                        <p className="font-medium">{user.coachProfile.currentLevel || 'No definido'}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Experiencia</p>
+                        <p className="font-medium">
+                          {user.coachProfile.totalExperience !== null && user.coachProfile.totalExperience !== undefined
+                            ? `${user.coachProfile.totalExperience} años`
+                            : 'No definida'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-gray-500">Objetivo profesional</p>
+                      <p className="font-medium">{user.coachProfile.currentGoal || 'No definido'}</p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-gray-500">Disponibilidad</p>
+                      <p className="font-medium">{user.coachProfile.availability || 'No definida'}</p>
+                    </div>
+
+                    {user.coachProfile.bio && (
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">Biografía</p>
+                        <p className="text-sm text-gray-700">{user.coachProfile.bio}</p>
+                      </div>
+                    )}
+
+                    <div className="pt-4 border-t">
+                      <Link href="/profile/complete">
+                        <Button variant="outline" size="sm">
+                          Editar perfil de entrenador
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {((isPlayer && !user.talentProfile) || (isCoach && !user.coachProfile)) && (
               <Card className="mt-6 bg-yellow-50 border-yellow-200">
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-gray-900 mb-2">
-                    Completa tu perfil de talento
+                    {isCoach ? 'Completa tu perfil de entrenador' : 'Completa tu perfil de jugador'}
                   </h3>
                   <p className="text-sm text-gray-600 mb-4">
-                    Crea tu perfil deportivo para ser descubierto por clubs y agencias
+                    {isCoach
+                      ? 'Configura tu experiencia, disponibilidad y objetivo profesional.'
+                      : 'Crea tu perfil deportivo para ser descubierto por clubes.'}
                   </p>
-                  <Link href="/talento#formulario">
+                  <Link href="/profile/complete">
                     <Button size="sm">
-                      Crear perfil de talento
+                      {isCoach ? 'Crear perfil de entrenador' : 'Crear perfil de jugador'}
                     </Button>
                   </Link>
                 </CardContent>
@@ -251,14 +315,21 @@ export default async function ProfilePage() {
                 </Link>
                 <Link href="/dashboard/applications">
                   <Button variant="outline" className="w-full justify-start">
-                    Mis aplicaciones
+                    {isCoach ? 'Mis procesos' : 'Mis aplicaciones'}
                   </Button>
                 </Link>
                 <Link href="/dashboard/favorites">
                   <Button variant="outline" className="w-full justify-start">
-                    Mis favoritos
+                    {isCoach ? 'Guardadas' : 'Mis favoritos'}
                   </Button>
                 </Link>
+                {(isPlayer || isCoach) && (
+                  <Link href="/profile/complete">
+                    <Button variant="outline" className="w-full justify-start">
+                      {isCoach ? 'Perfil de entrenador' : 'Perfil de jugador'}
+                    </Button>
+                  </Link>
+                )}
                 {user.role === 'admin' && (
                   <Link href="/admin">
                     <Button variant="outline" className="w-full justify-start text-orange-600 border-orange-200 hover:bg-orange-50">
