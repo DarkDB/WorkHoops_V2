@@ -219,7 +219,7 @@ export default async function DashboardPage() {
       })
     : []
 
-  const [clubLeadCounts, recentClubLeads] = isClubOrAgency
+  const [clubLeadCounts, recentClubLeads, pendingInvitations, pendingShortlist] = isClubOrAgency
     ? await Promise.all([
         prisma.clubLead.groupBy({
           by: ['status'],
@@ -237,9 +237,25 @@ export default async function DashboardPage() {
             email: true,
             createdAt: true
           }
+        }),
+        prisma.talentInvitation.count({
+          where: {
+            clubUserId: user.id,
+            status: {
+              in: ['SENT', 'VIEWED']
+            }
+          }
+        }),
+        prisma.talentShortlist.count({
+          where: {
+            clubUserId: user.id,
+            status: {
+              in: ['SAVED', 'CONTACTED']
+            }
+          }
         })
       ])
-    : [[], []]
+    : [[], [], 0, 0]
 
   const totalLeads = clubLeadCounts.reduce((acc, row) => acc + row._count._all, 0)
   const newLeads = clubLeadCounts.find((row) => row.status === 'NEW')?._count._all || 0
@@ -388,6 +404,8 @@ export default async function DashboardPage() {
             totalApplications={user.opportunities.reduce((sum, opp) => sum + opp._count.applications, 0)}
             totalLeads={totalLeads}
             newLeads={newLeads}
+            pendingInvitations={pendingInvitations}
+            pendingShortlist={pendingShortlist}
             recentLeads={recentClubLeads.map((lead) => ({
               ...lead,
               createdAt: lead.createdAt.toISOString()

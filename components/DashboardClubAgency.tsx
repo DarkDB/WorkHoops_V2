@@ -46,6 +46,8 @@ interface DashboardClubAgencyProps {
   totalApplications: number
   totalLeads: number
   newLeads: number
+  pendingInvitations: number
+  pendingShortlist: number
   recentLeads: RecentLead[]
 }
 
@@ -68,6 +70,8 @@ export default function DashboardClubAgency({
   totalApplications,
   totalLeads,
   newLeads,
+  pendingInvitations,
+  pendingShortlist,
   recentLeads
 }: DashboardClubAgencyProps) {
   const activeOpportunities = opportunities.filter((opp) => opp.status === 'publicada').length
@@ -242,6 +246,49 @@ export default function DashboardClubAgency({
                     </div>
                   ))
                 )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Inbox de reclutamiento</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between border rounded-md p-3">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Leads nuevos</p>
+                  <p className="text-xs text-gray-500">Jugadores que enviaron “Quiero jugar”</p>
+                </div>
+                <Link href="/dashboard/leads">
+                  <Button size="sm" variant={newLeads > 0 ? 'default' : 'outline'} className={newLeads > 0 ? 'bg-workhoops-accent hover:bg-orange-600' : ''}>
+                    {newLeads}
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="flex items-center justify-between border rounded-md p-3">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Invitaciones pendientes</p>
+                  <p className="text-xs text-gray-500">Sin respuesta del jugador</p>
+                </div>
+                <Link href="/dashboard/shortlist">
+                  <Button size="sm" variant={pendingInvitations > 0 ? 'default' : 'outline'} className={pendingInvitations > 0 ? 'bg-workhoops-accent hover:bg-orange-600' : ''}>
+                    {pendingInvitations}
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="flex items-center justify-between border rounded-md p-3">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Shortlist por trabajar</p>
+                  <p className="text-xs text-gray-500">Perfiles guardados/contactados</p>
+                </div>
+                <Link href="/dashboard/shortlist">
+                  <Button size="sm" variant={pendingShortlist > 0 ? 'default' : 'outline'} className={pendingShortlist > 0 ? 'bg-workhoops-accent hover:bg-orange-600' : ''}>
+                    {pendingShortlist}
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
