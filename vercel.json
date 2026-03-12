@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/club-weekly-summary",
       "schedule": "0 9 * * 1"
+    },
+    {
+      "path": "/api/cron/engagement-nudges",
+      "schedule": "0 10 * * *"
     }
   ]
 }

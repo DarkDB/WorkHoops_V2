@@ -921,3 +921,116 @@ export async function sendClubWeeklyRecruitingSummaryEmail(params: {
     throw new Error('Failed to send weekly recruiting summary email')
   }
 }
+
+export async function sendClubRecruitingNudgeEmail(params: {
+  clubEmail: string
+  clubName: string
+  staleLeads: number
+  staleShortlist: number
+  dashboardUrl: string
+}) {
+  const { clubEmail, clubName, staleLeads, staleShortlist, dashboardUrl } = params
+
+  if (!clubEmail) return null
+
+  try {
+    const safeClubName = escapeHtml(clubName)
+    const { data, error } = await getResendClient().emails.send({
+      from: 'WorkHoops <hola@workhoops.com>',
+      to: [clubEmail],
+      subject: `Tienes talento pendiente por revisar en ${safeClubName}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #FF6A00 0%, #e55a00 100%); padding: 30px 20px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">WorkHoops</h1>
+            <p style="color: rgba(255,255,255,0.9); margin-top: 8px;">Recordatorio de reclutamiento</p>
+          </div>
+          <div style="padding: 24px 20px; background: white;">
+            <h2 style="margin: 0 0 12px 0; color: #111;">Hola, ${safeClubName}</h2>
+            <p style="color: #555; margin: 0 0 16px 0; line-height: 1.6;">
+              Hay actividad pendiente que puede convertirse en fichajes si actúas hoy.
+            </p>
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 14px; margin-bottom: 12px;">
+              <p style="margin: 0; color: #111;"><strong>Leads sin revisar:</strong> ${staleLeads}</p>
+            </div>
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 14px; margin-bottom: 20px;">
+              <p style="margin: 0; color: #111;"><strong>Talento guardado sin seguimiento:</strong> ${staleShortlist}</p>
+            </div>
+            <div style="text-align: center;">
+              <a href="${dashboardUrl}" style="background: #FF6A00; color: white; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; display: inline-block;">
+                Abrir dashboard de club
+              </a>
+            </div>
+          </div>
+          <div style="padding: 18px 20px; background: #f8f9fa; text-align: center;">
+            <p style="margin: 0; color: #777; font-size: 13px;">
+              Puedes gestionar estos avisos en <a href="${APP_URL}/dashboard/notifications" style="color: #FF6A00;">Preferencias de email</a>.
+            </p>
+          </div>
+        </div>
+      `
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error sending club recruiting nudge:', error)
+    throw new Error('Failed to send club recruiting nudge email')
+  }
+}
+
+export async function sendTalentInvitationReminderEmail(params: {
+  talentEmail: string
+  talentName: string
+  pendingInvitations: number
+  dashboardUrl: string
+}) {
+  const { talentEmail, talentName, pendingInvitations, dashboardUrl } = params
+
+  if (!talentEmail) return null
+
+  try {
+    const safeTalentName = escapeHtml(talentName)
+    const { data, error } = await getResendClient().emails.send({
+      from: 'WorkHoops <hola@workhoops.com>',
+      to: [talentEmail],
+      subject: `Tienes ${pendingInvitations} invitación(es) pendiente(s) en WorkHoops`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #FF6A00 0%, #e55a00 100%); padding: 30px 20px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">WorkHoops</h1>
+            <p style="color: rgba(255,255,255,0.9); margin-top: 8px;">Recordatorio de invitaciones</p>
+          </div>
+          <div style="padding: 24px 20px; background: white;">
+            <h2 style="margin: 0 0 12px 0; color: #111;">Hola, ${safeTalentName}</h2>
+            <p style="color: #555; margin: 0 0 16px 0; line-height: 1.6;">
+              Tienes <strong>${pendingInvitations}</strong> invitación(es) de clubes pendientes de revisar.
+            </p>
+            <div style="text-align: center; margin-top: 20px;">
+              <a href="${dashboardUrl}" style="background: #FF6A00; color: white; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; display: inline-block;">
+                Revisar invitaciones
+              </a>
+            </div>
+          </div>
+          <div style="padding: 18px 20px; background: #f8f9fa; text-align: center;">
+            <p style="margin: 0; color: #777; font-size: 13px;">
+              Puedes gestionar estos avisos en <a href="${APP_URL}/dashboard/notifications" style="color: #FF6A00;">Preferencias de email</a>.
+            </p>
+          </div>
+        </div>
+      `
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error sending talent invitation reminder:', error)
+    throw new Error('Failed to send talent invitation reminder email')
+  }
+}

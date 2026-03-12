@@ -16,6 +16,7 @@ import {
   Heart,
   Shield,
   Bookmark,
+  Mail,
   Users
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -222,6 +223,12 @@ export function Navbar() {
                         Configuración
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/notifications" className="cursor-pointer">
+                        <Mail className="mr-2 h-4 w-4" />
+                        Emails
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
                       className="cursor-pointer text-red-600 focus:text-red-600"
@@ -386,6 +393,13 @@ export function Navbar() {
                         Jugadores interesados
                       </Link>
                     )}
+                    <Link
+                      href="/dashboard/notifications"
+                      className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Preferencias de email
+                    </Link>
                     <button
                       onClick={handleSignOut}
                       className="block w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:text-red-800"

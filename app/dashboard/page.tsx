@@ -517,7 +517,7 @@ export default async function DashboardPage() {
                           </p>
                         </div>
                         <p className="text-sm text-gray-700 mb-2">
-                          Ha mostrado interés en tu perfil. Activa el Plan Pro para recibir contacto directo.
+                          Ha mostrado interés en tu perfil. Revisa tus invitaciones y mantén tu disponibilidad actualizada.
                         </p>
                         <div className="flex items-center text-xs text-gray-500">
                           <Clock className="w-3 h-3 mr-1" />
@@ -536,10 +536,10 @@ export default async function DashboardPage() {
                       )}
                     </div>
                     <div className="flex items-center space-x-2 mt-3 pt-3 border-t border-orange-100">
-                      <Link href="/planes" className="flex-1">
+                      <Link href="/talento/perfiles" className="flex-1">
                         <Button size="sm" className="w-full bg-orange-600 hover:bg-orange-700 text-white">
                           <Star className="w-3 h-3 mr-2" />
-                          Activar Plan Pro
+                          Ver talento y ofertas
                         </Button>
                       </Link>
                       <form action={async () => {
@@ -688,6 +688,12 @@ export default async function DashboardPage() {
                     <Button variant="outline" className="w-full justify-start">
                       <User className="w-4 h-4 mr-2" />
                       Editar perfil
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/notifications">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Bell className="w-4 h-4 mr-2" />
+                      Preferencias de email
                     </Button>
                   </Link>
                 </div>
