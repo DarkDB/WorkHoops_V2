@@ -83,9 +83,18 @@ export default function ClubInterestForm({ clubSlug, initialValues }: ClubIntere
     return (
       <div className="rounded-lg border border-green-200 bg-green-50 p-4">
         <p className="font-semibold text-green-900">Solicitud enviada</p>
-        <p className="text-sm text-green-800 mt-1">
-          El club revisará tu información. Mientras tanto, puedes completar tu perfil en WorkHoops para aumentar tus opciones.
-        </p>
+        {session?.user ? (
+          <p className="text-sm text-green-800 mt-1">
+            El club revisará tu información. Mientras tanto, puedes completar tu perfil en WorkHoops para aumentar tus opciones.
+          </p>
+        ) : (
+          <p className="text-sm text-green-800 mt-1">
+            El club revisará tu información. Si aún no tienes cuenta, crea tu perfil en 1 click para aumentar tus opciones:{' '}
+            <a href="/auth/register" className="underline font-medium">
+              Registrarme en WorkHoops
+            </a>
+          </p>
+        )}
       </div>
     )
   }
