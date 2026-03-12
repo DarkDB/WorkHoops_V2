@@ -86,6 +86,9 @@ export default async function ClubPublicPage({ params }: PageProps) {
   }
 
   const clubName = club.commercialName || club.legalName
+  const viewerIsClubOwner = session?.user?.id === club.userId
+  const viewerIsClubOrAgency = session?.user?.role === 'club' || session?.user?.role === 'agencia'
+  const canPrefillLeadForm = !!session?.user?.id && !viewerIsClubOwner && !viewerIsClubOrAgency
 
   const [opportunities, associatedPlayers, currentUser] = await Promise.all([
     prisma.opportunity.findMany({
@@ -133,7 +136,7 @@ export default async function ClubPublicPage({ params }: PageProps) {
         }
       }
     }),
-    session?.user?.id
+    canPrefillLeadForm
       ? prisma.user.findUnique({
           where: { id: session.user.id },
           include: {
@@ -152,7 +155,7 @@ export default async function ClubPublicPage({ params }: PageProps) {
   ])
 
   let prefillAge: number | null = null
-  if (currentUser?.talentProfile?.birthDate) {
+  if (canPrefillLeadForm && currentUser?.talentProfile?.birthDate) {
     const birthDate = new Date(currentUser.talentProfile.birthDate)
     const today = new Date()
     prefillAge = today.getFullYear() - birthDate.getFullYear()
@@ -298,12 +301,12 @@ export default async function ClubPublicPage({ params }: PageProps) {
                 <ClubInterestForm
                   clubSlug={club.slug || params.slug}
                   initialValues={{
-                    fullName: currentUser?.talentProfile?.fullName || currentUser?.name || '',
-                    age: prefillAge,
-                    position: currentUser?.talentProfile?.position || '',
-                    height: currentUser?.talentProfile?.height || null,
-                    city: currentUser?.talentProfile?.city || '',
-                    email: currentUser?.email || '',
+                    fullName: canPrefillLeadForm ? (currentUser?.talentProfile?.fullName || currentUser?.name || '') : '',
+                    age: canPrefillLeadForm ? prefillAge : null,
+                    position: canPrefillLeadForm ? (currentUser?.talentProfile?.position || '') : '',
+                    height: canPrefillLeadForm ? (currentUser?.talentProfile?.height || null) : null,
+                    city: canPrefillLeadForm ? (currentUser?.talentProfile?.city || '') : '',
+                    email: canPrefillLeadForm ? (currentUser?.email || '') : '',
                     phone: ''
                   }}
                 />
