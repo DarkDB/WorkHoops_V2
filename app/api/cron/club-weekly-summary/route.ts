@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendClubWeeklyRecruitingSummaryEmail } from '@/lib/email'
+import { logEmailEvent, shouldSendEmail } from '@/lib/email-lifecycle'
 
 export const dynamic = 'force-dynamic'
 
@@ -48,6 +49,7 @@ export async function GET(request: NextRequest) {
     })
 
     let sent = 0
+    const weekKey = new Date().toISOString().slice(0, 10)
 
     for (const club of clubs) {
       const [newLeads, pendingInvitations, pendingShortlist] = await Promise.all([
@@ -86,6 +88,28 @@ export async function GET(request: NextRequest) {
         continue
       }
 
+      const dedupeKey = `club-weekly-summary:${club.id}:${weekKey}`
+      const canSend = await shouldSendEmail({
+        userId: club.id,
+        email: clubEmail,
+        category: 'club_digest',
+        template: 'club_weekly_recruiting_summary',
+        dedupeKey,
+        minIntervalHours: 24 * 6
+      })
+
+      if (!canSend) {
+        await logEmailEvent({
+          userId: club.id,
+          email: clubEmail,
+          category: 'club_digest',
+          template: 'club_weekly_recruiting_summary',
+          dedupeKey,
+          status: 'skipped'
+        })
+        continue
+      }
+
       try {
         await sendClubWeeklyRecruitingSummaryEmail({
           clubEmail,
@@ -95,9 +119,26 @@ export async function GET(request: NextRequest) {
           pendingShortlist,
           dashboardUrl: `${process.env.APP_URL || 'https://workhoops.es'}/dashboard`
         })
+        await logEmailEvent({
+          userId: club.id,
+          email: clubEmail,
+          category: 'club_digest',
+          template: 'club_weekly_recruiting_summary',
+          dedupeKey,
+          status: 'sent'
+        })
         sent += 1
       } catch (error) {
         console.error(`Failed summary email for club ${club.id}:`, error)
+        await logEmailEvent({
+          userId: club.id,
+          email: clubEmail,
+          category: 'club_digest',
+          template: 'club_weekly_recruiting_summary',
+          dedupeKey,
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'Unknown error'
+        })
       }
     }
 

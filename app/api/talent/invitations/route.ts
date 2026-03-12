@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { createNotification } from '@/lib/notifications'
 import { trackFunnelEvent } from '@/lib/funnel-events'
+import { logEmailEvent, shouldSendEmail } from '@/lib/email-lifecycle'
 
 export const dynamic = 'force-dynamic'
 
@@ -88,17 +89,68 @@ export async function POST(request: NextRequest) {
     })
 
     try {
-      const { sendTalentInvitationEmail } = await import('@/lib/email')
-      await sendTalentInvitationEmail(
-        talentProfile.user.email || '',
-        talentProfile.user.name || talentProfile.fullName,
-        session.user.name || 'Un club',
-        type,
-        message || null,
-        `${process.env.APP_URL || 'https://workhoops.es'}/talento/perfiles/${profileId}`
-      )
+      const recipientEmail = talentProfile.user.email || ''
+      const dedupeKey = `talent-invitation:${invitation.id}`
+      const canSend = recipientEmail
+        ? await shouldSendEmail({
+            userId: talentProfile.userId,
+            email: recipientEmail,
+            category: 'talent_recruiting',
+            template: 'talent_invitation',
+            dedupeKey,
+            minIntervalHours: 0
+          })
+        : false
+
+      if (!recipientEmail) {
+        await logEmailEvent({
+          userId: talentProfile.userId,
+          email: recipientEmail,
+          category: 'talent_recruiting',
+          template: 'talent_invitation',
+          dedupeKey,
+          status: 'skipped',
+          error: 'Missing recipient email'
+        })
+      } else if (!canSend) {
+        await logEmailEvent({
+          userId: talentProfile.userId,
+          email: recipientEmail,
+          category: 'talent_recruiting',
+          template: 'talent_invitation',
+          dedupeKey,
+          status: 'skipped'
+        })
+      } else {
+        const { sendTalentInvitationEmail } = await import('@/lib/email')
+        await sendTalentInvitationEmail(
+          recipientEmail,
+          talentProfile.user.name || talentProfile.fullName,
+          session.user.name || 'Un club',
+          type,
+          message || null,
+          `${process.env.APP_URL || 'https://workhoops.es'}/talento/perfiles/${profileId}`
+        )
+        await logEmailEvent({
+          userId: talentProfile.userId,
+          email: recipientEmail,
+          category: 'talent_recruiting',
+          template: 'talent_invitation',
+          dedupeKey,
+          status: 'sent'
+        })
+      }
     } catch (emailError) {
       console.error('Error sending invitation email:', emailError)
+      await logEmailEvent({
+        userId: talentProfile.userId,
+        email: talentProfile.user.email || '',
+        category: 'talent_recruiting',
+        template: 'talent_invitation',
+        dedupeKey: `talent-invitation:${invitation.id}`,
+        status: 'failed',
+        error: emailError instanceof Error ? emailError.message : 'Unknown error'
+      })
     }
 
     await trackFunnelEvent({

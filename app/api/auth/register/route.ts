@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { rateLimitByIP } from '@/lib/rate-limit'
 import { normalizePlanType } from '@/lib/entitlements'
+import { logEmailEvent, shouldSendEmail } from '@/lib/email-lifecycle'
 
 export const dynamic = 'force-dynamic'
 
@@ -97,10 +98,48 @@ export async function POST(request: NextRequest) {
 
     // ========== SEND WELCOME EMAIL (non-blocking) ==========
     try {
-      const { sendWelcomeEmail } = await import('@/lib/email')
-      await sendWelcomeEmail(name, normalizedEmail, role)
+      const dedupeKey = `welcome:${user.id}`
+      const canSend = await shouldSendEmail({
+        userId: user.id,
+        email: normalizedEmail,
+        category: 'onboarding',
+        template: 'welcome',
+        dedupeKey,
+        minIntervalHours: 24
+      })
+
+      if (canSend) {
+        const { sendWelcomeEmail } = await import('@/lib/email')
+        await sendWelcomeEmail(name, normalizedEmail, role)
+        await logEmailEvent({
+          userId: user.id,
+          email: normalizedEmail,
+          category: 'onboarding',
+          template: 'welcome',
+          dedupeKey,
+          status: 'sent'
+        })
+      } else {
+        await logEmailEvent({
+          userId: user.id,
+          email: normalizedEmail,
+          category: 'onboarding',
+          template: 'welcome',
+          dedupeKey,
+          status: 'skipped'
+        })
+      }
     } catch (emailError) {
       console.error('[REGISTER] Email send failed (non-critical):', emailError)
+      await logEmailEvent({
+        userId: user.id,
+        email: normalizedEmail,
+        category: 'onboarding',
+        template: 'welcome',
+        dedupeKey: `welcome:${user.id}`,
+        status: 'failed',
+        error: emailError instanceof Error ? emailError.message : 'Unknown error'
+      })
     }
 
     return NextResponse.json({

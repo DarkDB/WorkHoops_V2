@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma'
 import { createNotification } from '@/lib/notifications'
 import { sendClubLeadReceivedEmail } from '@/lib/email'
 import { trackFunnelEvent } from '@/lib/funnel-events'
+import { logEmailEvent, shouldSendEmail } from '@/lib/email-lifecycle'
 
 const createClubLeadSchema = z.object({
   fullName: z.string().min(2, 'El nombre es requerido'),
@@ -120,17 +121,56 @@ export async function POST(request: NextRequest, context: { params: { slug: stri
     })
 
     try {
-      await sendClubLeadReceivedEmail({
-        clubEmail: club.contactEmail || club.user.email,
-        clubName: club.commercialName || club.legalName,
-        playerName: validatedData.fullName,
-        playerEmail: validatedData.email,
-        playerPhone: validatedData.phone || null,
-        message: validatedData.message,
-        leadsUrl: `${process.env.APP_URL}/dashboard/leads`
+      const clubEmail = club.contactEmail || club.user.email
+      const dedupeKey = `club-lead-received:${lead.id}`
+      const canSend = await shouldSendEmail({
+        userId: club.userId,
+        email: clubEmail,
+        category: 'club_recruiting',
+        template: 'club_lead_received',
+        dedupeKey,
+        minIntervalHours: 0
       })
+
+      if (canSend) {
+        await sendClubLeadReceivedEmail({
+          clubEmail,
+          clubName: club.commercialName || club.legalName,
+          playerName: validatedData.fullName,
+          playerEmail: validatedData.email,
+          playerPhone: validatedData.phone || null,
+          message: validatedData.message,
+          leadsUrl: `${process.env.APP_URL || 'https://workhoops.es'}/dashboard/leads`
+        })
+        await logEmailEvent({
+          userId: club.userId,
+          email: clubEmail,
+          category: 'club_recruiting',
+          template: 'club_lead_received',
+          dedupeKey,
+          status: 'sent'
+        })
+      } else {
+        await logEmailEvent({
+          userId: club.userId,
+          email: clubEmail,
+          category: 'club_recruiting',
+          template: 'club_lead_received',
+          dedupeKey,
+          status: 'skipped'
+        })
+      }
     } catch (emailError) {
       console.error('Lead email send failed:', emailError)
+      await logEmailEvent({
+        userId: club.userId,
+        email: club.contactEmail || club.user.email,
+        category: 'club_recruiting',
+        template: 'club_lead_received',
+        dedupeKey: `club-lead-received:${lead.id}`,
+        status: 'failed',
+        error: emailError instanceof Error ? emailError.message : 'Unknown error'
+      })
     }
 
     await trackFunnelEvent({

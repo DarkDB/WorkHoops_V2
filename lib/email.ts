@@ -1,6 +1,17 @@
 import { Resend } from 'resend'
 
 let resend: Resend | null = null
+const APP_URL = process.env.APP_URL || 'https://workhoops.es'
+const CURRENT_YEAR = new Date().getFullYear()
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
 
 export function getResendClient() {
   if (!resend) {
@@ -50,7 +61,7 @@ export async function sendOtpEmail(email: string, name: string, otpCode: string)
           
           <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
             <p style="color: #666; font-size: 14px; margin: 0;">
-              © 2024 WorkHoops. Todos los derechos reservados.
+              ©  WorkHoops. Todos los derechos reservados.
             </p>
           </div>
         </div>
@@ -102,7 +113,7 @@ export async function sendMagicLinkEmail(email: string, url: string) {
           
           <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
             <p style="color: #666; font-size: 14px; margin: 0;">
-              © 2024 WorkHoops. Todos los derechos reservados.
+              ©  WorkHoops. Todos los derechos reservados.
             </p>
           </div>
         </div>
@@ -145,7 +156,7 @@ export async function sendApplicationNotificationEmail(
             </p>
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.APP_URL}/dashboard/applications/${applicationId}" 
+              <a href="${APP_URL}/dashboard/applications" 
                  style="background: #FF6A00; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
                 Ver Aplicación
               </a>
@@ -203,7 +214,7 @@ export async function sendApplicationStateChangeEmail(
             </p>
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.APP_URL}/dashboard/applications" 
+              <a href="${APP_URL}/dashboard/applications" 
                  style="background: #FF6A00; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
                 Ver Mis Aplicaciones
               </a>
@@ -250,7 +261,7 @@ export async function sendPaymentConfirmationEmail(
             </p>
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.APP_URL}/dashboard/opportunities" 
+              <a href="${APP_URL}/dashboard" 
                  style="background: #FF6A00; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
                 Ver Mis Oportunidades
               </a>
@@ -281,6 +292,10 @@ export async function sendTalentContactEmail(
   profileUrl: string
 ) {
   try {
+    const safeTalentName = escapeHtml(talentName)
+    const safeContactName = escapeHtml(contactName)
+    const safeContactEmail = escapeHtml(contactEmail)
+    const safeContactMessage = escapeHtml(contactMessage)
     const { data, error } = await getResendClient().emails.send({
       from: 'WorkHoops <hola@workhoops.com>',
       to: [talentEmail],
@@ -293,20 +308,20 @@ export async function sendTalentContactEmail(
           </div>
           
           <div style="padding: 40px 20px; background: white;">
-            <h2 style="color: #111111; margin: 0 0 20px 0;">Hola ${talentName}</h2>
+            <h2 style="color: #111111; margin: 0 0 20px 0;">Hola ${safeTalentName}</h2>
             <p style="color: #666; margin: 0 0 20px 0; line-height: 1.6;">
-              <strong>${contactName}</strong> está interesado en tu perfil y quiere contactarte.
+              <strong>${safeContactName}</strong> está interesado en tu perfil y quiere contactarte.
             </p>
             
             <div style="background: #f8f9fa; border-left: 4px solid #FF6A00; padding: 20px; margin: 20px 0; border-radius: 4px;">
               <h3 style="color: #111111; margin: 0 0 10px 0; font-size: 16px;">Mensaje:</h3>
-              <p style="color: #666; margin: 0; line-height: 1.6; white-space: pre-wrap;">${contactMessage}</p>
+              <p style="color: #666; margin: 0; line-height: 1.6; white-space: pre-wrap;">${safeContactMessage}</p>
             </div>
             
             <div style="background: #f8f9fa; padding: 15px; margin: 20px 0; border-radius: 4px;">
               <p style="color: #666; margin: 0; font-size: 14px;">
                 <strong>Datos de contacto:</strong><br/>
-                Email: <a href="mailto:${contactEmail}" style="color: #FF6A00;">${contactEmail}</a>
+                Email: <a href="mailto:${safeContactEmail}" style="color: #FF6A00;">${safeContactEmail}</a>
               </p>
             </div>
             
@@ -317,13 +332,13 @@ export async function sendTalentContactEmail(
             </div>
             
             <p style="color: #999; font-size: 14px; margin: 30px 0 0 0; line-height: 1.6;">
-              Puedes responder directamente a ${contactName} usando el email proporcionado.
+              Puedes responder directamente a ${safeContactName} usando el email proporcionado.
             </p>
           </div>
           
           <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
             <p style="color: #666; font-size: 14px; margin: 0;">
-              © 2024 WorkHoops. Todos los derechos reservados.
+              ©  WorkHoops. Todos los derechos reservados.
             </p>
           </div>
         </div>
@@ -349,6 +364,8 @@ export async function sendInterestNotificationEmail(
   profileUrl: string
 ) {
   try {
+    const safeTalentName = escapeHtml(talentName)
+    const safeInterestedUserName = escapeHtml(interestedUserName)
     console.log('[RESEND] Attempting to send interest notification email')
     console.log('[RESEND] To:', talentEmail)
     console.log('[RESEND] From: WorkHoops <hola@workhoops.com>')
@@ -366,15 +383,15 @@ export async function sendInterestNotificationEmail(
           </div>
           
           <div style="padding: 40px 20px; background: white;">
-            <h2 style="color: #111111; margin: 0 0 20px 0;">Hola ${talentName}</h2>
+            <h2 style="color: #111111; margin: 0 0 20px 0;">Hola ${safeTalentName}</h2>
             <p style="color: #666; margin: 0 0 20px 0; line-height: 1.6;">
-              <strong>${interestedUserName}</strong> ha mostrado interés en tu perfil pero no puede contactarte directamente porque aún no tienes el Plan Pro activo.
+              <strong>${safeInterestedUserName}</strong> ha mostrado interés en tu perfil.
             </p>
             
             <div style="background: #FFF7ED; border: 2px solid #FF6A00; padding: 25px; margin: 25px 0; border-radius: 8px;">
               <h3 style="color: #FF6A00; margin: 0 0 15px 0; font-size: 18px;">🚀 Activa el Plan Pro y desbloquea:</h3>
               <ul style="color: #666; margin: 0; padding-left: 20px; line-height: 1.8;">
-                <li>Recibe solicitudes de contacto directo</li>
+                <li>Más visibilidad en búsquedas de clubes</li>
                 <li>Perfil destacado en búsquedas</li>
                 <li>Acceso a todas las ofertas premium</li>
                 <li>Estadísticas avanzadas de perfil</li>
@@ -385,7 +402,7 @@ export async function sendInterestNotificationEmail(
             </div>
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.APP_URL}/planes" style="background: #FF6A00; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
+              <a href="${APP_URL}/planes" style="background: #FF6A00; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
                 Activar Plan Pro Ahora
               </a>
             </div>
@@ -397,7 +414,7 @@ export async function sendInterestNotificationEmail(
           
           <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #eee;">
             <p style="color: #666; font-size: 14px; margin: 0;">
-              © 2024 WorkHoops. Todos los derechos reservados.
+              ©  WorkHoops. Todos los derechos reservados.
             </p>
           </div>
         </div>
@@ -511,7 +528,7 @@ export async function sendWelcomeEmail(
           
           <div style="background: #f8f9fa; padding: 25px; text-align: center; border-top: 1px solid #eee;">
             <p style="color: #666; font-size: 14px; margin: 0;">
-              © 2024 WorkHoops. Todos los derechos reservados.
+              ©  WorkHoops. Todos los derechos reservados.
             </p>
           </div>
         </div>
@@ -615,7 +632,7 @@ export async function sendProfileCompletedEmail(
           
           <div style="background: #f8f9fa; padding: 25px; text-align: center; border-top: 1px solid #eee;">
             <p style="color: #666; font-size: 14px; margin: 0;">
-              © 2024 WorkHoops. Todos los derechos reservados.
+              ©  WorkHoops. Todos los derechos reservados.
             </p>
           </div>
         </div>
@@ -701,7 +718,7 @@ export async function sendAdminWelcomeEmail(
           
           <div style="background: #f8f9fa; padding: 25px; text-align: center; border-top: 1px solid #eee;">
             <p style="color: #666; font-size: 14px; margin: 0;">
-              © 2024 WorkHoops. Todos los derechos reservados.
+              ©  WorkHoops. Todos los derechos reservados.
             </p>
           </div>
         </div>
@@ -734,6 +751,9 @@ export async function sendTalentInvitationEmail(
   const inviteLabel = inviteType === 'INVITE_TO_APPLY' ? 'Invitación para aplicar' : 'Invitación a tryout'
 
   try {
+    const safeTalentName = escapeHtml(talentName)
+    const safeClubName = escapeHtml(clubName)
+    const safeMessage = message ? escapeHtml(message) : null
     const { data, error } = await getResendClient().emails.send({
       from: 'WorkHoops <hola@workhoops.com>',
       to: [talentEmail],
@@ -745,13 +765,13 @@ export async function sendTalentInvitationEmail(
             <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0;">Nueva invitación de scouting</p>
           </div>
           <div style="padding: 32px 20px; background: white;">
-            <h2 style="color: #111111; margin: 0 0 16px 0;">Hola ${talentName}</h2>
+            <h2 style="color: #111111; margin: 0 0 16px 0;">Hola ${safeTalentName}</h2>
             <p style="color: #666; margin: 0 0 16px 0; line-height: 1.6;">
-              <strong>${clubName}</strong> te envió una <strong>${inviteLabel.toLowerCase()}</strong>.
+              <strong>${safeClubName}</strong> te envió una <strong>${inviteLabel.toLowerCase()}</strong>.
             </p>
-            ${message ? `
+            ${safeMessage ? `
               <div style="background: #f8f9fa; border-left: 4px solid #FF6A00; padding: 16px; margin: 20px 0; border-radius: 4px;">
-                <p style="color: #666; margin: 0; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+                <p style="color: #666; margin: 0; line-height: 1.6; white-space: pre-wrap;">${safeMessage}</p>
               </div>
             ` : ''}
             <div style="text-align: center; margin-top: 24px;">
@@ -789,10 +809,15 @@ export async function sendClubLeadReceivedEmail(params: {
   if (!clubEmail) return null
 
   try {
+    const safeClubName = escapeHtml(clubName)
+    const safePlayerName = escapeHtml(playerName)
+    const safePlayerEmail = escapeHtml(playerEmail)
+    const safePlayerPhone = playerPhone ? escapeHtml(playerPhone) : null
+    const safeMessage = escapeHtml(message)
     const { data, error } = await getResendClient().emails.send({
       from: 'WorkHoops <hola@workhoops.com>',
       to: [clubEmail],
-      subject: `Nuevo jugador interesado en ${clubName}`,
+      subject: `Nuevo jugador interesado en ${safeClubName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #FF6A00 0%, #e55a00 100%); padding: 32px 20px; text-align: center;">
@@ -801,20 +826,20 @@ export async function sendClubLeadReceivedEmail(params: {
           </div>
 
           <div style="padding: 28px 20px; background: white;">
-            <h2 style="margin: 0 0 14px 0; color: #111;">${playerName} quiere jugar en tu club</h2>
+            <h2 style="margin: 0 0 14px 0; color: #111;">${safePlayerName} quiere jugar en tu club</h2>
             <p style="color: #666; margin: 0 0 14px 0; line-height: 1.6;">
               Te han enviado una solicitud desde la página pública del club.
             </p>
 
             <div style="background: #f8f9fa; border-left: 4px solid #FF6A00; padding: 16px; border-radius: 4px; margin: 16px 0;">
               <p style="margin: 0 0 8px 0; color: #111;"><strong>Contacto</strong></p>
-              <p style="margin: 0; color: #666; line-height: 1.5;">Email: <a href="mailto:${playerEmail}" style="color: #FF6A00;">${playerEmail}</a></p>
-              ${playerPhone ? `<p style="margin: 6px 0 0 0; color: #666;">Teléfono: ${playerPhone}</p>` : ''}
+              <p style="margin: 0; color: #666; line-height: 1.5;">Email: <a href="mailto:${safePlayerEmail}" style="color: #FF6A00;">${safePlayerEmail}</a></p>
+              ${safePlayerPhone ? `<p style="margin: 6px 0 0 0; color: #666;">Teléfono: ${safePlayerPhone}</p>` : ''}
             </div>
 
             <div style="background: #f8f9fa; padding: 16px; border-radius: 6px; margin: 16px 0;">
               <p style="margin: 0 0 8px 0; color: #111;"><strong>Mensaje</strong></p>
-              <p style="margin: 0; color: #666; white-space: pre-wrap; line-height: 1.6;">${message}</p>
+              <p style="margin: 0; color: #666; white-space: pre-wrap; line-height: 1.6;">${safeMessage}</p>
             </div>
 
             <div style="text-align: center; margin-top: 20px;">

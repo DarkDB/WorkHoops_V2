@@ -190,6 +190,8 @@ model User {
   funnelEvents FunnelEvent[]
   receivedClubLeads ClubLead[] @relation("ClubLeadClubUser")
   submittedClubLeads ClubLead[] @relation("ClubLeadSourceUser")
+  emailPreferences EmailPreference[]
+  emailEvents      EmailEvent[]
 
   @@map("users")
 }
@@ -760,4 +762,40 @@ model FunnelEvent {
   @@index([eventName, createdAt])
   @@index([userId, createdAt])
   @@map("funnel_events")
+}
+
+model EmailPreference {
+  id        String   @id @default(cuid())
+  userId    String
+  category  String
+  enabled   Boolean  @default(true)
+  frequency String   @default("immediate")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+  @@index([userId])
+  @@map("email_preferences")
+}
+
+model EmailEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  email     String
+  template  String
+  category  String
+  dedupeKey String?
+  status    String
+  error     String?
+  createdAt DateTime @default(now())
+  sentAt    DateTime?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, category, createdAt])
+  @@index([email, template, createdAt])
+  @@index([dedupeKey])
+  @@map("email_events")
 }
