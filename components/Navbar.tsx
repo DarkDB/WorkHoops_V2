@@ -39,6 +39,10 @@ const NotificationBell = dynamic(
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const { data: session, status } = useSession()
+  const role = session?.user?.role
+  const isPlayer = role === 'jugador'
+  const isCoach = role === 'entrenador'
+  const isClubLike = role === 'club' || role === 'agencia'
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' })
@@ -139,7 +143,7 @@ export function Navbar() {
                 )}
                 
                 {/* Role-specific actions */}
-                {(session.user.role === 'club' || session.user.role === 'agencia') && (
+                {isClubLike && (
                   <Link href="/publicar">
                     <Button size="sm" className="bg-workhoops-accent hover:bg-workhoops-accent-hover">
                       <PlusCircle className="w-4 h-4 mr-2" />
@@ -179,15 +183,15 @@ export function Navbar() {
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
-                    {(session.user.role === 'jugador' || session.user.role === 'entrenador') && (
+                    {(isPlayer || isCoach) && (
                       <DropdownMenuItem asChild>
                         <Link href="/dashboard/applications" className="cursor-pointer">
                           <FileText className="mr-2 h-4 w-4" />
-                          Mis Aplicaciones
+                          {isCoach ? 'Mis Procesos' : 'Mis Aplicaciones'}
                         </Link>
                       </DropdownMenuItem>
                     )}
-                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
+                    {isClubLike && (
                       <DropdownMenuItem asChild>
                         <Link href="/dashboard/shortlist" className="cursor-pointer">
                           <Bookmark className="mr-2 h-4 w-4" />
@@ -195,7 +199,7 @@ export function Navbar() {
                         </Link>
                       </DropdownMenuItem>
                     )}
-                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
+                    {isClubLike && (
                       <DropdownMenuItem asChild>
                         <Link href="/dashboard/leads" className="cursor-pointer">
                           <Users className="mr-2 h-4 w-4" />
@@ -203,7 +207,7 @@ export function Navbar() {
                         </Link>
                       </DropdownMenuItem>
                     )}
-                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
+                    {isClubLike && (
                       <DropdownMenuItem asChild>
                         <Link href="/dashboard/opportunities" className="cursor-pointer">
                           <FileText className="mr-2 h-4 w-4" />
@@ -211,16 +215,18 @@ export function Navbar() {
                         </Link>
                       </DropdownMenuItem>
                     )}
+                    {(isPlayer || isCoach) && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/favorites" className="cursor-pointer">
+                          <Heart className="mr-2 h-4 w-4" />
+                          {isCoach ? 'Guardadas' : 'Favoritos'}
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard/favorites" className="cursor-pointer">
-                        <Heart className="mr-2 h-4 w-4" />
-                        Favoritos
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile/edit" className="cursor-pointer">
+                      <Link href={isPlayer || isCoach ? '/profile/complete' : '/profile/edit'} className="cursor-pointer">
                         <Settings className="mr-2 h-4 w-4" />
-                        Configuración
+                        {isPlayer || isCoach ? 'Perfil profesional' : 'Configuración'}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
@@ -366,7 +372,7 @@ export function Navbar() {
                     >
                       Dashboard
                     </Link>
-                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
+                    {isClubLike && (
                       <Link
                         href="/publicar"
                         className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
@@ -375,7 +381,7 @@ export function Navbar() {
                         Publicar Oportunidad
                       </Link>
                     )}
-                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
+                    {isClubLike && (
                       <Link
                         href="/dashboard/shortlist"
                         className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
@@ -384,13 +390,40 @@ export function Navbar() {
                         Shortlist
                       </Link>
                     )}
-                    {(session.user.role === 'club' || session.user.role === 'agencia') && (
+                    {isClubLike && (
                       <Link
                         href="/dashboard/leads"
                         className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
                         onClick={() => setIsOpen(false)}
                       >
                         Jugadores interesados
+                      </Link>
+                    )}
+                    {(isPlayer || isCoach) && (
+                      <Link
+                        href="/dashboard/applications"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {isCoach ? 'Mis procesos' : 'Mis aplicaciones'}
+                      </Link>
+                    )}
+                    {(isPlayer || isCoach) && (
+                      <Link
+                        href="/dashboard/favorites"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {isCoach ? 'Guardadas' : 'Favoritos'}
+                      </Link>
+                    )}
+                    {(isPlayer || isCoach) && (
+                      <Link
+                        href="/profile/complete"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Perfil profesional
                       </Link>
                     )}
                     <Link

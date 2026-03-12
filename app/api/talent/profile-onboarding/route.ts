@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { trackFunnelEvent } from '@/lib/funnel-events'
+import { calculateTalentProfileCompletion } from '@/lib/profile-completion'
 
 // Esquema de validación para el onboarding
 const profileOnboardingSchema = z.object({
@@ -115,26 +116,13 @@ export async function POST(request: NextRequest) {
     // Convertir birthDate a DateTime
     const birthDateObj = validatedData.birthDate ? new Date(validatedData.birthDate) : null
 
-    // Calculate profile completion percentage - weighted by importance
-    const weightedFields = [
-      { value: validatedData.fullName, weight: 20 },
-      { value: validatedData.city, weight: 15 },
-      { value: validatedData.position, weight: 15 },
-      { value: validatedData.height, weight: 10 },
-      { value: availabilityStatus !== 'NOT_AVAILABLE', weight: 10 },
-      { value: validatedData.currentLevel, weight: 8 },
-      { value: validatedData.bio, weight: 8 },
-      { value: validatedData.videoUrl, weight: 6 },
-      { value: validatedData.currentGoal, weight: 3 },
-      { value: validatedData.playingStyle && validatedData.playingStyle.length > 0, weight: 3 },
-      { value: validatedData.languages && validatedData.languages.length > 0, weight: 2 }
-    ]
-    
-    const totalWeight = weightedFields.reduce((sum, field) => sum + field.weight, 0)
-    const filledWeight = weightedFields.reduce((sum, field) => {
-      return sum + (field.value ? field.weight : 0)
-    }, 0)
-    const profileCompletionPercentage = Math.round((filledWeight / totalWeight) * 100)
+    const profileCompletionPercentage = calculateTalentProfileCompletion({
+      fullName: validatedData.fullName,
+      city: validatedData.city,
+      position: validatedData.position,
+      height: validatedData.height,
+      availabilityStatus
+    })
 
     // Buscar perfil existente
     const existingProfile = await prisma.talentProfile.findUnique({

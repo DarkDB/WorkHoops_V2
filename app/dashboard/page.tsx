@@ -9,6 +9,12 @@ import PlayerDashboard from '@/components/dashboard/PlayerDashboard'
 import CoachDashboard from '@/components/dashboard/CoachDashboard'
 import { getPlanLabel } from '@/lib/entitlements'
 import { calculateClubProfileCompletion } from '@/lib/club-profile-completion'
+import {
+  calculateCoachProfileCompletion,
+  calculateTalentProfileCompletion,
+  getCoachCompletionMissingFields,
+  getTalentCompletionMissingFields
+} from '@/lib/profile-completion'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { User } from 'lucide-react'
@@ -94,21 +100,43 @@ export default async function DashboardPage() {
 
     if (isPlayer) {
       if (user.talentProfile) {
-        percentage = user.talentProfile.profileCompletionPercentage || 0
-        if (!user.talentProfile.fullName) missingItems.push('Nombre completo')
-        if (!user.talentProfile.city) missingItems.push('Ciudad')
-        if (!user.talentProfile.position) missingItems.push('Posición')
-        if (!user.talentProfile.height) missingItems.push('Altura')
-        if (!user.talentProfile.availabilityStatus) missingItems.push('Disponibilidad')
+        percentage = calculateTalentProfileCompletion({
+          fullName: user.talentProfile.fullName,
+          city: user.talentProfile.city,
+          position: user.talentProfile.position,
+          height: user.talentProfile.height,
+          availabilityStatus: user.talentProfile.availabilityStatus
+        })
+        missingItems.push(
+          ...getTalentCompletionMissingFields({
+            fullName: user.talentProfile.fullName,
+            city: user.talentProfile.city,
+            position: user.talentProfile.position,
+            height: user.talentProfile.height,
+            availabilityStatus: user.talentProfile.availabilityStatus
+          })
+        )
       }
     } else if (isCoach) {
       if (user.coachProfile) {
-        percentage = user.coachProfile.profileCompletionPercentage || 0
-        if (!user.coachProfile.fullName) missingItems.push('Nombre completo')
-        if (!user.coachProfile.city) missingItems.push('Ciudad')
-        if (!user.coachProfile.currentLevel) missingItems.push('Nivel actual')
-        if (!user.coachProfile.totalExperience) missingItems.push('Experiencia')
-        if (!user.coachProfile.currentGoal) missingItems.push('Objetivo profesional')
+        percentage = calculateCoachProfileCompletion({
+          fullName: user.coachProfile.fullName,
+          city: user.coachProfile.city,
+          currentLevel: user.coachProfile.currentLevel,
+          totalExperience: user.coachProfile.totalExperience,
+          currentGoal: user.coachProfile.currentGoal,
+          availability: user.coachProfile.availability
+        })
+        missingItems.push(
+          ...getCoachCompletionMissingFields({
+            fullName: user.coachProfile.fullName,
+            city: user.coachProfile.city,
+            currentLevel: user.coachProfile.currentLevel,
+            totalExperience: user.coachProfile.totalExperience,
+            currentGoal: user.coachProfile.currentGoal,
+            availability: user.coachProfile.availability
+          })
+        )
       }
     } else if (isClubOrAgency && user.clubAgencyProfile) {
       percentage = calculateClubProfileCompletion({
@@ -125,9 +153,6 @@ export default async function DashboardPage() {
       if (!user.clubAgencyProfile.logo) missingItems.push('Logo')
       if (!user.clubAgencyProfile.slug) missingItems.push('URL pública del club')
     }
-
-    if (!user.name) missingItems.push('Nombre de usuario')
-    if (!user.image) missingItems.push('Foto de perfil')
 
     return { percentage, missing: missingItems }
   }

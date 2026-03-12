@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Navbar } from '@/components/Navbar'
+import { revalidatePath } from 'next/cache'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -39,6 +40,26 @@ export default async function FavoritesPage() {
     },
     orderBy: { createdAt: 'desc' }
   })
+  const isCoach = session.user.role === 'entrenador'
+
+  async function removeFavorite(formData: FormData) {
+    'use server'
+
+    const session = await getServerSession(authOptions)
+    if (!session?.user) return
+
+    const favoriteId = formData.get('favoriteId')
+    if (typeof favoriteId !== 'string' || !favoriteId) return
+
+    await prisma.favorite.deleteMany({
+      where: {
+        id: favoriteId,
+        userId: session.user.id
+      }
+    })
+
+    revalidatePath('/dashboard/favorites')
+  }
 
   const getTypeLabel = (type: string) => {
     switch (type) {
@@ -116,10 +137,12 @@ export default async function FavoritesPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                 <Heart className="w-8 h-8 mr-3 text-red-500" />
-                Mis Favoritos
+                {isCoach ? 'Oportunidades Guardadas' : 'Mis Favoritos'}
               </h1>
               <p className="text-gray-600 mt-1">
-                Oportunidades que has marcado como favoritas
+                {isCoach
+                  ? 'Ofertas de staff que guardaste para revisar después'
+                  : 'Oportunidades que has marcado como favoritas'}
               </p>
             </div>
             
@@ -138,11 +161,13 @@ export default async function FavoritesPage() {
                 No tienes favoritos aún
               </h3>
               <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                Explora oportunidades y marca como favoritas las que más te interesen
+                {isCoach
+                  ? 'Explora ofertas y guarda las más relevantes para tu perfil de entrenador'
+                  : 'Explora oportunidades y marca como favoritas las que más te interesen'}
               </p>
               <Link href="/oportunidades">
                 <Button>
-                  Explorar oportunidades
+                  {isCoach ? 'Explorar oportunidades para entrenador' : 'Explorar oportunidades'}
                 </Button>
               </Link>
             </CardContent>
@@ -196,7 +221,8 @@ export default async function FavoritesPage() {
                       </div>
                       
                       <div className="flex items-center space-x-2 ml-4">
-                        <form action={`/api/favorites`} method="DELETE">
+                        <form action={removeFavorite}>
+                          <input type="hidden" name="favoriteId" value={favorite.id} />
                           <Button type="submit" variant="ghost" size="sm" className="text-red-600 hover:bg-red-50">
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -247,12 +273,14 @@ export default async function FavoritesPage() {
         {/* Tips */}
         <Card className="mt-8 bg-blue-50 border-blue-200">
           <CardContent className="p-6">
-            <h3 className="font-semibold text-blue-900 mb-3">💡 Consejos para aprovechar tus favoritos</h3>
+            <h3 className="font-semibold text-blue-900 mb-3">
+              {isCoach ? 'Consejos para tu pipeline de entrenador' : 'Consejos para aprovechar tus favoritos'}
+            </h3>
             <ul className="space-y-2 text-sm text-blue-800">
-              <li>• Revisa regularmente tus favoritos para no perder oportunidades</li>
-              <li>• Configura alertas para recibir notificaciones de plazos de cierre</li>
-              <li>• Organiza tus favoritos por fecha límite para priorizar aplicaciones</li>
-              <li>• Aplica cuanto antes - muchas oportunidades se llenan rápidamente</li>
+              <li>• Revisa semanalmente tus guardadas para moverlas a aplicación o descarte.</li>
+              <li>• Prioriza por fecha de cierre para no perder procesos abiertos.</li>
+              <li>• Mantén actualizado tu perfil para aumentar tasa de respuesta.</li>
+              <li>• Aplica cuanto antes: los clubes cierran vacantes rápido.</li>
             </ul>
           </CardContent>
         </Card>

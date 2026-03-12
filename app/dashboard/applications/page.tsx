@@ -39,6 +39,7 @@ export default async function ApplicationsPage() {
     },
     orderBy: { createdAt: 'desc' }
   })
+  const isCoach = session.user.role === 'entrenador'
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -125,11 +126,11 @@ export default async function ApplicationsPage() {
           
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Mis Aplicaciones
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-900">{isCoach ? 'Mis Procesos' : 'Mis Aplicaciones'}</h1>
               <p className="text-gray-600 mt-1">
-                Gestiona todas tus solicitudes enviadas
+                {isCoach
+                  ? 'Gestiona tus candidaturas y procesos como entrenador'
+                  : 'Gestiona todas tus solicitudes enviadas'}
               </p>
             </div>
             
@@ -192,14 +193,16 @@ export default async function ApplicationsPage() {
             <CardContent className="p-12 text-center">
               <Briefcase className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No has enviado aplicaciones aún
+                {isCoach ? 'No has iniciado procesos aún' : 'No has enviado aplicaciones aún'}
               </h3>
               <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                Explora oportunidades y aplica a las que más te interesen
+                {isCoach
+                  ? 'Explora oportunidades para entrenador y activa tu perfil profesional'
+                  : 'Explora oportunidades y aplica a las que más te interesen'}
               </p>
               <Link href="/oportunidades">
                 <Button>
-                  Explorar oportunidades
+                  {isCoach ? 'Explorar oportunidades para entrenador' : 'Explorar oportunidades'}
                 </Button>
               </Link>
             </CardContent>
@@ -210,7 +213,7 @@ export default async function ApplicationsPage() {
         {applications.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>Todas mis aplicaciones</CardTitle>
+              <CardTitle>{isCoach ? 'Todos mis procesos' : 'Todas mis aplicaciones'}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -262,7 +265,7 @@ export default async function ApplicationsPage() {
                         </Link>
                         {application.state === 'aceptada' && (
                         <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                          Ver detalles
+                          {isCoach ? 'Ver siguiente paso' : 'Ver detalles'}
                         </Button>
                         )}
                       </div>
