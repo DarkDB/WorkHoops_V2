@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/Navbar'
+import { getSiteStats } from '@/lib/site-stats'
 
 const values = [
   {
@@ -26,13 +27,6 @@ const values = [
     title: 'Excelencia',
     description: 'Buscamos conectar talento excepcional con organizaciones que valoran la calidad'
   }
-]
-
-const stats = [
-  { number: '2,500+', label: 'Jugadores registrados' },
-  { number: '150+', label: 'Clubes verificados' }, 
-  { number: '500+', label: 'Oportunidades publicadas' },
-  { number: '95%', label: 'Satisfacción de usuarios' }
 ]
 
 const team = [
@@ -95,7 +89,17 @@ const testimonials = [
   }
 ]
 
-export default function SobrePage() {
+export const revalidate = 300
+
+export default async function SobrePage() {
+  const stats = await getSiteStats()
+  const statItems = [
+    { number: `${stats.users.toLocaleString('es-ES')}+`, label: 'Usuarios registrados' },
+    { number: `${stats.organizations.toLocaleString('es-ES')}+`, label: 'Clubes verificados' },
+    { number: `${stats.opportunities.toLocaleString('es-ES')}+`, label: 'Oportunidades publicadas' },
+    { number: `${stats.profiles.toLocaleString('es-ES')}+`, label: 'Perfiles de talento' }
+  ]
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -163,7 +167,7 @@ export default function SobrePage() {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
+            {statItems.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-4xl font-black text-workhoops-accent mb-2">
                   {stat.number}

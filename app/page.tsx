@@ -6,18 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/Navbar'
 import { prisma } from '@/lib/prisma'
+import { getSiteStats } from '@/lib/site-stats'
 import { getOpportunityTypeLabel, getOpportunityTypeColor, formatRelativeTime } from '@/lib/utils'
 export const revalidate = 300
 
 async function getHomeData() {
   try {
-    const [
-      featuredOpportunities, 
-      totalOpportunities, 
-      totalOrganizations,
-      totalUsers,
-      totalTalentProfiles
-    ] = await Promise.all([
+    const [featuredOpportunities, stats] = await Promise.all([
       prisma.opportunity.findMany({
         where: {
           status: 'publicada',
@@ -37,39 +32,12 @@ async function getHomeData() {
           },
         },
       }),
-      prisma.opportunity.count({
-        where: { status: 'publicada' },
-      }),
-      prisma.user.count({
-        where: {
-          role: {
-            in: ['club', 'agencia']
-          },
-          verified: true,
-          clubAgencyProfile: {
-            is: {
-              isPublic: true,
-              slug: {
-                not: null
-              }
-            }
-          }
-        },
-      }),
-      prisma.user.count(),
-      prisma.talentProfile.count({
-        where: { profileCompletionPercentage: { gte: 50 } }
-      }),
+      getSiteStats(),
     ])
 
     return {
       featuredOpportunities,
-      stats: {
-        opportunities: totalOpportunities,
-        organizations: totalOrganizations,
-        users: totalUsers,
-        profiles: totalTalentProfiles,
-      },
+      stats,
     }
   } catch (error) {
     console.error('Error fetching home data:', error)
