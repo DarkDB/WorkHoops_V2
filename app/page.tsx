@@ -40,8 +40,21 @@ async function getHomeData() {
       prisma.opportunity.count({
         where: { status: 'publicada' },
       }),
-      prisma.organization.count({
-        where: { verified: true },
+      prisma.user.count({
+        where: {
+          role: {
+            in: ['club', 'agencia']
+          },
+          verified: true,
+          clubAgencyProfile: {
+            is: {
+              isPublic: true,
+              slug: {
+                not: null
+              }
+            }
+          }
+        },
       }),
       prisma.user.count(),
       prisma.talentProfile.count({
