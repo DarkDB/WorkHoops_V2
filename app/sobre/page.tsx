@@ -10,22 +10,22 @@ const values = [
   {
     icon: <Target className="w-6 h-6 text-workhoops-accent" />,
     title: 'Transparencia',
-    description: 'Verificamos manualmente cada oferta y somos claros sobre cómo funciona nuestra plataforma'
+    description: 'Explicamos con claridad qué ofrece WorkHoops y qué puede esperar cada tipo de usuario'
   },
   {
     icon: <Users className="w-6 h-6 text-workhoops-accent" />,
     title: 'Comunidad',
-    description: 'Construimos una red sólida donde jugadores, entrenadores y clubes crecen juntos'
+    description: 'Construimos una red donde clubes, jugadores y entrenadores pueden conectar con contexto real'
   },
   {
     icon: <Shield className="w-6 h-6 text-workhoops-accent" />,
     title: 'Confianza',
-    description: 'Priorizamos la seguridad y veracidad de todas las oportunidades publicadas'
+    description: 'Priorizamos perfiles claros, ofertas útiles y una experiencia segura para ambas partes'
   },
   {
     icon: <Award className="w-6 h-6 text-workhoops-accent" />,
     title: 'Excelencia',
-    description: 'Buscamos conectar talento excepcional con organizaciones que valoran la calidad'
+    description: 'Buscamos que cada club encuentre mejor talento y que cada perfil transmita valor real'
   }
 ]
 
@@ -126,9 +126,8 @@ export default async function SobrePage() {
                 </h1>
                 
                 <p className="text-lg lg:text-xl text-gray-600 max-w-2xl leading-relaxed">
-                  Nacimos para democratizar el acceso a oportunidades profesionales 
-                  en el mundo del baloncesto, creando un ecosistema transparente 
-                  donde el talento encuentra su lugar.
+                  WorkHoops nace para ayudar a los clubes a reclutar mejor y a los
+                  jugadores y entrenadores a ser descubiertos con un perfil profesional claro.
                 </p>
               </div>
 
@@ -191,18 +190,18 @@ export default async function SobrePage() {
               </h2>
               <div className="space-y-4 text-lg text-gray-600 leading-relaxed">
                 <p>
-                  En WorkHoops creemos que <strong>cada jugador y entrenador merece 
-                  una oportunidad real</strong> de desarrollar su carrera profesional, 
-                  independientemente de sus contactos o su red actual.
+                  En WorkHoops creemos que <strong>un buen proceso de reclutamiento
+                  deportivo debe ser más accesible y más claro</strong>, tanto para
+                  los clubes como para el talento.
                 </p>
                 <p>
-                  Trabajamos para <strong>eliminar las barreras tradicionales</strong> 
-                  que dificultan el acceso a oportunidades en el baloncesto español, 
-                  desde pruebas y empleos hasta becas y patrocinios.
+                  Trabajamos para <strong>reducir la fricción</strong> que hoy existe
+                  entre descubrir talento, contactar perfiles adecuados y gestionar
+                  el interés de jugadores y entrenadores.
                 </p>
                 <p>
-                  Nuestro compromiso es construir un <strong>ecosistema transparente 
-                  y meritocrático</strong> donde el talento sea lo único que importe.
+                  Nuestro compromiso es construir una plataforma simple y útil donde
+                  cada perfil aporte contexto real y cada club pueda tomar mejores decisiones.
                 </p>
               </div>
             </div>
@@ -216,7 +215,7 @@ export default async function SobrePage() {
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
                   <div>
                     <h4 className="font-semibold">Verificación manual</h4>
-                    <p className="text-sm text-gray-600">Cada oferta es revisada por nuestro equipo</p>
+                    <p className="text-sm text-gray-600">Revisamos la calidad de la información y mantenemos controles básicos sobre la actividad</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
@@ -290,7 +289,8 @@ export default async function SobrePage() {
               <CardContent>
                 <p className="text-gray-600">
                   Los jugadores pueden optar por planes premium para aumentar 
-                  su visibilidad y acceder a más funcionalidades.
+                  su visibilidad y acceder a funcionalidades adicionales, sin bloquear
+                  la liquidez básica del marketplace.
                 </p>
               </CardContent>
             </Card>
@@ -305,7 +305,7 @@ export default async function SobrePage() {
               <CardContent>
                 <p className="text-gray-600">
                   Los clubes pueden destacar sus ofertas para llegar a más 
-                  candidatos cualificados de forma más rápida.
+                  candidatos cualificados y acelerar su flujo de scouting.
                 </p>
               </CardContent>
             </Card>
@@ -319,8 +319,8 @@ export default async function SobrePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Soluciones personalizadas para federaciones, ligas y 
-                  organizaciones que gestionan múltiples equipos.
+                  Soluciones personalizadas para academias y organizaciones que
+                  gestionan múltiples equipos.
                 </p>
               </CardContent>
             </Card>
@@ -329,7 +329,8 @@ export default async function SobrePage() {
           <div className="text-center mt-8">
             <p className="text-gray-600">
               <strong>¿Lo más importante?</strong> Los jugadores y entrenadores siempre 
-              tendrán acceso gratuito a las oportunidades básicas.
+              mantienen acceso gratuito a la base del producto y los clubes pagan por
+              herramientas de reclutamiento y visibilidad.
             </p>
           </div>
         </div>

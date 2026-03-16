@@ -31,18 +31,18 @@ const opportunityTypes = [
 const clubBenefits = [
   {
     icon: <Target className="w-6 h-6" />,
-    title: 'Acceso a talento verificado',
-    description: 'Conecta con jugadores y entrenadores con perfiles completos y verificados'
+    title: 'Acceso a talento disponible',
+    description: 'Encuentra jugadores y entrenadores con perfil profesional y contexto suficiente para scouting'
   },
   {
     icon: <Users className="w-6 h-6" />,
-    title: 'Alcance nacional e internacional',
-    description: 'Tu oferta es visible para miles de profesionales en toda España'
+    title: 'Descubrimiento más simple',
+    description: 'Tu club puede recibir interés y aparecer ante talento que ya está buscando oportunidades'
   },
   {
     icon: <TrendingUp className="w-6 h-6" />,
     title: 'Sistema de filtrado avanzado',
-    description: 'Los candidatos pueden encontrar tu oferta según sus preferencias y habilidades'
+    description: 'Filtra mejor el talento y acelera la selección inicial'
   },
   {
     icon: <BarChart3 className="w-6 h-6" />,
@@ -190,13 +190,13 @@ export default function PublicarPage() {
                     Encuentra el talento perfecto para tu club
                   </h2>
                   <p className="text-gray-600 mb-6">
-                    Publica ofertas rápidamente y conecta con jugadores y entrenadores verificados en toda España. 
-                    Simplifica tu proceso de reclutamiento con nuestra plataforma especializada.
+                    Publica ofertas rápidamente, comparte tu página de club y conecta con
+                    jugadores y entrenadores desde una sola herramienta.
                   </p>
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      <span>Miles de perfiles activos</span>
+                      <span>Base activa de talento</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <CheckCircle2 className="w-5 h-5 text-green-500" />
@@ -344,13 +344,13 @@ export default function PublicarPage() {
                     Encuentra el talento perfecto para tu club
                   </h2>
                   <p className="text-gray-600 mb-6">
-                    Publica ofertas rápidamente y conecta con jugadores y entrenadores verificados en toda España. 
-                    Simplifica tu proceso de reclutamiento con nuestra plataforma especializada.
+                    Publica ofertas rápidamente, comparte tu página de club y conecta con
+                    jugadores y entrenadores desde una sola herramienta.
                   </p>
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      <span>Miles de perfiles activos</span>
+                      <span>Base activa de talento</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <CheckCircle2 className="w-5 h-5 text-green-500" />

@@ -9,21 +9,21 @@ import { getSiteStats } from '@/lib/site-stats'
 const pressReleases = [
   {
     date: '2024-09-15',
-    title: 'WorkHoops acelera su crecimiento en el baloncesto amateur en Espana',
-    excerpt: 'La plataforma sigue ampliando su base de usuarios y clubes activos con foco en reclutamiento.',
+    title: 'WorkHoops refuerza su foco en reclutamiento para clubes',
+    excerpt: 'La plataforma avanza hacia un producto más útil para scouting, contacto e interés de jugadores.',
     category: 'Crecimiento'
   },
   {
     date: '2024-08-20',
-    title: 'Nueva funcionalidad de verificación para organizaciones',
-    excerpt: 'WorkHoops lanza sistema de verificación para aumentar la confianza entre clubes y jugadores.',
+    title: 'Nueva página pública para clubes y captación directa de jugadores',
+    excerpt: 'Los clubes ya pueden compartir su página pública y recibir leads desde WorkHoops.',
     category: 'Producto'
   },
   {
     date: '2024-07-10',
-    title: 'Partnership con la Federación Catalana de Baloncesto',
-    excerpt: 'Acuerdo estratégico para promover oportunidades en el baloncesto catalán.',
-    category: 'Partnership'
+    title: 'Mejoras en el flujo de scouting y gestión de talento',
+    excerpt: 'Shortlists, invitaciones y filtros mejorados para que los clubes trabajen el scouting básico desde una sola herramienta.',
+    category: 'Producto'
   }
 ]
 
@@ -247,14 +247,14 @@ export default async function PrensaPage() {
               
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  <strong>WorkHoops</strong> es la plataforma líder en España que conecta 
-                  profesionales del baloncesto con oportunidades reales de empleo, pruebas, 
-                  torneos, becas y patrocinios.
+                  <strong>WorkHoops</strong> es una plataforma de reclutamiento para el
+                  baloncesto, pensada para que los clubes encuentren talento y para que
+                  los jugadores puedan mostrarse disponibles y ser contactados.
                 </p>
                 <p>
-                  Fundada en 2024 en Barcelona, nuestra misión es democratizar el acceso 
-                  a oportunidades en el baloncesto español, eliminando las barreras 
-                  tradicionales que dificultan la conexión entre talento y organizaciones.
+                  Fundada en 2024 en Barcelona, nuestra evolución de producto está centrada
+                  en hacer más fácil el scouting básico, la captación de jugadores y la
+                  gestión del interés desde una sola plataforma.
                 </p>
                 <p>
                   Actualmente WorkHoops cuenta con {stats.users.toLocaleString('es-ES')}+ usuarios
@@ -274,18 +274,14 @@ export default async function PrensaPage() {
                 <div className="bg-white rounded-lg p-6 border">
                   <h4 className="font-semibold text-gray-900 mb-2">Departamento de Comunicación</h4>
                   <div className="space-y-2 text-sm">
-                    <p><strong>Email:</strong> prensa@workhoops.es</p>
-                    <p><strong>Teléfono:</strong> +34 600 000 000</p>
-                    <p><strong>Horario:</strong> L-V 9:00-18:00 CET</p>
+                    <p>Si necesitas información adicional sobre el producto o el proyecto, utiliza nuestro formulario de contacto.</p>
                   </div>
                 </div>
 
                 <div className="bg-white rounded-lg p-6 border">
-                  <h4 className="font-semibold text-gray-900 mb-2">CEO y Fundador</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">Equipo WorkHoops</h4>
                   <div className="space-y-2 text-sm">
-                    <p><strong>Carlos Martínez</strong></p>
-                    <p>Disponible para entrevistas</p>
-                    <p>Email: carlos@workhoops.es</p>
+                    <p>Podemos compartir contexto de producto, roadmap y materiales para medios cuando sea necesario.</p>
                   </div>
                 </div>
 
@@ -309,16 +305,18 @@ export default async function PrensaPage() {
             ¿Quieres saber más sobre WorkHoops?
           </h2>
           <p className="text-xl text-orange-100 mb-8">
-            Estamos disponibles para entrevistas, colaboraciones y partnership
+            Si necesitas más contexto del producto o materiales de apoyo, te respondemos desde contacto
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" className="px-8 py-4">
-              <Calendar className="w-5 h-5 mr-2" />
-              Solicitar entrevista
-            </Button>
-            <Link href="mailto:prensa@workhoops.es">
+            <Link href="/contacto">
+              <Button size="lg" variant="secondary" className="px-8 py-4">
+                <Calendar className="w-5 h-5 mr-2" />
+                Contactar con WorkHoops
+              </Button>
+            </Link>
+            <Link href="/sobre">
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-workhoops-accent px-8 py-4">
-                Contactar ahora
+                Conocer el producto
               </Button>
             </Link>
           </div>

@@ -73,7 +73,7 @@ export default async function HomePage() {
               <div className="space-y-4">
                 <div className="inline-flex items-center space-x-2 bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
                   <Shield className="w-4 h-4" />
-                  <span>Verificamos todas las ofertas manualmente</span>
+                  <span>Producto orientado a reclutamiento para clubes</span>
                 </div>
                 
                 <h1 className="text-4xl lg:text-6xl font-black text-workhoops-primary leading-tight">
@@ -83,8 +83,8 @@ export default async function HomePage() {
                 </h1>
                 
                 <p className="text-lg lg:text-xl text-gray-600 max-w-2xl leading-relaxed">
-                  Encuentra pruebas, torneos, becas, equipos y trabajos. 
-                  Conecta con quien busca tu talento en el baloncesto español.
+                  Los clubes pueden encontrar talento y los jugadores pueden mostrarse
+                  disponibles para nuevas oportunidades dentro del baloncesto.
                 </p>
               </div>
 
@@ -146,7 +146,7 @@ export default async function HomePage() {
               La comunidad crece cada día
             </h2>
             <p className="text-lg text-orange-100 max-w-2xl mx-auto">
-              Miles de jugadores, clubes y oportunidades activas en un solo lugar
+              Jugadores, clubes y oportunidades publicadas en una sola plataforma
             </p>
           </div>
 
@@ -155,7 +155,7 @@ export default async function HomePage() {
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
                 {stats.opportunities.toLocaleString('es-ES')}+
               </div>
-              <div className="text-orange-100 font-medium">Oportunidades activas</div>
+              <div className="text-orange-100 font-medium">Oportunidades publicadas</div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
@@ -190,7 +190,7 @@ export default async function HomePage() {
               Cómo funciona WorkHoops
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              En tres sencillos pasos conectamos el talento con las oportunidades
+              En tres pasos ayudamos a clubes y talento a encontrarse
             </p>
           </div>
 
@@ -201,7 +201,7 @@ export default async function HomePage() {
               </div>
               <h3 className="text-xl font-semibold mb-2">1. Descubre</h3>
               <p className="text-gray-600">
-                Explora cientos de oportunidades verificadas: empleos, pruebas, torneos, becas y patrocinios.
+                Explora oportunidades publicadas por clubes y perfiles disponibles para scouting.
               </p>
             </div>
 
@@ -211,7 +211,7 @@ export default async function HomePage() {
               </div>
               <h3 className="text-xl font-semibold mb-2">2. Aplica</h3>
               <p className="text-gray-600">
-                Aplica directamente desde la plataforma con tu perfil profesional y portfolio.
+                Los jugadores pueden aplicar o dejar que los clubes contacten desde su perfil.
               </p>
             </div>
 
@@ -221,7 +221,7 @@ export default async function HomePage() {
               </div>
               <h3 className="text-xl font-semibold mb-2">3. Conecta</h3>
               <p className="text-gray-600">
-                Encuentra tu lugar en el baloncesto español y da el salto profesional que mereces.
+                Gestiona el contacto entre club y talento sin salir de WorkHoops.
               </p>
             </div>
           </div>
