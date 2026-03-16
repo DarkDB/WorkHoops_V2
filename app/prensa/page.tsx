@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/Navbar'
+import { getSiteStats } from '@/lib/site-stats'
 
 const pressReleases = [
   {
@@ -24,13 +25,6 @@ const pressReleases = [
     excerpt: 'Acuerdo estratégico para promover oportunidades en el baloncesto catalán.',
     category: 'Partnership'
   }
-]
-
-const stats = [
-  { number: '2,500+', label: 'Usuarios registrados', icon: <Users className="w-6 h-6" /> },
-  { number: '150+', label: 'Clubes verificados', icon: <Award className="w-6 h-6" /> },
-  { number: '500+', label: 'Oportunidades publicadas', icon: <TrendingUp className="w-6 h-6" /> },
-  { number: '95%', label: 'Satisfacción de usuarios', icon: <Award className="w-6 h-6" /> }
 ]
 
 const mediaKit = [
@@ -63,7 +57,17 @@ const mediaKit = [
   }
 ]
 
-export default function PrensaPage() {
+export const revalidate = 300
+
+export default async function PrensaPage() {
+  const stats = await getSiteStats()
+  const statItems = [
+    { number: `${stats.users.toLocaleString('es-ES')}+`, label: 'Usuarios registrados', icon: <Users className="w-6 h-6" /> },
+    { number: `${stats.organizations.toLocaleString('es-ES')}+`, label: 'Clubes verificados', icon: <Award className="w-6 h-6" /> },
+    { number: `${stats.opportunities.toLocaleString('es-ES')}+`, label: 'Oportunidades publicadas', icon: <TrendingUp className="w-6 h-6" /> },
+    { number: `${stats.profiles.toLocaleString('es-ES')}+`, label: 'Perfiles de talento', icon: <Award className="w-6 h-6" /> }
+  ]
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -116,7 +120,7 @@ export default function PrensaPage() {
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
+            {statItems.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <div className="text-workhoops-accent">
