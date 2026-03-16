@@ -102,6 +102,7 @@ export default function TalentoPage() {
   const { data: session, status } = useSession()
   const [hasProfile, setHasProfile] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [profileCount, setProfileCount] = useState<number | null>(null)
 
   // Check if user has a profile
   useEffect(() => {
@@ -124,6 +125,24 @@ export default function TalentoPage() {
 
     checkProfile()
   }, [session, status])
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const response = await fetch('/api/site-stats')
+        if (!response.ok) return
+
+        const data = await response.json()
+        if (typeof data?.profiles === 'number') {
+          setProfileCount(data.profiles)
+        }
+      } catch (error) {
+        console.error('Error loading site stats:', error)
+      }
+    }
+
+    loadStats()
+  }, [])
 
   // Determine CTA based on user state
   const getCTAButton = () => {
@@ -233,8 +252,12 @@ export default function TalentoPage() {
               </div>
               
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-lg border">
-                <div className="text-2xl font-bold text-workhoops-accent">2.500+</div>
-                <div className="text-sm text-gray-600">Perfiles activos</div>
+                <div className="text-2xl font-bold text-workhoops-accent">
+                  {profileCount !== null ? `${profileCount.toLocaleString('es-ES')}+` : 'Perfil activo'}
+                </div>
+                <div className="text-sm text-gray-600">
+                  {profileCount !== null ? 'Perfiles de talento' : 'Visible para clubes'}
+                </div>
               </div>
             </div>
           </div>

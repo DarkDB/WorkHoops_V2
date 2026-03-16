@@ -9,8 +9,8 @@ import { getSiteStats } from '@/lib/site-stats'
 const pressReleases = [
   {
     date: '2024-09-15',
-    title: 'WorkHoops alcanza los 2.500 usuarios registrados en España',
-    excerpt: 'La plataforma de oportunidades deportivas duplica su base de usuarios en el último trimestre.',
+    title: 'WorkHoops acelera su crecimiento en el baloncesto amateur en Espana',
+    excerpt: 'La plataforma sigue ampliando su base de usuarios y clubes activos con foco en reclutamiento.',
     category: 'Crecimiento'
   },
   {
@@ -115,7 +115,7 @@ export default async function PrensaPage() {
               WorkHoops en cifras
             </h2>
             <p className="text-lg text-gray-600">
-              Datos actualizados a octubre de 2024
+              Datos actualizados automaticamente desde la plataforma
             </p>
           </div>
 
@@ -257,9 +257,10 @@ export default async function PrensaPage() {
                   tradicionales que dificultan la conexión entre talento y organizaciones.
                 </p>
                 <p>
-                  Con más de 2,500 usuarios registrados y 150 clubes verificados, WorkHoops 
-                  se ha convertido en el referente del sector para jugadores, entrenadores, 
-                  clubes y marcas que buscan crecer en el ecosistema del baloncesto.
+                  Actualmente WorkHoops cuenta con {stats.users.toLocaleString('es-ES')}+ usuarios
+                  registrados y {stats.organizations.toLocaleString('es-ES')}+ clubes verificados,
+                  consolidando una base real para conectar talento y organizaciones dentro del
+                  ecosistema del baloncesto.
                 </p>
               </div>
             </div>
