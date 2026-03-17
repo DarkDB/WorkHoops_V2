@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -28,9 +28,9 @@ const roles = [
   },
   { 
     value: 'club', 
-    label: 'Club/Agencia', 
+    label: 'Club', 
     icon: <Trophy className="w-4 h-4" />,
-    description: 'Busco jugadores y entrenadores'
+    description: 'Quiero encontrar y contactar jugadores'
   },
   {
     value: 'agencia',
@@ -72,13 +72,23 @@ function RegisterContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const planFromUrl = searchParams?.get('plan')
+  const roleFromUrl = searchParams?.get('role')
 
-  // Set plan from URL parameter if exists
-  useState(() => {
+  useEffect(() => {
     if (planFromUrl && ['free_amateur', 'pro_semipro', 'club_agencia', 'destacado'].includes(planFromUrl)) {
       setFormData(prev => ({ ...prev, planType: planFromUrl }))
     }
-  })
+  }, [planFromUrl])
+
+  useEffect(() => {
+    if (roleFromUrl && ['jugador', 'entrenador', 'club', 'agencia'].includes(roleFromUrl)) {
+      setFormData(prev => ({
+        ...prev,
+        role: roleFromUrl,
+        planType: roleFromUrl === 'club' || roleFromUrl === 'agencia' ? 'club_agencia' : prev.planType
+      }))
+    }
+  }, [roleFromUrl])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -147,7 +157,9 @@ function RegisterContent() {
         setError('Cuenta creada, pero error al iniciar sesión. Intenta iniciar sesión manualmente.')
       } else {
         // Redirect based on plan type
-        if (formData.planType === 'pro_semipro' || formData.planType === 'destacado') {
+        if (formData.role === 'club' || formData.role === 'agencia') {
+          router.push('/profile/complete')
+        } else if (formData.planType === 'pro_semipro' || formData.planType === 'destacado') {
           // Redirect to plans page to complete payment
           router.push('/planes')
         } else {
@@ -313,7 +325,7 @@ function RegisterContent() {
                     </div>
                   </div>
 
-                  {formData.role && formData.role !== 'club' && (
+                  {formData.role && formData.role !== 'club' && formData.role !== 'agencia' && (
                     <div className="space-y-4">
                       <Label>Selecciona tu plan</Label>
                       <div className="grid gap-3">
@@ -347,13 +359,24 @@ function RegisterContent() {
                     </div>
                   )}
 
+                  {(formData.role === 'club' || formData.role === 'agencia') && (
+                    <div className="rounded-lg border bg-orange-50 p-4 text-sm text-gray-700">
+                      Crearás una cuenta de club con onboarding rápido. Solo te pediremos el nombre del club,
+                      ciudad y descripción inicial para activar la página pública.
+                    </div>
+                  )}
+
                   <Button 
                     type="submit" 
                     className="w-full"
                     disabled={isLoading}
                   >
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {formData.planType === 'pro_semipro' ? 'Continuar al pago' : 'Crear cuenta gratis'}
+                    {formData.role === 'club' || formData.role === 'agencia'
+                      ? 'Crear cuenta de club'
+                      : formData.planType === 'pro_semipro'
+                        ? 'Continuar al pago'
+                        : 'Crear cuenta gratis'}
                   </Button>
                 </form>
               )}

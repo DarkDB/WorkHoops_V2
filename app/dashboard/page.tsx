@@ -315,6 +315,11 @@ export default async function DashboardPage() {
       ? 'Completa tu perfil para mejorar visibilidad ante clubes.'
       : 'Completa tu perfil profesional para mejorar opciones como entrenador.'
 
+  const shouldShowClubCompletionBanner =
+    isClubOrAgency &&
+    profileCompletion.percentage < 100 &&
+    profileCompletion.percentage > 0
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -352,7 +357,7 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          {profileCompletion.percentage < 100 && (
+          {((!isClubOrAgency && profileCompletion.percentage < 100) || shouldShowClubCompletionBanner) && (
             <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
