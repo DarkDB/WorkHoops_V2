@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { generateUniqueClubSlug } from '@/lib/club-slug'
+import { generateUniqueClubSlug, shouldRegenerateClubSlug } from '@/lib/club-slug'
 import { calculateClubProfileCompletion } from '@/lib/club-profile-completion'
 import { z } from 'zod'
 
@@ -147,7 +147,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (existingProfile) {
-      const slug = existingProfile.slug || await generateUniqueClubSlug(validatedData.commercialName || validatedData.legalName || 'club', existingProfile.id)
+      const slugBase = validatedData.commercialName || validatedData.legalName || session.user.name || 'club'
+      const slug = shouldRegenerateClubSlug(existingProfile.slug, slugBase)
+        ? await generateUniqueClubSlug(slugBase, existingProfile.id)
+        : existingProfile.slug
       const updatedProfile = await prisma.clubAgencyProfile.update({
         where: { userId: session.user.id },
         data: {
@@ -177,7 +180,7 @@ export async function POST(request: NextRequest) {
         message: 'Perfil actualizado correctamente'
       })
     } else {
-      const slug = await generateUniqueClubSlug(validatedData.commercialName || validatedData.legalName || 'club')
+      const slug = await generateUniqueClubSlug(validatedData.commercialName || validatedData.legalName || session.user.name || 'club')
       const newProfile = await prisma.clubAgencyProfile.create({
         data: {
           userId: session.user.id,

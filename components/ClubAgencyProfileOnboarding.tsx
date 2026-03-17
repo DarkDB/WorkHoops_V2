@@ -1,370 +1,240 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
+import { Building, ChevronRight, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { 
-  Building, 
-  Phone, 
-  Search, 
-  DollarSign,
-  CheckCircle,
-  ChevronRight,
-  ChevronLeft,
-  Shield,
-  X
-} from 'lucide-react'
-
-import ClubEntityStep from './onboarding/club/ClubEntityStep'
-import ClubContactStep from './onboarding/club/ClubContactStep'
-import ClubNeedsStep from './onboarding/club/ClubNeedsStep'
-import ClubConditionsStep from './onboarding/club/ClubConditionsStep'
-import ClubVerificationStep from './onboarding/club/ClubVerificationStep'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface ClubAgencyProfileOnboardingProps {
-  user: any
-  existingProfile: any
+  user: {
+    name?: string | null
+    email?: string | null
+    role?: string | null
+  }
+  existingProfile?: any
 }
 
-export default function ClubAgencyProfileOnboarding({ user, existingProfile }: ClubAgencyProfileOnboardingProps) {
+export default function ClubAgencyProfileOnboarding({
+  user,
+  existingProfile,
+}: ClubAgencyProfileOnboardingProps) {
   const router = useRouter()
-  const [currentStep, setCurrentStep] = useState(1)
   const [saving, setSaving] = useState(false)
-
-  // Helper to parse JSON fields
-  const parseJsonField = (field: any): any[] => {
-    if (!field) return []
-    if (Array.isArray(field)) return field
-    try {
-      return JSON.parse(field)
-    } catch {
-      return []
-    }
-  }
-  
   const [formData, setFormData] = useState({
-    // Paso 1: Entidad
-    legalName: existingProfile?.legalName || '',
+    legalName: existingProfile?.legalName || user?.name || '',
     commercialName: existingProfile?.commercialName || '',
-    entityType: existingProfile?.entityType || '',
-    foundedYear: existingProfile?.foundedYear || null,
-    country: existingProfile?.country || 'España',
-    province: existingProfile?.province || '',
+    entityType:
+      existingProfile?.entityType ||
+      (user?.role === 'agencia' ? 'agencia' : 'club'),
     city: existingProfile?.city || '',
-    competitions: parseJsonField(existingProfile?.competitions),
-    sections: parseJsonField(existingProfile?.sections),
-    rosterSize: existingProfile?.rosterSize || null,
-    staffSize: existingProfile?.staffSize || null,
-    workingLanguages: parseJsonField(existingProfile?.workingLanguages),
     description: existingProfile?.description || '',
-    
-    // Paso 2: Contacto
-    contactPerson: existingProfile?.contactPerson || '',
-    contactRole: existingProfile?.contactRole || '',
-    contactEmail: existingProfile?.contactEmail || user?.email || '',
-    contactPhone: existingProfile?.contactPhone || '',
-    contactPreference: existingProfile?.contactPreference || '',
-    website: existingProfile?.website || '',
-    instagramUrl: existingProfile?.instagramUrl || '',
-    twitterUrl: existingProfile?.twitterUrl || '',
-    linkedinUrl: existingProfile?.linkedinUrl || '',
-    youtubeUrl: existingProfile?.youtubeUrl || '',
-    showEmailPublic: existingProfile?.showEmailPublic || false,
-    showPhonePublic: existingProfile?.showPhonePublic || false,
-    candidatesViaPortal: existingProfile?.candidatesViaPortal !== false,
-    fiscalDocument: existingProfile?.fiscalDocument || '',
-    
-    // Paso 3: Necesidades
-    profilesNeeded: parseJsonField(existingProfile?.profilesNeeded),
-    ageRangeMin: existingProfile?.ageRangeMin || null,
-    ageRangeMax: existingProfile?.ageRangeMax || null,
-    experienceRequired: existingProfile?.experienceRequired || '',
-    keySkills: parseJsonField(existingProfile?.keySkills),
-    competitiveReqs: existingProfile?.competitiveReqs || '',
-    availabilityNeeded: existingProfile?.availabilityNeeded || '',
-    scoutingNotes: existingProfile?.scoutingNotes || '',
-    
-    // Paso 4: Condiciones
-    salaryRange: existingProfile?.salaryRange || '',
-    housingProvided: existingProfile?.housingProvided || false,
-    mealsTransport: existingProfile?.mealsTransport || false,
-    medicalInsurance: existingProfile?.medicalInsurance || false,
-    visaSupport: existingProfile?.visaSupport || false,
-    contractType: existingProfile?.contractType || '',
-    requiredDocs: existingProfile?.requiredDocs || '',
-    agentPolicy: existingProfile?.agentPolicy || '',
-    
-    // Paso 5: Verificación
     logo: existingProfile?.logo || '',
-    facilityPhotos: parseJsonField(existingProfile?.facilityPhotos),
-    facilityPhotosInput: parseJsonField(existingProfile?.facilityPhotos).join(', '),
-    institutionalVideo: existingProfile?.institutionalVideo || '',
-    requestVerification: false
   })
 
-  const steps = [
-    { number: 1, title: 'Entidad', icon: <Building className="w-5 h-5" />, component: ClubEntityStep },
-    { number: 2, title: 'Contacto', icon: <Phone className="w-5 h-5" />, component: ClubContactStep },
-    { number: 3, title: 'Necesidades', icon: <Search className="w-5 h-5" />, component: ClubNeedsStep },
-    { number: 4, title: 'Condiciones', icon: <DollarSign className="w-5 h-5" />, component: ClubConditionsStep },
-    { number: 5, title: 'Verificación', icon: <Shield className="w-5 h-5" />, component: ClubVerificationStep }
-  ]
+  const clubPreviewName = useMemo(
+    () => formData.commercialName.trim() || formData.legalName.trim() || 'tu-club',
+    [formData.commercialName, formData.legalName]
+  )
 
-  const updateFormData = (newData: any) => {
-    setFormData(prev => ({ ...prev, ...newData }))
-  }
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
 
-  // Auto-save every 30 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!saving) {
-        handleSave(false)
-      }
-    }, 30000)
+    if (!formData.legalName.trim()) {
+      toast.error('El nombre del club es obligatorio')
+      return
+    }
 
-    return () => clearInterval(interval)
-  }, [formData, saving])
+    if (!formData.city.trim()) {
+      toast.error('La ciudad es obligatoria')
+      return
+    }
 
-  const handleSave = async (showToast = true) => {
     setSaving(true)
-    
+
     try {
-      const response = await fetch('/api/club-agency/profile-onboarding', {
+      const response = await fetch('/api/club-agency/profile', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          ...formData,
-          currentStep
-        })
+          legalName: formData.legalName.trim(),
+          commercialName: formData.commercialName.trim() || null,
+          entityType: formData.entityType,
+          city: formData.city.trim(),
+          description: formData.description.trim() || null,
+          logo: formData.logo.trim() || null,
+          contactEmail: user?.email || null,
+          isPublic: true,
+        }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error('Error al guardar')
+        throw new Error(data.message || 'No se pudo guardar el perfil del club')
       }
 
-      if (showToast) {
-        toast.success('Progreso guardado')
-      }
+      toast.success('Perfil básico creado', {
+        description: 'Ya puedes usar WorkHoops como club y completar el resto después.',
+      })
+
+      router.push('/dashboard')
+      router.refresh()
     } catch (error) {
-      console.error('Error saving:', error)
-      if (showToast) {
-        toast.error('Error al guardar el progreso')
-      }
+      console.error('Error saving club onboarding:', error)
+      toast.error('No se pudo guardar el perfil', {
+        description:
+          error instanceof Error ? error.message : 'Inténtalo de nuevo en unos segundos.',
+      })
     } finally {
       setSaving(false)
     }
   }
 
-  const validateStep = (step: number): boolean => {
-    switch (step) {
-      case 1:
-        if (!formData.legalName.trim()) {
-          toast.error('El nombre legal es requerido')
-          return false
-        }
-        if (!formData.entityType) {
-          toast.error('El tipo de entidad es requerido')
-          return false
-        }
-        if (!formData.city.trim()) {
-          toast.error('La ciudad es requerida')
-          return false
-        }
-        return true
-      case 2:
-        if (!formData.contactEmail.trim()) {
-          toast.error('El email de contacto es requerido')
-          return false
-        }
-        return true
-      case 3:
-        return true // Todos opcionales
-      case 4:
-        return true // Todos opcionales
-      case 5:
-        return true
-      default:
-        return true
-    }
-  }
-
-  const handleNext = async () => {
-    if (!validateStep(currentStep)) {
-      return
-    }
-
-    await handleSave(false)
-
-    if (currentStep < steps.length) {
-      setCurrentStep(currentStep + 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  }
-
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  }
-
-  const handleFinish = async () => {
-    if (!validateStep(currentStep)) {
-      return
-    }
-
-    setSaving(true)
-    
-    try {
-      const response = await fetch('/api/club-agency/profile-onboarding', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          currentStep: steps.length
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error('Error al guardar')
-      }
-
-      toast.success('¡Perfil completado!', {
-        description: 'Tu perfil de organización ha sido guardado correctamente'
-      })
-
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 1500)
-    } catch (error) {
-      console.error('Error finishing:', error)
-      toast.error('Error al completar el perfil')
-      setSaving(false)
-    }
-  }
-
-  const CurrentStepComponent = steps[currentStep - 1].component
-  const progress = (currentStep / steps.length) * 100
-
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Completa tu Perfil de Organización</h1>
-            <p className="text-gray-600 mt-1">Paso {currentStep} de {steps.length}</p>
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Card className="border-workhoops-accent/20 shadow-sm">
+        <CardHeader className="space-y-4">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-800">
+            <Building className="h-4 w-4" />
+            <span>Onboarding rápido para clubes</span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push('/dashboard')}
-          >
-            <X className="w-4 h-4 mr-2" />
-            Salir
-          </Button>
-        </div>
-        <Progress value={progress} className="h-2" />
-      </div>
-
-      {/* Steps Navigation */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          {steps.map((step, index) => (
-            <React.Fragment key={step.number}>
-              <div
-                className={`flex flex-col items-center ${
-                  step.number <= currentStep ? 'opacity-100' : 'opacity-40'
-                }`}
-              >
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    step.number < currentStep
-                      ? 'bg-green-500 text-white'
-                      : step.number === currentStep
-                      ? 'bg-workhoops-accent text-white'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}
-                >
-                  {step.number < currentStep ? (
-                    <CheckCircle className="w-6 h-6" />
-                  ) : (
-                    step.icon
-                  )}
-                </div>
-                <span className="text-xs mt-2 text-center hidden md:block">
-                  {step.title}
-                </span>
-              </div>
-              {index < steps.length - 1 && (
-                <div className="flex-1 h-0.5 bg-gray-200 mx-2">
-                  <div
-                    className="h-full bg-workhoops-accent transition-all"
-                    style={{ width: step.number < currentStep ? '100%' : '0%' }}
-                  />
-                </div>
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-
-      {/* Current Step Content */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            {steps[currentStep - 1].icon}
-            <span className="ml-2">{steps[currentStep - 1].title}</span>
-          </CardTitle>
+          <div>
+            <CardTitle className="text-3xl text-gray-900">Activa tu club en menos de 2 minutos</CardTitle>
+            <CardDescription className="mt-2 text-base">
+              Solo necesitamos lo mínimo para crear tu página pública y empezar a recibir interés.
+              El resto lo podrás completar después desde tu panel.
+            </CardDescription>
+          </div>
         </CardHeader>
+
         <CardContent>
-          <CurrentStepComponent formData={formData} updateFormData={updateFormData} />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label htmlFor="legalName">Nombre del club *</Label>
+                <Input
+                  id="legalName"
+                  value={formData.legalName}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, legalName: e.target.value }))
+                  }
+                  placeholder="Escola Pia Sabadell"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="commercialName">Nombre visible</Label>
+                <Input
+                  id="commercialName"
+                  value={formData.commercialName}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, commercialName: e.target.value }))
+                  }
+                  placeholder="Opcional si usas otro nombre público"
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label htmlFor="entityType">Tipo de entidad *</Label>
+                <Select
+                  value={formData.entityType}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, entityType: value }))
+                  }
+                >
+                  <SelectTrigger id="entityType">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="club">Club</SelectItem>
+                    <SelectItem value="agencia">Agencia</SelectItem>
+                    <SelectItem value="academia">Academia</SelectItem>
+                    <SelectItem value="programa_universitario">Programa universitario</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="city">Ciudad *</Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, city: e.target.value }))
+                  }
+                  placeholder="Sabadell"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="description">Descripción</Label>
+              <Textarea
+                id="description"
+                rows={5}
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, description: e.target.value }))
+                }
+                placeholder="Explica brevemente quiénes sois, vuestro proyecto deportivo y qué tipo de jugador buscáis."
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="logo">Logo (URL)</Label>
+              <Input
+                id="logo"
+                type="url"
+                value={formData.logo}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, logo: e.target.value }))
+                }
+                placeholder="https://..."
+              />
+            </div>
+
+            <div className="rounded-xl border bg-gray-50 p-4 text-sm text-gray-600">
+              <p className="font-medium text-gray-900">Vista previa de la URL pública</p>
+              <p className="mt-1">
+                Se generará automáticamente a partir del nombre del club. Si vienes de un slug
+                provisional como <code>club-3</code>, se corregirá al guardar.
+              </p>
+              <p className="mt-2 font-medium text-workhoops-accent">/club/{clubPreviewName}</p>
+            </div>
+
+            <div className="flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-gray-600">
+                Después podrás añadir redes, web, contacto y más detalle en la edición del perfil.
+              </p>
+              <Button type="submit" disabled={saving} className="sm:min-w-[220px]">
+                {saving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    Crear página del club
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
         </CardContent>
       </Card>
-
-      {/* Navigation Buttons */}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          onClick={handlePrevious}
-          disabled={currentStep === 1 || saving}
-        >
-          <ChevronLeft className="w-4 h-4 mr-2" />
-          Anterior
-        </Button>
-
-        <div className="flex items-center space-x-3">
-          <Button
-            variant="outline"
-            onClick={() => handleSave(true)}
-            disabled={saving}
-          >
-            {saving ? 'Guardando...' : 'Guardar progreso'}
-          </Button>
-
-          {currentStep < steps.length ? (
-            <Button onClick={handleNext} disabled={saving}>
-              Siguiente
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
-          ) : (
-            <Button onClick={handleFinish} disabled={saving}>
-              <CheckCircle className="w-4 h-4 mr-2" />
-              {saving ? 'Finalizando...' : 'Finalizar'}
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {/* Auto-save indicator */}
-      {saving && (
-        <div className="fixed bottom-4 right-4 bg-blue-100 text-blue-800 px-4 py-2 rounded-lg shadow-lg">
-          Guardando...
-        </div>
-      )}
     </div>
   )
 }

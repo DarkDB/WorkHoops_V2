@@ -6,6 +6,21 @@ function sanitizeSlugValue(value: string) {
   return slug.length > 0 ? slug : 'club'
 }
 
+export function shouldRegenerateClubSlug(currentSlug?: string | null, nextBaseValue?: string | null) {
+  if (!currentSlug) {
+    return true
+  }
+
+  const nextBaseSlug = sanitizeSlugValue(nextBaseValue || 'club')
+
+  // Existing fallback slugs should be replaced once the club provides a real name.
+  if (/^club(?:-\d+)?$/.test(currentSlug) && nextBaseSlug !== 'club') {
+    return true
+  }
+
+  return false
+}
+
 export async function generateUniqueClubSlug(baseValue: string, excludeProfileId?: string) {
   const baseSlug = sanitizeSlugValue(baseValue)
   let slug = baseSlug

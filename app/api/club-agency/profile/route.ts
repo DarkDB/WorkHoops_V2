@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { generateUniqueClubSlug } from '@/lib/club-slug'
+import { generateUniqueClubSlug, shouldRegenerateClubSlug } from '@/lib/club-slug'
 import { calculateClubProfileCompletion } from '@/lib/club-profile-completion'
 import { z } from 'zod'
 
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
       Object.entries(validatedData).map(([key, value]) => [key, value === null || value === '' ? undefined : value])
     )
 
-    const slugBase = validatedData.commercialName || validatedData.legalName
+    const slugBase = validatedData.commercialName || validatedData.legalName || session.user.name || 'club'
 
     const completionFrom = {
       legalName: validatedData.legalName,
@@ -134,7 +134,9 @@ export async function POST(request: NextRequest) {
     const profileCompletionPercentage = calculateClubProfileCompletion(completionFrom)
 
     if (existingProfile) {
-      const slug = existingProfile.slug || await generateUniqueClubSlug(slugBase, existingProfile.id)
+      const slug = shouldRegenerateClubSlug(existingProfile.slug, slugBase)
+        ? await generateUniqueClubSlug(slugBase, existingProfile.id)
+        : existingProfile.slug
       // Update existing profile
       profile = await prisma.clubAgencyProfile.update({
         where: { userId: session.user.id },

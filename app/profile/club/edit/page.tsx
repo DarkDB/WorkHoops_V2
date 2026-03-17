@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
@@ -35,6 +35,7 @@ export default function EditClubProfilePage() {
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [formData, setFormData] = useState(defaultFormData)
+  const hasLoadedProfileRef = useRef(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -47,13 +48,14 @@ export default function EditClubProfilePage() {
       return
     }
 
-    if (status === 'authenticated') {
+    if (status === 'authenticated' && !hasLoadedProfileRef.current) {
       fetchProfile()
     }
-  }, [status, session, router])
+  }, [status, session?.user?.role, router])
 
   const fetchProfile = async () => {
     try {
+      hasLoadedProfileRef.current = true
       const response = await fetch('/api/club-agency/profile')
 
       if (response.status === 404) {
