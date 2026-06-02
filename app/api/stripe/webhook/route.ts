@@ -6,13 +6,6 @@ import logger from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
-// Disable body parsing so we get the raw body for signature verification
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
