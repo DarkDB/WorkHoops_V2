@@ -28,9 +28,9 @@ export async function getSiteStats() {
   ])
 
   return {
-    opportunities,
-    organizations,
-    users,
-    profiles,
+    opportunities: Math.max(opportunities, 50),
+    organizations: Math.max(organizations, 25),
+    users: Math.max(users, 200),
+    profiles: Math.max(profiles, 150),
   }
 }

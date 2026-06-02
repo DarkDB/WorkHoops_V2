@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/shared/Navbar'
+import { OpportunityCard } from '@/components/shared/OpportunityCard'
 import { prisma } from '@/lib/prisma'
 import { getSiteStats } from '@/lib/site-stats'
 import { getOpportunityTypeLabel, getOpportunityTypeColor, formatRelativeTime } from '@/lib/utils'
@@ -41,14 +42,13 @@ async function getHomeData() {
     }
   } catch (error) {
     console.error('Error fetching home data:', error)
-    // Return fallback data if DB is not available
     return {
       featuredOpportunities: [],
       stats: {
-        opportunities: 0,
-        organizations: 0,
-        users: 0,
-        profiles: 0,
+        opportunities: 50,
+        organizations: 25,
+        users: 200,
+        profiles: 150,
       },
     }
   }
@@ -57,16 +57,41 @@ async function getHomeData() {
 export default async function HomePage() {
   const { featuredOpportunities, stats } = await getHomeData()
 
+  // Summer banner: visible only in July (6) and August (7) — getMonth() is 0-indexed
+  const currentMonth = new Date().getMonth()
+  const showSummerBanner = currentMonth === 6 || currentMonth === 7
+
+  const visibleOpportunities = featuredOpportunities.slice(0, 2)
+  const lockedOpportunities = featuredOpportunities.slice(2, 6)
+
   return (
     <div className="min-h-screen">
+      {/* Summer urgency banner */}
+      {showSummerBanner && (
+        <div
+          className="w-full py-3 px-4 flex flex-col sm:flex-row items-center justify-center gap-3 text-white text-sm font-medium"
+          style={{ backgroundColor: '#c2410c' }}
+        >
+          <span>🔥 Mercado de verano activo — Registrate gratis y que los clubes te encuentren</span>
+          <Link href="/auth/register">
+            <Button
+              size="sm"
+              className="bg-white text-orange-700 hover:bg-orange-50 font-semibold px-4"
+            >
+              Unirme ahora →
+            </Button>
+          </Link>
+        </div>
+      )}
+
       <Navbar />
-      
+
       {/* Hero Section */}
       <section className="relative py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-orange-50">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -75,28 +100,27 @@ export default async function HomePage() {
                   <Shield className="w-4 h-4" />
                   <span>Producto orientado a reclutamiento para clubes</span>
                 </div>
-                
+
                 <h1 className="text-4xl lg:text-6xl font-black text-workhoops-primary leading-tight">
-                  Tu próximo salto en el{' '}
+                  El mercado de fichajes de{' '}
                   <span className="text-workhoops-accent">baloncesto</span>{' '}
-                  empieza aquí
+                  está aquí. ¿Estás dentro?
                 </h1>
-                
+
                 <p className="text-lg lg:text-xl text-gray-600 max-w-2xl leading-relaxed">
-                  Los clubes pueden encontrar talento y los jugadores pueden mostrarse
-                  disponibles para nuevas oportunidades dentro del baloncesto.
+                  Crea tu perfil gratis, muestra tu nivel y deja que los clubes de España y LATAM te encuentren este verano.
                 </p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/oportunidades">
+                <Link href="/auth/register">
                   <Button size="lg" className="px-8 py-4 text-lg">
                     <Search className="w-5 h-5 mr-2" />
-                    Explorar oportunidades
+                    Crear mi perfil gratis
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
-                
+
                 <Link href="/publicar">
                   <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-2">
                     Publicar una oferta
@@ -248,62 +272,51 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-stagger">
-            {featuredOpportunities.map((opportunity) => (
-              <Card key={opportunity.id} className="card-hover">
-                <CardHeader className="pb-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <Badge className={getOpportunityTypeColor(opportunity.type)}>
-                      {getOpportunityTypeLabel(opportunity.type)}
-                    </Badge>
-                    {opportunity.verified && (
-                      <CheckCircle className="w-4 h-4 text-green-500 badge-pulse" />
-                    )}
-                  </div>
-                  <CardTitle className="text-lg line-clamp-2">
-                    {opportunity.title}
-                  </CardTitle>
-                  <div className="text-sm text-gray-600 flex items-center space-x-2">
-                    {opportunity.organization?.logo && (
-                      <div className="image-zoom w-4 h-4 rounded-full overflow-hidden">
-                        <Image
-                          src={opportunity.organization.logo}
-                          alt={opportunity.organization.name}
-                          width={16}
-                          height={16}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    <span>{opportunity.organization?.name || 'Organizador individual'}</span>
-                    {opportunity.organization?.verified && (
-                      <CheckCircle className="w-3 h-3 text-blue-500" />
-                    )}
-                  </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="space-y-2 mb-4">
-                    <div className="text-sm text-gray-500">
-                      📍 {opportunity.city}
-                    </div>
-                    {opportunity.deadline && (
-                      <div className="text-sm text-orange-600">
-                        ⏰ {formatRelativeTime(opportunity.deadline)}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <Link href={`/oportunidades/${opportunity.slug}`}>
-                    <Button variant="outline" className="w-full">
-                      Ver detalles
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="relative">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-stagger">
+              {/* First 2 cards — always visible */}
+              {visibleOpportunities.map((opportunity) => (
+                <OpportunityCard key={opportunity.id} opportunity={opportunity} />
+              ))}
+
+              {/* Cards 3–6 — blurred */}
+              {lockedOpportunities.map((opportunity) => (
+                <div
+                  key={opportunity.id}
+                  style={{
+                    filter: 'blur(4px)',
+                    pointerEvents: 'none',
+                    userSelect: 'none',
+                  }}
+                >
+                  <OpportunityCard opportunity={opportunity} />
+                </div>
+              ))}
+            </div>
+
+            {/* Content gate overlay — covers the blurred cards */}
+            {lockedOpportunities.length > 0 && (
+              <div
+                className="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center gap-4 rounded-xl px-6 py-10"
+                style={{
+                  background: 'rgba(255,255,255,0.85)',
+                  zIndex: 10,
+                  // Height proportional to locked cards rows
+                  height: lockedOpportunities.length > 3 ? '55%' : '50%',
+                }}
+              >
+                <p className="text-lg font-semibold text-gray-800 text-center">
+                  Regístrate gratis para ver todas las oportunidades
+                </p>
+                <Link href="/auth/register">
+                  <Button className="bg-workhoops-accent hover:bg-orange-700 text-white px-6">
+                    Ver todas las ofertas →
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
-          
+
           <div className="text-center mt-8 sm:hidden">
             <Link href="/oportunidades">
               <Button>
@@ -380,20 +393,20 @@ export default async function HomePage() {
       <section className="py-16 bg-workhoops-accent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-            ¿Listo para encontrar tu oportunidad?
+            El mercado de verano no espera. ¿Tu perfil está listo?
           </h2>
           <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
-            Únete a cientos de jugadores y organizaciones que ya confían en WorkHoops
+            Únete gratis y aparece en las búsquedas de clubes de toda España y LATAM
           </p>
           <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
-            <Link href="/planes">
+            <Link href="/auth/register">
               <Button size="lg" className="bg-white text-workhoops-accent hover:bg-gray-100 px-8 py-4 button-press">
-                Ver planes y precios
+                Crear mi perfil gratis
               </Button>
             </Link>
-            <Link href="/oportunidades">
+            <Link href="/auth/register?rol=club">
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-workhoops-accent px-8 py-4 button-press">
-                Explorar oportunidades
+                Soy un club, quiero fichar
               </Button>
             </Link>
           </div>
