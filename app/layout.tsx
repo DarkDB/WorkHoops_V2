@@ -10,7 +10,7 @@ import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 const CookieBanner = dynamic(
-  () => import('@/components/CookieBanner').then((m) => m.CookieBanner),
+  () => import('@/components/shared/CookieBanner').then((m) => m.CookieBanner),
   { ssr: false }
 )
 

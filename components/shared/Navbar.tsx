@@ -29,7 +29,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 const NotificationBell = dynamic(
-  () => import('@/components/NotificationBell').then((m) => m.NotificationBell),
+  () => import('@/components/shared/NotificationBell').then((m) => m.NotificationBell),
   {
     ssr: false,
     loading: () => <div className="w-8 h-8 rounded-full bg-gray-100 animate-pulse" />
