@@ -1,4 +1,5 @@
 import { NextAuthOptions } from 'next-auth'
+import logger from '@/lib/logger'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 import CredentialsProvider from 'next-auth/providers/credentials'
@@ -37,7 +38,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         // Basic validation
         if (!credentials?.email || !credentials?.password) {
-          console.log('[AUTH] Missing credentials')
+          logger.warn('[AUTH] Missing credentials')
           return null
         }
 
@@ -65,7 +66,7 @@ export const authOptions: NextAuthOptions = {
 
           // Generic error to prevent user enumeration
           const genericError = () => {
-            console.log('[AUTH] Invalid credentials for:', email)
+            logger.warn({ email }, '[AUTH] Invalid credentials')
             return null
           }
 
@@ -77,13 +78,13 @@ export const authOptions: NextAuthOptions = {
 
           // User inactive
           if (!user.isActive) {
-            console.log('[AUTH] Inactive user attempted login:', email)
+            logger.warn({ email }, '[AUTH] Inactive user attempted login')
             return genericError()
           }
 
           // User locked
           if (user.lockedUntil && new Date(user.lockedUntil) > new Date()) {
-            console.log('[AUTH] Locked user attempted login:', email)
+            logger.warn({ email }, '[AUTH] Locked user attempted login')
             return genericError()
           }
 
@@ -91,7 +92,7 @@ export const authOptions: NextAuthOptions = {
           if (isOtpLogin || (!user.passwordHash && user.mustResetPassword)) {
             // User must have mustResetPassword=true and no passwordHash for OTP login
             if (!user.mustResetPassword) {
-              console.log('[AUTH] OTP login attempted but user not in reset mode:', email)
+              logger.warn({ email }, '[AUTH] OTP login attempted but user not in reset mode')
               return genericError()
             }
 
@@ -99,7 +100,7 @@ export const authOptions: NextAuthOptions = {
             
             // Validate OTP format (6 digits)
             if (!/^\d{6}$/.test(otpCode)) {
-              console.log('[AUTH] Invalid OTP format:', email)
+              logger.warn({ email }, '[AUTH] Invalid OTP format')
               return genericError()
             }
 
@@ -125,7 +126,7 @@ export const authOptions: NextAuthOptions = {
             }
 
             if (!validToken) {
-              console.log('[AUTH] Invalid OTP for user:', email)
+              logger.warn({ email }, '[AUTH] Invalid OTP for user')
               // Increment failed attempts
               await prisma.user.update({
                 where: { id: user.id },
@@ -154,7 +155,7 @@ export const authOptions: NextAuthOptions = {
               }
             })
 
-            console.log('[AUTH] Successful OTP login:', email)
+            logger.info({ email }, '[AUTH] Successful OTP login')
 
             return {
               id: user.id,
@@ -171,7 +172,7 @@ export const authOptions: NextAuthOptions = {
           
           // User without passwordHash but NOT in OTP mode - they need to request OTP first
           if (!user.passwordHash) {
-            console.log('[AUTH] User without password attempted normal login:', email)
+            logger.warn({ email }, '[AUTH] User without password attempted normal login')
             return genericError()
           }
 
@@ -185,7 +186,7 @@ export const authOptions: NextAuthOptions = {
 
             if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
               updateData.lockedUntil = new Date(Date.now() + LOCKOUT_DURATION_MS)
-              console.log('[AUTH] User locked due to failed attempts:', email)
+              logger.warn({ email }, '[AUTH] User locked due to failed attempts')
             }
 
             await prisma.user.update({
@@ -208,7 +209,7 @@ export const authOptions: NextAuthOptions = {
             })
           }
 
-          console.log('[AUTH] Successful login:', email)
+          logger.info({ email }, '[AUTH] Successful login')
 
           return {
             id: user.id,
@@ -221,7 +222,7 @@ export const authOptions: NextAuthOptions = {
           }
 
         } catch (error) {
-          console.error('[AUTH] Database error:', error)
+          logger.error({ err: error }, '[AUTH] Database error')
           return null
         }
       }
@@ -266,10 +267,10 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     async signIn({ user }) {
-      console.log('[AUTH] Sign in event:', user.email)
+      logger.info({ email: user.email }, '[AUTH] Sign in event')
     },
     async signOut({ token }) {
-      console.log('[AUTH] Sign out event:', token?.email)
+      logger.info({ email: token?.email }, '[AUTH] Sign out event')
     },
   },
 }

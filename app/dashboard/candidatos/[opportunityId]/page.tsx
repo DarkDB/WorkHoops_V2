@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { Navbar } from '@/components/Navbar'
-import CandidatesManager from '@/components/CandidatesManager'
+import { Navbar } from '@/components/shared/Navbar'
+import CandidatesManager from '@/components/admin/CandidatesManager'
 
 export default async function CandidatesPage({ params }: { params: { opportunityId: string } }) {
   const session = await getServerSession(authOptions)

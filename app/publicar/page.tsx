@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/shared/Navbar'
 import { toast } from 'sonner'
 import { getPlanPriceLabel, resolveEntitlements } from '@/lib/entitlements'
 

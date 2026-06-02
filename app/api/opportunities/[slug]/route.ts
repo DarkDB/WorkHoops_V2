@@ -11,6 +11,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { opportunityCreateSchema, opportunityUpdateSchema } from '@/lib/validations'
 import { sanitizeMarkdown, sanitizeInput } from '@/lib/sanitize'
+import { createAuditLog } from '@/lib/audit'
 
 export const dynamic = 'force-dynamic'
 
@@ -229,20 +230,15 @@ export async function PUT(request: NextRequest, { params }: Params) {
     })
 
     // Create audit log
-    // TODO: Audit log
-    /*
-    await prisma.auditLog.create({
-      data: {
-        actorId: session.user.id,
-        action: 'updated',
-        entity: 'opportunity',
-        entityId: opportunity.id,
-        metadata: JSON.stringify({
-          updatedFields: Object.keys(sanitizedData),
-        }),
+    await createAuditLog({
+      actorId: session.user.id,
+      action: 'updated',
+      entity: 'opportunity',
+      entityId: opportunity.id,
+      metadata: {
+        updatedFields: Object.keys(sanitizedData),
       },
     })
-    */
 
     return NextResponse.json(opportunity)
 
@@ -334,20 +330,15 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     })
 
     // Create audit log
-    // TODO: Audit log
-    /*
-    await prisma.auditLog.create({
-      data: {
-        actorId: session.user.id,
-        action: 'deleted',
-        entity: 'opportunity',
-        entityId: existing.id,
-        metadata: JSON.stringify({
-          title: existing.title,
-        }),
+    await createAuditLog({
+      actorId: session.user.id,
+      action: 'deleted',
+      entity: 'opportunity',
+      entityId: existing.id,
+      metadata: {
+        title: existing.title,
       },
     })
-    */
 
     return NextResponse.json({ success: true })
 

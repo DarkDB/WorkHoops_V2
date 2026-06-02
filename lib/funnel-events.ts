@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import logger from '@/lib/logger'
 
 type FunnelEventName =
   | 'profile_created'
@@ -31,6 +32,6 @@ export async function trackFunnelEvent({
       }
     })
   } catch (error) {
-    console.error('[FUNNEL] Failed to track event:', eventName, error)
+    logger.error({ err: error, eventName }, '[FUNNEL] Failed to track event')
   }
 }

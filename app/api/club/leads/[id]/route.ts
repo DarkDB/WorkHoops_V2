@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import logger from '@/lib/logger'
 import { getServerSession } from 'next-auth/next'
 import { z } from 'zod'
 import { authOptions } from '@/lib/auth'
@@ -54,7 +55,7 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
       return NextResponse.json({ message: 'Datos inválidos', errors: error.errors }, { status: 400 })
     }
 
-    console.error('Error updating club lead:', error)
+    logger.error({ err: error }, 'Error updating club lead')
     return NextResponse.json({ message: 'Error interno del servidor' }, { status: 500 })
   }
 }

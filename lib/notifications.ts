@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import logger from '@/lib/logger'
 
 interface CreateNotificationParams {
   userId: string
@@ -29,7 +30,7 @@ export async function createNotification({
       },
     })
   } catch (error) {
-    console.error('Error creating notification:', error)
+    logger.error({ err: error }, 'Error creating notification')
     // No lanzamos error para no romper el flujo principal
   }
 }

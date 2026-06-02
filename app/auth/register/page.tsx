@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Loader2, Mail, Lock, User, ArrowLeft, Github, Users, Trophy, Zap } from 'lucide-react'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/shared/Navbar'
 
 const roles = [
   { 

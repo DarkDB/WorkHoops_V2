@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, Mail, Lock, ArrowLeft, Github } from 'lucide-react'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/shared/Navbar'
 
 function LoginContent() {
   const [isLoading, setIsLoading] = useState(false)

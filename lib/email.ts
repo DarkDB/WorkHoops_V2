@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import logger from '@/lib/logger'
 
 let resend: Resend | null = null
 const APP_URL = process.env.APP_URL || 'https://workhoops.es'
@@ -69,13 +70,13 @@ export async function sendOtpEmail(email: string, name: string, otpCode: string)
     })
 
     if (error) {
-      console.error('Error sending OTP email:', error)
+      logger.error({ err: error }, 'Error sending OTP email')
       throw error
     }
 
     return data
   } catch (error) {
-    console.error('Error in sendOtpEmail:', error)
+    logger.error({ err: error }, 'Error in sendOtpEmail')
     throw error
   }
 }
@@ -121,7 +122,7 @@ export async function sendMagicLinkEmail(email: string, url: string) {
     })
 
     if (error) {
-      console.error('Error sending magic link email:', error)
+      logger.error({ err: error }, 'Error sending magic link email')
       throw new Error('Failed to send magic link email')
     }
 
@@ -167,7 +168,7 @@ export async function sendApplicationNotificationEmail(
     })
 
     if (error) {
-      console.error('Error sending application notification:', error)
+      logger.error({ err: error }, 'Error sending application notification')
       throw new Error('Failed to send application notification')
     }
 
@@ -225,7 +226,7 @@ export async function sendApplicationStateChangeEmail(
     })
 
     if (error) {
-      console.error('Error sending application state change email:', error)
+      logger.error({ err: error }, 'Error sending application state change email')
       throw new Error('Failed to send application state change email')
     }
 
@@ -272,7 +273,7 @@ export async function sendPaymentConfirmationEmail(
     })
 
     if (error) {
-      console.error('Error sending payment confirmation email:', error)
+      logger.error({ err: error }, 'Error sending payment confirmation email')
       throw new Error('Failed to send payment confirmation email')
     }
 
@@ -346,7 +347,7 @@ export async function sendTalentContactEmail(
     })
 
     if (error) {
-      console.error('Error sending talent contact email:', error)
+      logger.error({ err: error }, 'Error sending talent contact email')
       throw new Error('Failed to send talent contact email')
     }
 
@@ -366,10 +367,10 @@ export async function sendInterestNotificationEmail(
   try {
     const safeTalentName = escapeHtml(talentName)
     const safeInterestedUserName = escapeHtml(interestedUserName)
-    console.log('[RESEND] Attempting to send interest notification email')
-    console.log('[RESEND] To:', talentEmail)
-    console.log('[RESEND] From: WorkHoops <hola@workhoops.com>')
-    console.log('[RESEND] API Key present:', !!process.env.RESEND_API_KEY)
+    logger.info('[RESEND] Attempting to send interest notification email')
+    logger.info({ to: talentEmail }, '[RESEND] To')
+    logger.info('[RESEND] From: WorkHoops <hola@workhoops.com>')
+    logger.info({ apiKeyPresent: !!process.env.RESEND_API_KEY }, '[RESEND] API Key present')
     
     const { data, error } = await getResendClient().emails.send({
       from: 'WorkHoops <hola@workhoops.com>',
@@ -422,14 +423,14 @@ export async function sendInterestNotificationEmail(
     })
 
     if (error) {
-      console.error('[RESEND] Error from Resend API:', error)
+      logger.error({ err: error }, '[RESEND] Error from Resend API')
       throw new Error('Failed to send interest notification email: ' + JSON.stringify(error))
     }
 
-    console.log('[RESEND] Email sent successfully! ID:', data?.id)
+    logger.info({ id: data?.id }, '[RESEND] Email sent successfully')
     return data
   } catch (error) {
-    console.error('[RESEND] Exception caught:', error)
+    logger.error({ err: error }, '[RESEND] Exception caught')
     throw error
   }
 }
@@ -442,7 +443,7 @@ export async function sendWelcomeEmail(
   userRole: string
 ) {
   try {
-    console.log('[RESEND] Sending welcome email to:', userEmail)
+    logger.info({ to: userEmail }, '[RESEND] Sending welcome email')
     
     // Personalizar mensaje según rol
     const roleMessages = {
@@ -536,14 +537,14 @@ export async function sendWelcomeEmail(
     })
 
     if (error) {
-      console.error('[RESEND] Error sending welcome email:', error)
+      logger.error({ err: error }, '[RESEND] Error sending welcome email')
       throw new Error('Failed to send welcome email: ' + JSON.stringify(error))
     }
 
-    console.log('[RESEND] Welcome email sent successfully! ID:', data?.id)
+    logger.info({ id: data?.id }, '[RESEND] Welcome email sent successfully')
     return data
   } catch (error) {
-    console.error('[RESEND] Exception in sendWelcomeEmail:', error)
+    logger.error({ err: error }, '[RESEND] Exception in sendWelcomeEmail')
     throw error
   }
 }
@@ -555,7 +556,7 @@ export async function sendProfileCompletedEmail(
   profileUrl: string
 ) {
   try {
-    console.log('[RESEND] Sending profile completed email to:', userEmail)
+    logger.info({ to: userEmail }, '[RESEND] Sending profile completed email')
     
     const roleNames = {
       jugador: 'Jugador',
@@ -640,14 +641,14 @@ export async function sendProfileCompletedEmail(
     })
 
     if (error) {
-      console.error('[RESEND] Error sending profile completed email:', error)
+      logger.error({ err: error }, '[RESEND] Error sending profile completed email')
       throw new Error('Failed to send profile completed email: ' + JSON.stringify(error))
     }
 
-    console.log('[RESEND] Profile completed email sent successfully! ID:', data?.id)
+    logger.info({ id: data?.id }, '[RESEND] Profile completed email sent successfully')
     return data
   } catch (error) {
-    console.error('[RESEND] Exception in sendProfileCompletedEmail:', error)
+    logger.error({ err: error }, '[RESEND] Exception in sendProfileCompletedEmail')
     throw error
   }
 }
@@ -657,7 +658,7 @@ export async function sendAdminWelcomeEmail(
   adminEmail: string
 ) {
   try {
-    console.log('[RESEND] Sending admin welcome email to:', adminEmail)
+    logger.info({ to: adminEmail }, '[RESEND] Sending admin welcome email')
     
     const { data, error } = await getResendClient().emails.send({
       from: 'WorkHoops <hola@workhoops.com>',
@@ -726,14 +727,14 @@ export async function sendAdminWelcomeEmail(
     })
 
     if (error) {
-      console.error('[RESEND] Error sending admin welcome email:', error)
+      logger.error({ err: error }, '[RESEND] Error sending admin welcome email')
       throw new Error('Failed to send admin welcome email: ' + JSON.stringify(error))
     }
 
-    console.log('[RESEND] Admin welcome email sent successfully! ID:', data?.id)
+    logger.info({ id: data?.id }, '[RESEND] Admin welcome email sent successfully')
     return data
   } catch (error) {
-    console.error('[RESEND] Exception in sendAdminWelcomeEmail:', error)
+    logger.error({ err: error }, '[RESEND] Exception in sendAdminWelcomeEmail')
     throw error
   }
 }
@@ -790,7 +791,7 @@ export async function sendTalentInvitationEmail(
 
     return data
   } catch (error) {
-    console.error('Error sending talent invitation email:', error)
+    logger.error({ err: error }, 'Error sending talent invitation email')
     throw new Error('Failed to send talent invitation email')
   }
 }
@@ -858,7 +859,7 @@ export async function sendClubLeadReceivedEmail(params: {
 
     return data
   } catch (error) {
-    console.error('Error sending club lead email:', error)
+    logger.error({ err: error }, 'Error sending club lead email')
     throw new Error('Failed to send club lead email')
   }
 }
@@ -917,7 +918,7 @@ export async function sendClubWeeklyRecruitingSummaryEmail(params: {
 
     return data
   } catch (error) {
-    console.error('Error sending weekly recruiting summary:', error)
+    logger.error({ err: error }, 'Error sending weekly recruiting summary')
     throw new Error('Failed to send weekly recruiting summary email')
   }
 }
@@ -977,7 +978,7 @@ export async function sendClubRecruitingNudgeEmail(params: {
 
     return data
   } catch (error) {
-    console.error('Error sending club recruiting nudge:', error)
+    logger.error({ err: error }, 'Error sending club recruiting nudge')
     throw new Error('Failed to send club recruiting nudge email')
   }
 }
@@ -1030,7 +1031,7 @@ export async function sendTalentInvitationReminderEmail(params: {
 
     return data
   } catch (error) {
-    console.error('Error sending talent invitation reminder:', error)
+    logger.error({ err: error }, 'Error sending talent invitation reminder')
     throw new Error('Failed to send talent invitation reminder email')
   }
 }

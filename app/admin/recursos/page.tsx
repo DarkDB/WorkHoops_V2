@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
-import { Navbar } from '@/components/Navbar'
-import AdminResourcesManager from '@/components/AdminResourcesManager'
+import { Navbar } from '@/components/shared/Navbar'
+import AdminResourcesManager from '@/components/admin/AdminResourcesManager'
 
 export default async function AdminRecursosPage() {
   const session = await getServerSession(authOptions)

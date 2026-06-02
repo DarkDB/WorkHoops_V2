@@ -7,7 +7,7 @@ import { ArrowLeft, Building2, MapPin, Mail, Phone, Globe, Briefcase, CheckCircl
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/shared/Navbar'
 
 interface PageProps {
   params: {

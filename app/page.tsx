@@ -4,7 +4,7 @@ import { ArrowRight, Search, Target, Users, Shield, CheckCircle, Star, Award } f
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/shared/Navbar'
 import { prisma } from '@/lib/prisma'
 import { getSiteStats } from '@/lib/site-stats'
 import { getOpportunityTypeLabel, getOpportunityTypeColor, formatRelativeTime } from '@/lib/utils'

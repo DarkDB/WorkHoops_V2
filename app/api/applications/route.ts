@@ -16,6 +16,7 @@ import { sanitizeInput } from '@/lib/sanitize'
 import { rateLimitByIP } from '@/lib/rate-limit'
 import { sendApplicationNotificationEmail } from '@/lib/email'
 import { trackFunnelEvent } from '@/lib/funnel-events'
+import { createAuditLog } from '@/lib/audit'
 
 export const dynamic = 'force-dynamic'
 
@@ -208,23 +209,17 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Create audit log - TODO: Implement when model ready
-    /*
-    // TODO: Audit log
-    /*
-    await prisma.auditLog.create({
-      data: {
-        actorId: session.user.id,
-        action: 'applied',
-        entity: 'application',
-        entityId: application.id,
-        metadata: JSON.stringify({
-          opportunityId,
-          opportunityTitle: opportunity.title,
-        }),
+    // Create audit log
+    await createAuditLog({
+      actorId: session.user.id,
+      action: 'applied',
+      entity: 'application',
+      entityId: application.id,
+      metadata: {
+        opportunityId,
+        opportunityTitle: opportunity.title,
       },
     })
-    */
 
     // Send notification email to organization (only if organization exists)
     if (opportunity.organization?.owner?.email) {

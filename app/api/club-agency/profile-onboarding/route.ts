@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import logger from '@/lib/logger'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -167,10 +168,10 @@ export async function POST(request: NextRequest) {
             const { sendProfileCompletedEmail } = await import('@/lib/email')
             const profileUrl = `${process.env.APP_URL}/club/${updatedProfile.slug || updatedProfile.id}`
             await sendProfileCompletedEmail(user.name!, user.email!, user.role, profileUrl)
-            console.log('[CLUB PROFILE] Profile completed email sent to:', user.email)
+            logger.info({ to: user.email }, '[CLUB PROFILE] Profile completed email sent')
           }
         } catch (emailError) {
-          console.error('[CLUB PROFILE] Failed to send profile completed email:', emailError)
+          logger.error({ err: emailError }, '[CLUB PROFILE] Failed to send profile completed email')
         }
       }
 
@@ -197,10 +198,10 @@ export async function POST(request: NextRequest) {
             const { sendProfileCompletedEmail } = await import('@/lib/email')
             const profileUrl = `${process.env.APP_URL}/club/${newProfile.slug || newProfile.id}`
             await sendProfileCompletedEmail(user.name!, user.email!, user.role, profileUrl)
-            console.log('[CLUB PROFILE] Profile completed email sent to:', user.email)
+            logger.info({ to: user.email }, '[CLUB PROFILE] Profile completed email sent')
           }
         } catch (emailError) {
-          console.error('[CLUB PROFILE] Failed to send profile completed email:', emailError)
+          logger.error({ err: emailError }, '[CLUB PROFILE] Failed to send profile completed email')
         }
       }
 
@@ -211,7 +212,7 @@ export async function POST(request: NextRequest) {
       })
     }
   } catch (error: any) {
-    console.error('Error in club-agency profile-onboarding:', error)
+    logger.error({ err: error }, 'Error in club-agency profile-onboarding')
 
     if (error.name === 'ZodError') {
       return NextResponse.json({

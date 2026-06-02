@@ -4,8 +4,8 @@ import { Search, Filter, MapPin, Clock, CheckCircle, Inbox, AlertCircle } from '
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Navbar } from '@/components/Navbar'
-import { EmptyState } from '@/components/EmptyState'
+import { Navbar } from '@/components/shared/Navbar'
+import { EmptyState } from '@/components/shared/EmptyState'
 import { prisma } from '@/lib/prisma'
 import { 
   getOpportunityTypeLabel, 

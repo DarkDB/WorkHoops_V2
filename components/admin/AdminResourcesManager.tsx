@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { EmptyState } from '@/components/EmptyState'
+import { EmptyState } from '@/components/shared/EmptyState'
 import { 
   Plus, 
   Edit, 

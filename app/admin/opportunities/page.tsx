@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { Navbar } from '@/components/Navbar'
-import AdminOpportunitiesManager from '@/components/AdminOpportunitiesManager'
+import { Navbar } from '@/components/shared/Navbar'
+import AdminOpportunitiesManager from '@/components/admin/AdminOpportunitiesManager'
 
 export default async function AdminOpportunitiesPage() {
   const session = await getServerSession(authOptions)

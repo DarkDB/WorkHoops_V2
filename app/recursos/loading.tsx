@@ -1,4 +1,4 @@
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/shared/Navbar'
 import { CardSkeleton } from '@/components/ui/skeleton'
 
 export default function Loading() {

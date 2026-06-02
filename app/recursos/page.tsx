@@ -3,7 +3,7 @@ import { Clock, User, ArrowRight, BookOpen, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/shared/Navbar'
 import { prisma } from '@/lib/prisma'
 
 const categories = [

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft, Cookie, Settings, BarChart, Target } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/shared/Navbar'
 
 export default function CookiesPage() {
   return (

@@ -2,10 +2,10 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { Navbar } from '@/components/Navbar'
-import PlayerProfileOnboarding from '@/components/PlayerProfileOnboarding'
-import CoachProfileOnboarding from '@/components/CoachProfileOnboarding'
-import ClubAgencyProfileOnboarding from '@/components/ClubAgencyProfileOnboarding'
+import { Navbar } from '@/components/shared/Navbar'
+import PlayerProfileOnboarding from '@/components/profile/PlayerProfileOnboarding'
+import CoachProfileOnboarding from '@/components/profile/CoachProfileOnboarding'
+import ClubAgencyProfileOnboarding from '@/components/profile/ClubAgencyProfileOnboarding'
 
 export default async function CompleteProfilePage() {
   const session = await getServerSession(authOptions)

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { ArrowLeft, Shield, Lock, Eye, UserCheck } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/shared/Navbar'
 
 export default function PrivacidadPage() {
   return (

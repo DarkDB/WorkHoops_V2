@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import dynamic from 'next/dynamic'
 import { NextAuthProvider } from '@/components/providers/NextAuthProvider'
-import { Footer } from '@/components/Footer'
+import { Footer } from '@/components/shared/Footer'
 import { Toaster } from 'sonner'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/og-image.png', // You would add this image
+        url: '/og-image.svg',
         width: 1200,
         height: 630,
         alt: 'WorkHoops - Oportunidades de baloncesto',
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'WorkHoops - Oportunidades de baloncesto',
     description: 'Encuentra tu próxima oportunidad en el baloncesto español',
-    images: ['/og-image.png'],
+    images: ['/og-image.svg'],
   },
   robots: {
     index: true,

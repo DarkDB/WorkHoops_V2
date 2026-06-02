@@ -8,6 +8,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
+import logger from '@/lib/logger'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -15,6 +16,7 @@ import { organizationCreateSchema } from '@/lib/validations'
 import { generateSlug } from '@/lib/utils'
 import { sanitizeInput } from '@/lib/sanitize'
 import { rateLimitByIP } from '@/lib/rate-limit'
+import { createAuditLog } from '@/lib/audit'
 
 export const dynamic = 'force-dynamic'
 
@@ -79,7 +81,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Get organizations error:', error)
+    logger.error({ err: error }, 'Get organizations error')
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -171,26 +173,21 @@ export async function POST(request: NextRequest) {
     })
 
     // Create audit log
-    // TODO: Audit log
-    /*
-    await prisma.auditLog.create({
-      data: {
-        actorId: session.user.id,
-        action: 'created',
-        entity: 'organization',
-        entityId: organization.id,
-        metadata: JSON.stringify({
-          name: organization.name,
-          slug: organization.slug,
-        }),
+    await createAuditLog({
+      actorId: session.user.id,
+      action: 'created',
+      entity: 'organization',
+      entityId: organization.id,
+      metadata: {
+        name: organization.name,
+        slug: organization.slug,
       },
     })
-    */
 
     return NextResponse.json(organization, { status: 201 })
 
   } catch (error) {
-    console.error('Create organization error:', error)
+    logger.error({ err: error }, 'Create organization error')
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

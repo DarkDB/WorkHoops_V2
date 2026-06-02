@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { Navbar } from '@/components/Navbar'
-import AdminDashboard from '@/components/AdminDashboard'
+import { Navbar } from '@/components/shared/Navbar'
+import AdminDashboard from '@/components/admin/AdminDashboard'
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions)

@@ -2,11 +2,11 @@ import { notFound, redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/shared/Navbar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { RegistrationGate } from '@/components/RegistrationGate'
+import { RegistrationGate } from '@/components/auth/RegistrationGate'
 import { 
   ArrowLeft,
   Calendar,

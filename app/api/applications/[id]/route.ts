@@ -11,6 +11,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { applicationUpdateSchema } from '@/lib/validations'
 import { sendApplicationStateChangeEmail } from '@/lib/email'
+import { createAuditLog } from '@/lib/audit'
 
 export const dynamic = 'force-dynamic'
 
@@ -180,24 +181,17 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     })
 
     // Create audit log
-    // TODO: Implement audit log when model is ready
-    /*
-    // TODO: Audit log
-    /*
-    await prisma.auditLog.create({
-      data: {
-        actorId: session.user.id,
-        action: 'state_changed',
-        entity: 'application',
-        entityId: application.id,
-        metadata: JSON.stringify({
-          previousState,
-          newState: state,
-          opportunityTitle: application.opportunity.title,
-        }),
+    await createAuditLog({
+      actorId: session.user.id,
+      action: 'state_changed',
+      entity: 'application',
+      entityId: application.id,
+      metadata: {
+        previousState,
+        newState: state,
+        opportunityTitle: application.opportunity.title,
       },
     })
-    */
 
     // Send notification email to applicant if state changed significantly
     if (state !== previousState && ['en_revision', 'rechazada', 'aceptada'].includes(state)) {

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import logger from '@/lib/logger'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -43,7 +44,7 @@ export async function GET() {
 
     return NextResponse.json({ leads })
   } catch (error) {
-    console.error('Error fetching club leads:', error)
+    logger.error({ err: error }, 'Error fetching club leads')
     return NextResponse.json({ message: 'Error interno del servidor' }, { status: 500 })
   }
 }

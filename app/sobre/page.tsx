@@ -3,7 +3,7 @@ import { Target, Users, Shield, Award, Heart, Zap, CheckCircle, ArrowRight } fro
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/shared/Navbar'
 import { getSiteStats } from '@/lib/site-stats'
 
 const values = [
