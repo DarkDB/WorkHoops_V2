@@ -18,10 +18,10 @@ import {
 } from 'lucide-react'
 
 // Import step components
-import TechnicalDataStep from './onboarding/TechnicalDataStep'
-import SkillsStep from './onboarding/SkillsStep'
-import PlayingStyleStep from './onboarding/PlayingStyleStep'
-import MultimediaStep from './onboarding/MultimediaStep'
+import TechnicalDataStep from '@/components/onboarding/TechnicalDataStep'
+import SkillsStep from '@/components/onboarding/SkillsStep'
+import PlayingStyleStep from '@/components/onboarding/PlayingStyleStep'
+import MultimediaStep from '@/components/onboarding/MultimediaStep'
 
 interface User {
   id: string
