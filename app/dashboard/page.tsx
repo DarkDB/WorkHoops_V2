@@ -17,7 +17,9 @@ import {
 } from '@/lib/profile-completion'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { User } from 'lucide-react'
+import { User, ExternalLink } from 'lucide-react'
+import CopyLinkButton from '@/components/public-profile/CopyLinkButton'
+import { generateSlug } from '@/lib/slug'
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
@@ -298,6 +300,23 @@ export default async function DashboardPage() {
   const totalLeads = clubLeadCounts.reduce((acc, row) => acc + row._count._all, 0)
   const newLeads = clubLeadCounts.find((row) => row.status === 'NEW')?._count._all || 0
 
+  // Generate public profile URL
+  const publicProfileSlug = (() => {
+    if (isPlayer && user.talentProfile) {
+      return generateSlug(user.talentProfile.fullName)
+    }
+    if (isCoach && user.coachProfile) {
+      return generateSlug(user.coachProfile.fullName)
+    }
+    return null
+  })()
+  const publicProfileUrl = publicProfileSlug
+    ? (isPlayer ? `/jugador/${publicProfileSlug}` : isCoach ? `/entrenador/${publicProfileSlug}` : null)
+    : null
+  const absolutePublicUrl = publicProfileUrl
+    ? `${process.env.NEXTAUTH_URL || 'https://workhoops.com'}${publicProfileUrl}`
+    : null
+
   const profileCtaHref = isClubOrAgency ? '/profile/club/edit' : '/profile/complete'
   const profileCtaLabel = isPlayer
     ? user.talentProfile
@@ -347,6 +366,22 @@ export default async function DashboardPage() {
                     {profileCtaLabel}
                   </Button>
                 </Link>
+              )}
+              {publicProfileUrl && (
+                <>
+                  <Link href={publicProfileUrl} target="_blank">
+                    <Button variant="outline" className="border-green-400 text-green-700 hover:bg-green-50">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Ver mi perfil público
+                    </Button>
+                  </Link>
+                  {absolutePublicUrl && (
+                    <CopyLinkButton
+                      url={absolutePublicUrl}
+                      className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                    />
+                  )}
+                </>
               )}
               <Link href={isClubOrAgency ? '/profile/club/edit' : '/profile'}>
                 <Button variant="outline">
