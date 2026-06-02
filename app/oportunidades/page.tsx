@@ -7,11 +7,13 @@ import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/shared/Navbar'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { prisma } from '@/lib/prisma'
-import { 
-  getOpportunityTypeLabel, 
-  getOpportunityTypeColor, 
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
+import {
+  getOpportunityTypeLabel,
+  getOpportunityTypeColor,
   getOpportunityLevelLabel,
-  formatRelativeTime 
+  formatRelativeTime
 } from '@/lib/utils'
 
 export const revalidate = 120
@@ -236,7 +238,14 @@ function OpportunitiesLoading() {
 }
 
 export default async function OpportunitiesPage({ searchParams }: OpportunitiesPageProps) {
-  const { opportunities, pagination } = await getOpportunities(searchParams)
+  const [{ opportunities, pagination }, session] = await Promise.all([
+    getOpportunities(searchParams),
+    getServerSession(authOptions),
+  ])
+
+  const GUEST_LIMIT = 6
+  const visibleOpportunities = !session ? opportunities.slice(0, GUEST_LIMIT) : opportunities
+  const hiddenCount = !session ? Math.max(0, pagination.total - GUEST_LIMIT) : 0
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -262,6 +271,11 @@ export default async function OpportunitiesPage({ searchParams }: OpportunitiesP
             </Link>
           </div>
           
+          {/* Urgency banner */}
+          <div className="mt-4 mb-2 inline-flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-800 text-sm font-medium px-4 py-2 rounded-full">
+            🔥 Mercado activo — Nuevas oportunidades esta semana · Regístrate para no perderte ninguna
+          </div>
+
           {/* Simple search */}
           <div className="max-w-md">
             <div className="relative">
@@ -321,25 +335,48 @@ export default async function OpportunitiesPage({ searchParams }: OpportunitiesP
         {/* Opportunities grid */}
         <Suspense fallback={<OpportunitiesLoading />}>
           {opportunities.length === 0 ? (
-            <EmptyState
-              icon={Inbox}
-              title="No se encontraron oportunidades"
-              description={
-                searchParams.search || searchParams.type || searchParams.level || searchParams.city
-                  ? "Prueba a ajustar los filtros de búsqueda para ver más resultados"
-                  : "Aún no hay oportunidades publicadas. ¡Sé el primero en publicar una!"
-              }
-              actionLabel="Publicar oportunidad"
-              actionHref="/publicar"
-              secondaryActionLabel="Ver todas"
-              secondaryActionHref="/oportunidades"
-            />
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-stagger">
-              {opportunities.map((opportunity) => (
-                <OpportunityCard key={opportunity.id} opportunity={opportunity} />
-              ))}
+            <div className="text-center py-16 space-y-4">
+              <Inbox className="w-12 h-12 text-gray-300 mx-auto" />
+              <h3 className="text-xl font-semibold text-gray-700">No se encontraron oportunidades</h3>
+              <p className="text-gray-500">
+                {searchParams.search || searchParams.type || searchParams.level || searchParams.city
+                  ? 'Prueba a ajustar los filtros de búsqueda para ver más resultados'
+                  : 'Sé el primero en publicar una oferta en esta categoría'}
+              </p>
+              <Link href="/publicar">
+                <Button className="bg-workhoops-accent hover:bg-workhoops-accent-hover mt-2">
+                  Publicar oferta
+                </Button>
+              </Link>
             </div>
+          ) : (
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-stagger">
+                {visibleOpportunities.map((opportunity) => (
+                  <OpportunityCard key={opportunity.id} opportunity={opportunity} />
+                ))}
+              </div>
+
+              {/* Guest paywall — shown after first 6 results */}
+              {!session && hiddenCount > 0 && (
+                <div className="relative mt-4">
+                  {/* Faded preview of more cards */}
+                  <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-transparent to-gray-50 pointer-events-none z-10" />
+                  <div className="relative z-20 flex flex-col items-center justify-center py-12 bg-white rounded-2xl border border-orange-100 shadow-sm text-center px-6">
+                    <p className="text-2xl font-bold text-gray-900 mb-1">
+                      Hay {hiddenCount} oportunidades más disponibles
+                    </p>
+                    <p className="text-gray-500 mb-6 text-sm">Regístrate gratis para verlas todas</p>
+                    <Link href="/auth/register">
+                      <Button size="lg" className="bg-workhoops-accent hover:bg-workhoops-accent-hover text-white font-semibold px-8">
+                        Ver todas gratis →
+                      </Button>
+                    </Link>
+                    <p className="text-xs text-gray-400 mt-3">Gratis para jugadores · Sin tarjeta de crédito</p>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </Suspense>
 

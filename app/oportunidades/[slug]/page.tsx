@@ -229,12 +229,36 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
                 <CardTitle>Descripción de la oferta</CardTitle>
               </CardHeader>
               <CardContent>
-                <div 
-                  className="prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: opportunity.description }}
-                />
+                {!session ? (
+                  <>
+                    <div
+                      className="prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{
+                        __html: opportunity.description.substring(0, 150) + '...',
+                      }}
+                    />
+                    <div className="relative mt-4">
+                      <div
+                        className="prose prose-sm max-w-none select-none pointer-events-none"
+                        style={{ filter: 'blur(6px)' }}
+                        dangerouslySetInnerHTML={{ __html: opportunity.description }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/60 to-white" />
+                    </div>
+                  </>
+                ) : (
+                  <div
+                    className="prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ __html: opportunity.description }}
+                  />
+                )}
               </CardContent>
             </Card>
+
+            {/* Registration Gate — shown prominently for unauthenticated users */}
+            {!session && (
+              <RegistrationGate slug={params.slug} />
+            )}
 
             {/* Organization */}
             {opportunity.organization && (
@@ -375,7 +399,7 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
                 </CardContent>
               </Card>
             ) : (
-              <RegistrationGate />
+              <RegistrationGate slug={params.slug} />
             )}
           </div>
         </div>

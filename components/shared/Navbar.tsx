@@ -251,11 +251,14 @@ export function Navbar() {
                 <Link href="/auth/login">
                   <Button variant="ghost">Iniciar sesión</Button>
                 </Link>
-                <Link href="/auth/register">
-                  <Button className="bg-workhoops-accent hover:bg-workhoops-accent-hover">
-                    Registrarse
-                  </Button>
-                </Link>
+                <div className="flex flex-col items-center">
+                  <Link href="/auth/register">
+                    <Button className="bg-workhoops-accent hover:bg-workhoops-accent-hover text-white font-semibold shadow-md">
+                      Registrarse
+                    </Button>
+                  </Link>
+                  <span className="text-[10px] text-gray-400 mt-0.5 leading-none">Es gratis</span>
+                </div>
               </div>
             )}
           </div>
