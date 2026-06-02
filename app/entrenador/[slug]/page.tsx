@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { generateSlug } from '@/lib/slug'
 import ShareButton from '@/components/public-profile/ShareButton'
+import { ProfileViewTracker } from '@/components/public-profile/ProfileViewTracker'
 import { MapPin, Trophy } from 'lucide-react'
 
 interface PageProps {
@@ -69,6 +70,7 @@ export default async function EntrenadorPublicPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ProfileViewTracker profileUserId={profile.user.id} profileType="entrenador" />
       {/* Hero Section */}
       <div className="bg-[#0f0f1a] text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">

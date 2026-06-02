@@ -3,7 +3,7 @@ import logger from '@/lib/logger'
 
 interface CreateNotificationParams {
   userId: string
-  type: 'application_received' | 'application_viewed' | 'application_accepted' | 'application_rejected' | 'message_received' | 'profile_saved' | 'club_lead_received'
+  type: 'application_received' | 'application_viewed' | 'application_accepted' | 'application_rejected' | 'message_received' | 'profile_saved' | 'club_lead_received' | 'profile_viewed'
   title: string
   message: string
   link?: string

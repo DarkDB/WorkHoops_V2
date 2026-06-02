@@ -161,6 +161,30 @@ export default async function DashboardPage() {
 
   const profileCompletion = calculateProfileCompletion()
 
+  // Profile views stats (only for jugador and entrenador)
+  let viewsToday = 0
+  let viewsWeek = 0
+  let viewsTotal = 0
+  if (isPlayer || isCoach) {
+    const startOfDay = new Date()
+    startOfDay.setHours(0, 0, 0, 0)
+    const startOfWeek = new Date()
+    startOfWeek.setDate(startOfWeek.getDate() - 7)
+    startOfWeek.setHours(0, 0, 0, 0)
+
+    ;[viewsToday, viewsWeek, viewsTotal] = await Promise.all([
+      prisma.profileView.count({
+        where: { profileUserId: session.user.id, createdAt: { gte: startOfDay } }
+      }),
+      prisma.profileView.count({
+        where: { profileUserId: session.user.id, createdAt: { gte: startOfWeek } }
+      }),
+      prisma.profileView.count({
+        where: { profileUserId: session.user.id }
+      })
+    ])
+  }
+
   const [playerRecommendations, coachRecommendations] = await Promise.all([
     isPlayer
       ? prisma.opportunity.findMany({
@@ -459,6 +483,26 @@ export default async function DashboardPage() {
               updatedAt: item.updatedAt.toISOString()
             }))}
           />
+        )}
+
+        {(isPlayer || isCoach) && (
+          <div className="mb-6 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h2 className="text-base font-semibold text-gray-900 mb-4">Visitas a tu perfil</h2>
+            <div className="flex items-end gap-6">
+              <div>
+                <p className="text-4xl font-bold text-[#FF6B1A]">{viewsWeek}</p>
+                <p className="text-sm text-gray-500 mt-1">esta semana</p>
+              </div>
+              <div className="text-sm text-gray-400 pb-1">
+                {viewsToday} hoy · {viewsTotal} en total
+              </div>
+            </div>
+            <p className={`mt-3 text-sm font-medium ${viewsWeek > 0 ? 'text-green-600' : 'text-gray-400'}`}>
+              {viewsWeek > 0
+                ? 'Los clubes te están viendo 👀'
+                : 'Comparte tu perfil para recibir visitas de clubes'}
+            </p>
+          </div>
         )}
 
         {isPlayer && (

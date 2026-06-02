@@ -192,6 +192,8 @@ model User {
   submittedClubLeads ClubLead[] @relation("ClubLeadSourceUser")
   emailPreferences EmailPreference[]
   emailEvents      EmailEvent[]
+  profileViewsReceived ProfileView[] @relation("ProfileViews")
+  profileViewsMade     ProfileView[] @relation("ViewsMade")
 
   @@map("users")
 }
@@ -778,6 +780,22 @@ model EmailPreference {
   @@unique([userId, category])
   @@index([userId])
   @@map("email_preferences")
+}
+
+model ProfileView {
+  id            String   @id @default(cuid())
+  profileUserId String   // userId del dueño del perfil
+  viewerIp      String?  // IP del visitante (para dedup)
+  viewerUserId  String?  // userId si está logueado
+  profileType   String   // 'jugador' | 'entrenador'
+  createdAt     DateTime @default(now())
+
+  profileUser User  @relation("ProfileViews", fields: [profileUserId], references: [id], onDelete: Cascade)
+  viewer      User? @relation("ViewsMade", fields: [viewerUserId], references: [id], onDelete: SetNull)
+
+  @@index([profileUserId, createdAt])
+  @@index([viewerIp, profileUserId, createdAt])
+  @@map("profile_views")
 }
 
 model EmailEvent {
