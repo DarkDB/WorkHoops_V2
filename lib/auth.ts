@@ -3,6 +3,7 @@ import logger from '@/lib/logger'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from 'next-auth/providers/google'
 import { compare } from 'bcryptjs'
 import crypto from 'crypto'
 
@@ -28,6 +29,10 @@ export const authOptions: NextAuthOptions = {
     error: '/auth/error',
   },
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -229,6 +234,38 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      // For Google OAuth: ensure user profile exists with default role
+      if (account?.provider === 'google') {
+        try {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+            select: { id: true },
+          })
+
+          if (!existingUser) {
+            // New Google user — create profile with default role 'jugador'
+            await prisma.user.create({
+              data: {
+                email: user.email!,
+                name: user.name ?? '',
+                image: user.image ?? null,
+                role: 'jugador',
+                planType: 'free_amateur',
+                isActive: true,
+                failedLoginAttempts: 0,
+                mustResetPassword: false,
+              },
+            })
+            logger.info({ email: user.email }, '[AUTH] New Google user profile created')
+          }
+        } catch (error) {
+          logger.error({ err: error }, '[AUTH] Error creating Google user profile')
+          return false
+        }
+      }
+      return true
+    },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
@@ -241,7 +278,7 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, account, trigger, session }) {
       // Initial login
       if (user) {
         token.id = user.id
@@ -250,6 +287,25 @@ export const authOptions: NextAuthOptions = {
         ;(token as any).mustResetPassword = (user as any).mustResetPassword || false
         if (user.image) {
           token.image = user.image
+        }
+      }
+
+      // For Google OAuth: load role/planType from DB since the provider doesn't supply them
+      if (account?.provider === 'google' && token.email && !(token as any).role) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email },
+            select: { id: true, role: true, planType: true, mustResetPassword: true, image: true },
+          })
+          if (dbUser) {
+            token.id = dbUser.id
+            ;(token as any).role = dbUser.role
+            ;(token as any).planType = dbUser.planType
+            ;(token as any).mustResetPassword = dbUser.mustResetPassword || false
+            if (dbUser.image) token.image = dbUser.image
+          }
+        } catch (error) {
+          logger.error({ err: error }, '[AUTH] Error loading Google user data for JWT')
         }
       }
       

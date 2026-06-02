@@ -9,6 +9,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { createSubscriptionCheckout, createOneTimeCheckout } from '@/lib/stripe'
 import { z } from 'zod'
+import logger from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
@@ -100,7 +101,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Error creating checkout session:', error)
+    logger.error({ error }, 'Error creating Stripe checkout session')
     return NextResponse.json(
       { message: 'Error al crear sesión de pago' },
       { status: 500 }
