@@ -637,36 +637,76 @@ export async function sendWelcomeEmail(
 
     const content = roleContent[userRole as RoleKey] ?? roleContent.jugador
 
+    const banners: Record<string, string> = {
+      jugador: `<div style="background: linear-gradient(135deg, #FF6B1A, #e05a10); padding: 28px 36px;">
+        <h2 style="color: white; margin: 0; font-size: 22px; font-weight: 700;">Este verano puede cambiar tu carrera, ${userName.split(' ')[0]} 🔥</h2>
+        <p style="color: rgba(255,255,255,0.85); margin: 8px 0 0; font-size: 15px; line-height: 1.5;">Los clubes ya están buscando jugadores. ¿Está tu perfil listo?</p>
+      </div>`,
+      entrenador: `<div style="background: linear-gradient(135deg, #1e3a5f, #0f2a4a); padding: 28px 36px;">
+        <h2 style="color: white; margin: 0; font-size: 22px; font-weight: 700;">Tu filosofía de juego merece ser vista, ${userName.split(' ')[0]} 🎯</h2>
+        <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 15px; line-height: 1.5;">Los clubes no contratan al mejor entrenador. Contratan al que aparece primero.</p>
+      </div>`,
+      club: `<div style="background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 28px 36px;">
+        <h2 style="color: white; margin: 0; font-size: 22px; font-weight: 700;">Miles de jugadores ya buscan equipo en WorkHoops 🏀</h2>
+        <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 15px; line-height: 1.5;">Publica tu primera oferta en 5 minutos. Sin WhatsApps, sin intermediarios.</p>
+      </div>`,
+    }
+
+    const progressColor: Record<string, string> = {
+      jugador: '#FF6B1A',
+      entrenador: '#0EA5E9',
+      club: '#16A34A',
+    }
+
+    const banner = banners[userRole] ?? banners.jugador
+    const pColor = progressColor[userRole] ?? '#FF6B1A'
+
+    const clubStats = userRole === 'club' ? `
+      <div style="display: flex; gap: 12px; margin: 0 0 28px 0; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 130px; background: #fff7ed; border-radius: 10px; padding: 16px; text-align: center;">
+          <p style="color: #FF6B1A; font-weight: 800; font-size: 22px; margin: 4px 0;">+500</p>
+          <p style="color: #888; font-size: 12px; margin: 0;">Jugadores activos</p>
+        </div>
+        <div style="flex: 1; min-width: 130px; background: #f0fdf4; border-radius: 10px; padding: 16px; text-align: center;">
+          <p style="color: #16A34A; font-weight: 800; font-size: 22px; margin: 4px 0;">+80</p>
+          <p style="color: #888; font-size: 12px; margin: 0;">Entrenadores</p>
+        </div>
+        <div style="flex: 1; min-width: 130px; background: #f0f9ff; border-radius: 10px; padding: 16px; text-align: center;">
+          <p style="color: #0EA5E9; font-weight: 800; font-size: 22px; margin: 4px 0;">72h</p>
+          <p style="color: #888; font-size: 12px; margin: 0;">Tiempo medio respuesta</p>
+        </div>
+      </div>` : ''
+
     const { data, error } = await getResendClient().emails.send({
       from: 'WorkHoops <hola@workhoops.com>',
       to: [userEmail],
       subject: content.subject,
       html: `
         <div style="font-family: system-ui, -apple-system, Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: #0f0f1a; padding: 48px 20px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 32px; font-weight: bold; letter-spacing: -0.5px;">WorkHoops</h1>
-            <p style="color: rgba(255,255,255,0.5); margin: 6px 0 0 0; font-size: 13px;">La plataforma de baloncesto</p>
+          <div style="background: #0f0f1a; padding: 48px 20px 40px; text-align: center;">
+            <div style="font-size: 44px; margin-bottom: 10px;">🏀</div>
+            <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -1px;">WorkHoops</h1>
+            <p style="color: #FF6B1A; margin: 10px 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">La plataforma de baloncesto</p>
           </div>
 
-          <div style="padding: 48px 36px; background: white;">
-            <h2 style="color: #111; margin: 0 0 6px 0; font-size: 26px; font-weight: 800;">${content.headline}</h2>
-            <p style="color: #FF6B1A; margin: 0 0 28px 0; font-size: 15px; font-weight: 600;">${content.subheadline}</p>
+          ${banner}
 
+          <div style="padding: 40px 36px; background: white;">
+            ${clubStats}
             ${content.body}
 
-            <div style="text-align: center; margin: 36px 0 20px 0;">
-              <a href="${content.ctaUrl}" style="background: #FF6B1A; color: white; padding: 18px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
-                ${content.ctaLabel}
+            <div style="text-align: center; margin: 32px 0 24px;">
+              <a href="${content.ctaUrl}" style="background: #FF6B1A; color: white; padding: 18px 40px; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block; font-size: 16px;">
+                ${content.ctaLabel} →
               </a>
             </div>
 
-            <!-- Progress bar -->
-            <div style="background: #fafafa; border: 1px solid #f0f0f0; border-radius: 10px; padding: 20px 24px; margin: 28px 0 0 0; text-align: center;">
-              <p style="margin: 0 0 10px 0; color: #111; font-size: 14px; font-weight: 600;">Tu perfil está al <span style="color: #FF6B1A;">20%</span></p>
-              <div style="background: #e5e7eb; border-radius: 999px; height: 8px; overflow: hidden;">
-                <div style="background: linear-gradient(90deg, #FF6B1A, #ff8c47); height: 100%; width: 20%; border-radius: 999px;"></div>
+            <div style="background: #fafafa; border-radius: 10px; padding: 20px 24px; text-align: center;">
+              <p style="margin: 0 0 10px; color: #555; font-size: 14px; font-weight: 600;">Progreso de tu perfil — <span style="color: ${pColor};">20%</span></p>
+              <div style="background: #e5e7eb; border-radius: 999px; height: 10px; overflow: hidden;">
+                <div style="background: linear-gradient(90deg, ${pColor}, ${pColor}99); height: 100%; width: 20%; border-radius: 999px;"></div>
               </div>
-              <p style="margin: 10px 0 0 0; color: #888; font-size: 12px;">Complétalo al 100% para aparecer en las búsquedas de los clubes</p>
+              <p style="margin: 10px 0 0; color: #aaa; font-size: 12px;">Complétalo al 100% para aparecer en las búsquedas de los clubes</p>
             </div>
           </div>
 
