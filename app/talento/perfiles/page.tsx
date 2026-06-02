@@ -212,7 +212,7 @@ export default function PerfilesPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Perfiles de Talento</h1>
           <p className="text-gray-600">
-            Descubre jugadores, entrenadores y profesionales del baloncesto
+            Jugadores y entrenadores buscando equipo en España y LATAM
           </p>
         </div>
 
@@ -330,7 +330,7 @@ export default function PerfilesPage() {
                     Solo jugadores disponibles
                   </label>
                 )}
-                <p className="text-sm text-gray-600">{profiles.length} perfiles encontrados</p>
+                <p className="text-sm text-gray-600">{session ? profiles.length : '150+'} perfiles encontrados</p>
               </div>
 
               <div className="md:col-span-1 flex justify-end">
@@ -370,102 +370,124 @@ export default function PerfilesPage() {
             secondaryActionHref="/talento/perfiles"
           />
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-stagger">
-            {profiles.map((profile) => (
-              <Card key={profile.id} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-workhoops-accent to-orange-600 rounded-full flex items-center justify-center text-white text-lg font-bold">
-                        {profile.fullName.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 flex items-center space-x-1">
-                          <span>{profile.fullName}</span>
-                          {profile.verified && <CheckCircle className="w-4 h-4 text-blue-600" />}
-                        </h3>
-                        <div className="flex flex-wrap items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-xs">
-                            {getRoleLabel(profile.role)}
-                          </Badge>
-                          {profile.role === 'jugador' && getAvailabilityBadge(profile.availabilityStatus)}
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-stagger">
+              {profiles.map((profile, index) => {
+                const isBlurred = !session && index >= 4
+                return (
+                  <div key={profile.id} style={isBlurred ? { filter: 'blur(4px)', pointerEvents: 'none' } : undefined}>
+                    <Card className="hover:shadow-lg transition-shadow">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-12 h-12 bg-gradient-to-br from-workhoops-accent to-orange-600 rounded-full flex items-center justify-center text-white text-lg font-bold">
+                              {profile.fullName.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-gray-900 flex items-center space-x-1">
+                                <span>{profile.fullName}</span>
+                                {profile.verified && <CheckCircle className="w-4 h-4 text-blue-600" />}
+                              </h3>
+                              <div className="flex flex-wrap items-center gap-2 mt-1">
+                                <Badge variant="outline" className="text-xs">
+                                  {getRoleLabel(profile.role)}
+                                </Badge>
+                                {profile.role === 'jugador' && getAvailabilityBadge(profile.availabilityStatus)}
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
+
+                        {profile.position && (
+                          <p className="text-sm text-gray-600 mb-2">
+                            <strong>Posición:</strong> {getPositionLabel(profile.position)}
+                          </p>
+                        )}
+
+                        {profile.currentLevel && (
+                          <p className="text-sm text-gray-600 mb-2">
+                            <strong>Nivel:</strong> {profile.currentLevel}
+                          </p>
+                        )}
+
+                        {profile.bio && <p className="text-sm text-gray-600 mb-4 line-clamp-3">{profile.bio}</p>}
+
+                        <div className="flex items-center text-sm text-gray-500 mb-2">
+                          <MapPin className="w-4 h-4 mr-1" />
+                          {profile.city}, {profile.country}
+                        </div>
+
+                        <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+                          {profile.height && (
+                            <span className="flex items-center">
+                              <Ruler className="w-3 h-3 mr-1" />
+                              {profile.height} cm
+                            </span>
+                          )}
+                          {profile.birthDate && (
+                            <span className="flex items-center">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              {getAge(profile.birthDate)} años
+                            </span>
+                          )}
+                        </div>
+
+                        {profile.role === 'jugador' && profile.availableFrom && (
+                          <p className="text-xs text-gray-500 mb-4">
+                            Disponible desde: {formatAvailableFrom(profile.availableFrom)}
+                          </p>
+                        )}
+
+                        <Link href={`/talento/perfiles/${profile.id}`}>
+                          <Button className="w-full" size="sm">
+                            Ver perfil completo
+                          </Button>
+                        </Link>
+
+                        {isClubOrAgency && profile.role === 'jugador' && (
+                          <div className="mt-3 pt-3 border-t border-gray-100">
+                            <ClubRecruitmentActions
+                              profileId={profile.id}
+                              profileName={profile.fullName}
+                              initialShortlisted={!!shortlistMap[profile.id]}
+                              initialPipelineStatus={shortlistMap[profile.id]?.status || null}
+                              compact
+                              onStateChange={(next) => {
+                                setShortlistMap((prev) => {
+                                  const copy = { ...prev }
+                                  if (!next.shortlisted) {
+                                    delete copy[profile.id]
+                                  } else if (next.pipelineStatus) {
+                                    copy[profile.id] = { status: next.pipelineStatus }
+                                  }
+                                  return copy
+                                })
+                              }}
+                            />
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
                   </div>
+                )
+              })}
+            </div>
 
-                  {profile.position && (
-                    <p className="text-sm text-gray-600 mb-2">
-                      <strong>Posición:</strong> {getPositionLabel(profile.position)}
-                    </p>
-                  )}
-
-                  {profile.currentLevel && (
-                    <p className="text-sm text-gray-600 mb-2">
-                      <strong>Nivel:</strong> {profile.currentLevel}
-                    </p>
-                  )}
-
-                  {profile.bio && <p className="text-sm text-gray-600 mb-4 line-clamp-3">{profile.bio}</p>}
-
-                  <div className="flex items-center text-sm text-gray-500 mb-2">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    {profile.city}, {profile.country}
-                  </div>
-
-                  <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
-                    {profile.height && (
-                      <span className="flex items-center">
-                        <Ruler className="w-3 h-3 mr-1" />
-                        {profile.height} cm
-                      </span>
-                    )}
-                    {profile.birthDate && (
-                      <span className="flex items-center">
-                        <Calendar className="w-3 h-3 mr-1" />
-                        {getAge(profile.birthDate)} años
-                      </span>
-                    )}
-                  </div>
-
-                  {profile.role === 'jugador' && profile.availableFrom && (
-                    <p className="text-xs text-gray-500 mb-4">
-                      Disponible desde: {formatAvailableFrom(profile.availableFrom)}
-                    </p>
-                  )}
-
-                  <Link href={`/talento/perfiles/${profile.id}`}>
-                    <Button className="w-full" size="sm">
-                      Ver perfil completo
-                    </Button>
-                  </Link>
-
-                  {isClubOrAgency && profile.role === 'jugador' && (
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <ClubRecruitmentActions
-                        profileId={profile.id}
-                        profileName={profile.fullName}
-                        initialShortlisted={!!shortlistMap[profile.id]}
-                        initialPipelineStatus={shortlistMap[profile.id]?.status || null}
-                        compact
-                        onStateChange={(next) => {
-                          setShortlistMap((prev) => {
-                            const copy = { ...prev }
-                            if (!next.shortlisted) {
-                              delete copy[profile.id]
-                            } else if (next.pipelineStatus) {
-                              copy[profile.id] = { status: next.pipelineStatus }
-                            }
-                            return copy
-                          })
-                        }}
-                      />
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+            {!session && (
+              <div className="mt-8 rounded-xl border border-orange-200 bg-white p-8 text-center shadow-sm">
+                <Users className="w-10 h-10 mx-auto mb-3 text-orange-400" />
+                <p className="text-lg font-semibold text-gray-800 mb-1">
+                  Hay más de 150 jugadores y entrenadores en WorkHoops
+                </p>
+                <p className="text-sm text-gray-500 mb-4">Regístrate gratis para contactar con cualquier jugador</p>
+                <Link href="/auth/register">
+                  <Button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6">
+                    Ver todos los perfiles →
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </>
         )}
 
         <Card className="mt-12 bg-gradient-to-r from-workhoops-accent to-orange-600 text-white">

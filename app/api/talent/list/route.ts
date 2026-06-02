@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
@@ -12,6 +14,8 @@ const clampNumber = (value: string | null, min: number, max: number): number | n
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+    const isAuthenticated = !!session
     const searchParams = request.nextUrl.searchParams
     const role = searchParams.get('role') || 'all'
     const search = searchParams.get('search')
@@ -186,8 +190,10 @@ export async function GET(request: NextRequest) {
 
     allProfiles.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
+    const limitedProfiles = isAuthenticated ? allProfiles : allProfiles.slice(0, 6)
+
     return NextResponse.json({
-      profiles: allProfiles,
+      profiles: limitedProfiles,
       total: allProfiles.length
     })
   } catch (error) {
