@@ -3,7 +3,7 @@ import logger from '@/lib/logger'
 
 interface CreateNotificationParams {
   userId: string
-  type: 'application_received' | 'application_viewed' | 'application_accepted' | 'application_rejected' | 'message_received' | 'profile_saved' | 'club_lead_received' | 'profile_viewed'
+  type: 'application_received' | 'application_viewed' | 'application_accepted' | 'application_rejected' | 'message_received' | 'profile_saved' | 'club_lead_received' | 'profile_viewed' | 'profile_incomplete'
   title: string
   message: string
   link?: string
@@ -118,6 +118,31 @@ export async function notifyMessageReceived(
     title: 'Nuevo mensaje',
     message: `${senderName}: ${messagePreview}`,
     link: '/dashboard/messages',
+  })
+}
+
+/**
+ * Notificación: Perfil incompleto — motivar al usuario (usado desde cron engagement-nudges)
+ */
+export async function notifyIncompleteProfile(
+  userId: string,
+  completedCount: number,
+  totalCount: number
+) {
+  const remaining = totalCount - completedCount
+  const messages = [
+    `Solo te faltan ${remaining} paso${remaining === 1 ? '' : 's'} para tener un perfil completo. ¡Los clubes te están esperando!`,
+    `Tu perfil está al ${Math.round((completedCount / totalCount) * 100)}%. Complétalo y aparece en más búsquedas.`,
+    `¡Casi! Completa ${remaining} campo${remaining === 1 ? '' : 's'} más y multiplica tus oportunidades en WorkHoops.`,
+  ]
+  const message = messages[completedCount % messages.length]
+
+  await createNotification({
+    userId,
+    type: 'profile_incomplete',
+    title: 'Tu perfil necesita un poco más de amor 🏀',
+    message,
+    link: '/dashboard',
   })
 }
 

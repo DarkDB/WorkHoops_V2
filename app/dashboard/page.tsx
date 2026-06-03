@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button'
 import { User, ExternalLink } from 'lucide-react'
 import CopyLinkButton from '@/components/public-profile/CopyLinkButton'
 import { generateSlug } from '@/lib/slug'
+import ActivationChecklist, { ChecklistItem } from '@/components/dashboard/ActivationChecklist'
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
@@ -341,6 +342,103 @@ export default async function DashboardPage() {
     ? `${process.env.NEXTAUTH_URL || 'https://workhoops.com'}${publicProfileUrl}`
     : null
 
+  // ── Activation Checklist ──────────────────────────────────────────────────
+  const checklistItems: ChecklistItem[] = (() => {
+    if (isPlayer && user.talentProfile) {
+      const profileSlug = generateSlug(user.talentProfile.fullName)
+      return [
+        { id: 'account', label: 'Cuenta creada', completed: true, ctaLabel: '', ctaHref: '' },
+        { id: 'photo', label: 'Foto de perfil', completed: !!user.image, ctaLabel: 'Añadir foto', ctaHref: '/profile/edit' },
+        {
+          id: 'position',
+          label: 'Posición y altura',
+          completed: !!(user.talentProfile.position && user.talentProfile.height),
+          ctaLabel: 'Completar',
+          ctaHref: '/profile/edit',
+        },
+        {
+          id: 'bio',
+          label: 'Bio escrita',
+          completed: !!(user.talentProfile.bio && user.talentProfile.bio.length > 20),
+          ctaLabel: 'Escribir bio',
+          ctaHref: '/profile/edit',
+        },
+        { id: 'share', label: 'Comparte tu perfil', completed: false, ctaLabel: 'Copiar enlace', ctaHref: `/jugador/${profileSlug}` },
+      ]
+    }
+    if (isCoach && user.coachProfile) {
+      const profileSlug = generateSlug(user.coachProfile.fullName)
+      return [
+        { id: 'account', label: 'Cuenta creada', completed: true, ctaLabel: '', ctaHref: '' },
+        { id: 'photo', label: 'Foto de perfil', completed: !!user.image, ctaLabel: 'Añadir foto', ctaHref: '/profile/edit' },
+        {
+          id: 'philosophy',
+          label: 'Filosofía de juego',
+          completed: !!user.coachProfile.playingStyle,
+          ctaLabel: 'Completar',
+          ctaHref: '/profile/edit',
+        },
+        {
+          id: 'experience',
+          label: 'Años de experiencia',
+          completed: user.coachProfile.totalExperience !== null,
+          ctaLabel: 'Completar',
+          ctaHref: '/profile/edit',
+        },
+        {
+          id: 'city',
+          label: 'Ciudad actualizada',
+          completed: !!user.coachProfile.city,
+          ctaLabel: 'Añadir ciudad',
+          ctaHref: '/profile/edit',
+        },
+        { id: 'share', label: 'Comparte tu perfil', completed: false, ctaLabel: 'Copiar enlace', ctaHref: `/entrenador/${profileSlug}` },
+      ]
+    }
+    if (isClubOrAgency && user.clubAgencyProfile) {
+      return [
+        { id: 'account', label: 'Cuenta creada', completed: true, ctaLabel: '', ctaHref: '' },
+        {
+          id: 'logo',
+          label: 'Logo del club',
+          completed: !!user.clubAgencyProfile.logo,
+          ctaLabel: 'Subir logo',
+          ctaHref: '/profile/club/edit',
+        },
+        {
+          id: 'description',
+          label: 'Descripción del club',
+          completed: !!user.clubAgencyProfile.description,
+          ctaLabel: 'Escribir descripción',
+          ctaHref: '/profile/club/edit',
+        },
+        {
+          id: 'opportunity',
+          label: 'Primera oferta publicada',
+          completed: user.opportunities.some((o) => o.status === 'publicada'),
+          ctaLabel: 'Publicar oferta',
+          ctaHref: '/oportunidades/nueva',
+        },
+        {
+          id: 'public',
+          label: 'Perfil público completo',
+          completed: user.clubAgencyProfile.isPublic,
+          ctaLabel: 'Hacer público',
+          ctaHref: '/profile/club/edit',
+        },
+      ]
+    }
+    return []
+  })()
+
+  const checklistAllDone = checklistItems.length > 0 && checklistItems.every((i) => i.completed)
+  const checklistProfileSlug = (() => {
+    if (isPlayer && user.talentProfile) return generateSlug(user.talentProfile.fullName)
+    if (isCoach && user.coachProfile) return generateSlug(user.coachProfile.fullName)
+    if (isClubOrAgency && user.clubAgencyProfile) return user.clubAgencyProfile.slug || ''
+    return ''
+  })()
+
   const profileCtaHref = isClubOrAgency ? '/profile/club/edit' : '/profile/complete'
   const profileCtaLabel = isPlayer
     ? user.talentProfile
@@ -456,6 +554,15 @@ export default async function DashboardPage() {
             </div>
           )}
         </div>
+
+        {/* Activation Checklist — shown above everything until complete */}
+        {checklistItems.length > 0 && !checklistAllDone && (
+          <ActivationChecklist
+            items={checklistItems}
+            role={user.role}
+            profileSlug={checklistProfileSlug}
+          />
+        )}
 
         {isClubOrAgency && (
           <DashboardClubAgency
