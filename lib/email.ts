@@ -1175,6 +1175,63 @@ export async function sendClubRecruitingNudgeEmail(params: {
   }
 }
 
+export async function sendIncompleteClubProfileEmail(
+  userName: string,
+  userEmail: string
+) {
+  try {
+    const safeName = escapeHtml(userName)
+    const { data, error } = await getResendClient().emails.send({
+      from: 'WorkHoops <hola@workhoops.com>',
+      to: [userEmail],
+      subject: 'Completa tu perfil en WorkHoops 🏀',
+      html: `
+        <div style="font-family: system-ui, -apple-system, Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #0f0f1a; padding: 48px 20px; text-align: center;">
+            <div style="font-size: 44px; margin-bottom: 10px;">🏀</div>
+            <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -1px;">WorkHoops</h1>
+            <p style="color: #FF6B1A; margin: 10px 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">La plataforma de baloncesto</p>
+          </div>
+
+          <div style="background: linear-gradient(135deg, #FF6B1A, #e05a10); padding: 28px 36px; text-align: center;">
+            <h2 style="color: white; margin: 0; font-size: 24px; font-weight: 700;">¡Ya casi estás, ${safeName}!</h2>
+          </div>
+
+          <div style="padding: 48px 36px; background: white;">
+            <p style="color: #555; margin: 0 0 24px 0; line-height: 1.7; font-size: 15px;">
+              Te registraste en WorkHoops pero falta un último paso para que tu club sea visible para jugadores y entrenadores de toda España.
+            </p>
+
+            <div style="text-align: center; margin: 36px 0;">
+              <a href="${APP_URL}/profile/complete"
+                 style="background: #FF6B1A; color: white; padding: 18px 40px; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block; font-size: 16px;">
+                Completar mi perfil →
+              </a>
+            </div>
+
+            <p style="color: #aaa; font-size: 13px; margin: 0; text-align: center; line-height: 1.7;">
+              Solo tarda 2 minutos. Una vez completado tu club aparecerá en la plataforma.
+            </p>
+          </div>
+
+          ${FOOTER_HTML}
+        </div>
+      `,
+    })
+
+    if (error) {
+      logger.error({ err: error }, '[RESEND] Error sending incomplete club profile email')
+      throw new Error('Failed to send incomplete club profile email: ' + JSON.stringify(error))
+    }
+
+    logger.info({ id: data?.id }, '[RESEND] Incomplete club profile email sent successfully')
+    return data
+  } catch (error) {
+    logger.error({ err: error }, '[RESEND] Exception in sendIncompleteClubProfileEmail')
+    throw error
+  }
+}
+
 export async function sendTalentInvitationReminderEmail(params: {
   talentEmail: string
   talentName: string

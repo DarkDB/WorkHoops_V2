@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { logEmailEvent, shouldSendEmail } from '@/lib/email-lifecycle'
-import { sendClubRecruitingNudgeEmail, sendTalentInvitationReminderEmail } from '@/lib/email'
+import { sendClubRecruitingNudgeEmail, sendTalentInvitationReminderEmail, sendIncompleteClubProfileEmail } from '@/lib/email'
+import logger from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
@@ -208,7 +209,61 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, clubSent, talentSent })
+    // ── Clubs sin perfil completado después de 24h ──────────────────────
+    let incompleteClubsSent = 0
+
+    const threshold24h = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+    const threshold72h = new Date(now.getTime() - 72 * 60 * 60 * 1000)
+
+    const incompleteClubs = await prisma.user.findMany({
+      where: {
+        role: { in: ['club', 'agencia'] },
+        isActive: true,
+        createdAt: {
+          gte: threshold72h,
+          lte: threshold24h,
+        },
+        clubAgencyProfile: null
+      },
+      select: { id: true, email: true, name: true }
+    })
+
+    for (const club of incompleteClubs) {
+      const dedupeKey = `incomplete-club-profile:${club.id}`
+      const canSend = await shouldSendEmail({
+        userId: club.id,
+        email: club.email,
+        category: 'onboarding',
+        template: 'incomplete_club_profile',
+        dedupeKey,
+      })
+      if (!canSend) continue
+
+      try {
+        await sendIncompleteClubProfileEmail(club.name || 'Club', club.email)
+        await logEmailEvent({
+          userId: club.id,
+          email: club.email,
+          category: 'onboarding',
+          template: 'incomplete_club_profile',
+          dedupeKey,
+          status: 'sent',
+        })
+        incompleteClubsSent++
+      } catch (err) {
+        logger.error({ err, userId: club.id }, 'Error sending incomplete club profile email')
+        await logEmailEvent({
+          userId: club.id,
+          email: club.email,
+          category: 'onboarding',
+          template: 'incomplete_club_profile',
+          dedupeKey,
+          status: 'failed',
+        })
+      }
+    }
+
+    return NextResponse.json({ success: true, clubSent, talentSent, incompleteClubsSent })
   } catch (error) {
     console.error('Error in engagement nudges cron:', error)
     return NextResponse.json({ message: 'Error interno del servidor' }, { status: 500 })
