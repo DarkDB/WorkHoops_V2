@@ -97,18 +97,18 @@ export default async function HomePage() {
             <div className="space-y-8">
               <div className="space-y-4">
                 <div className="inline-flex items-center space-x-2 bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
-                  <Shield className="w-4 h-4" />
-                  <span>Producto orientado a reclutamiento para clubes</span>
+                  <Star className="w-4 h-4" />
+                  <span>Gratis para jugadores · España y LATAM</span>
                 </div>
 
                 <h1 className="text-4xl lg:text-6xl font-black text-workhoops-primary leading-tight">
-                  El mercado de fichajes de{' '}
+                  Tu próximo contrato de{' '}
                   <span className="text-workhoops-accent">baloncesto</span>{' '}
-                  está aquí. ¿Estás dentro?
+                  empieza aquí.
                 </h1>
 
                 <p className="text-lg lg:text-xl text-gray-600 max-w-2xl leading-relaxed">
-                  Crea tu perfil gratis, muestra tu nivel y deja que los clubes de España y LATAM te encuentren este verano.
+                  Crea tu perfil gratis y deja que los clubes de España y LATAM te encuentren. Sin intermediarios, sin agentes.
                 </p>
               </div>
 
@@ -123,7 +123,7 @@ export default async function HomePage() {
 
                 <Link href="/publicar">
                   <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-2">
-                    Publicar una oferta
+                    ¿Eres un club? Publica gratis →
                   </Button>
                 </Link>
               </div>
@@ -131,7 +131,7 @@ export default async function HomePage() {
               <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>RGPD compliant</span>
+                  <span>Gratis para jugadores</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Shield className="w-4 h-4 text-blue-500" />
@@ -305,14 +305,23 @@ export default async function HomePage() {
                   height: lockedOpportunities.length > 3 ? '55%' : '50%',
                 }}
               >
-                <p className="text-lg font-semibold text-gray-800 text-center">
-                  Regístrate gratis para ver todas las oportunidades
-                </p>
-                <Link href="/auth/register">
-                  <Button className="bg-workhoops-accent hover:bg-orange-700 text-white px-6">
-                    Ver todas las ofertas →
-                  </Button>
-                </Link>
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <Users className="w-6 h-6 text-workhoops-accent" />
+                  </div>
+                  <p className="text-xl font-bold text-gray-900 text-center">
+                    {lockedOpportunities.length} ofertas más esperando
+                  </p>
+                  <p className="text-sm text-gray-500 text-center">
+                    Gratis para jugadores · Sin tarjeta de crédito
+                  </p>
+                  <Link href="/auth/register">
+                    <Button className="bg-workhoops-accent hover:bg-orange-700 text-white px-8 py-3 text-base font-semibold">
+                      Ver todas las ofertas →
+                    </Button>
+                  </Link>
+                  <p className="text-xs text-gray-400">Ya hay +200 jugadores registrados</p>
+                </div>
               </div>
             )}
           </div>

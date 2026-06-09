@@ -336,73 +336,32 @@ export default async function SobrePage() {
         </div>
       </section>
 
-      {/* Team */}
-      {/* Team */}
+      {/* Team — solo Eduardo */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Nuestro equipo
+              Quién hay detrás
             </h2>
             <p className="text-lg text-gray-600">
-              Profesionales apasionados por el baloncesto y la tecnología
+              WorkHoops nace de alguien que conoce el baloncesto desde dentro
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <Card key={index} className="text-center">
-                <CardHeader>
-                  <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
-                    {member.icon === 'user' && <Users className="w-12 h-12 text-workhoops-accent" />}
-                    {member.icon === 'users' && <Users className="w-12 h-12 text-workhoops-accent" />}
-                    {member.icon === 'zap' && <Zap className="w-12 h-12 text-workhoops-accent" />}
-                  </div>
-                  <CardTitle>{member.name}</CardTitle>
-                  <CardDescription className="text-workhoops-accent font-medium">
-                    {member.role}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">{member.bio}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Lo que dicen de nosotros
-            </h2>
-            <p className="text-lg text-gray-600">
-              Testimonios reales de nuestra comunidad
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardContent className="pt-6">
-                  <div className="flex items-center mb-3">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                      </svg>
-                    ))}
-                  </div>
-                  <p className="text-gray-600 mb-4 italic">"{testimonial.text}"</p>
-                  <div className="border-t pt-4">
-                    <p className="font-semibold text-gray-900">{testimonial.name}</p>
-                    <p className="text-sm text-gray-500">{testimonial.role}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="flex flex-col md:flex-row items-center gap-8 bg-orange-50 rounded-2xl p-8">
+            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-orange-200 to-orange-400 flex items-center justify-center shrink-0">
+              <Users className="w-14 h-14 text-white" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900">Eduardo Jiménez</h3>
+              <p className="text-workhoops-accent font-semibold mb-3">CEO & Fundador</p>
+              <p className="text-gray-600 leading-relaxed">
+                Amante del baloncesto y la tecnología, con más de 12 años en las canchas.
+                Creé WorkHoops porque viví en primera persona lo difícil que es para un jugador
+                encontrar equipo y para un club encontrar el perfil adecuado sin gastar una fortuna
+                en intermediarios.
+              </p>
+            </div>
           </div>
         </div>
       </section>

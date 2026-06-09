@@ -193,12 +193,17 @@ export default function PlayerDashboard({ applications, recommendations, interes
             <CardContent>
               <div className="space-y-4">
                 {applications.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <Briefcase className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                    <p>Aún no has enviado aplicaciones</p>
+                  <div className="text-center py-10">
+                    <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Briefcase className="w-8 h-8 text-orange-400" />
+                    </div>
+                    <p className="font-semibold text-gray-800 mb-1">Todavía no has aplicado a ninguna oferta</p>
+                    <p className="text-sm text-gray-500 mb-5">
+                      Hay clubes buscando jugadores ahora mismo. Encuentra la oferta que encaja con tu nivel.
+                    </p>
                     <Link href="/oportunidades">
-                      <Button variant="outline" size="sm" className="mt-4">
-                        Explorar oportunidades
+                      <Button size="sm">
+                        Ver ofertas disponibles →
                       </Button>
                     </Link>
                   </div>

@@ -283,6 +283,28 @@ export default function DashboardClubAgency({
 
   return (
     <>
+      {/* Banner: sin oferta activa */}
+      {activeOpportunities === 0 && (
+        <div className="mb-6 bg-orange-50 border-2 border-orange-300 rounded-xl p-5 flex items-start gap-4">
+          <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+            <Briefcase className="w-5 h-5 text-orange-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-bold text-gray-900">Tu club no tiene ninguna oferta activa</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Los jugadores no pueden encontrarte todavía. La descripción del club es para contar vuestra historia —
+              para recibir candidaturas necesitas publicar una oferta por separado.
+            </p>
+            <Link href="/publicar">
+              <Button size="sm" className="mt-3">
+                <PlusCircle className="w-4 h-4 mr-2" />
+                Publicar primera oferta →
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardContent className="p-6">

@@ -14,19 +14,18 @@ const plans = [
   {
     id: 'free_amateur',
     name: 'Free',
-    subtitle: 'Amateur',
+    subtitle: 'Jugador',
     price: 0,
     period: '',
-    description: 'Perfecto para empezar en WorkHoops',
+    description: 'Crea tu perfil y empieza a ser descubierto',
     popular: false,
     features: [
-      'Perfil público en la comunidad',
-      'Acceso a ofertas básicas y abiertas',
-      'Acceso a eventos gratuitos',
-      'Búsqueda básica de oportunidades',
+      'Perfil público visible para clubes',
+      'Acceso a ofertas abiertas',
+      'Aplicaciones básicas',
       'Notificaciones por email'
     ],
-    cta: 'Comenzar gratis',
+    cta: 'Crear perfil gratis',
     targetAudience: 'Jugadores y entrenadores que empiezan',
     icon: <Users className="w-6 h-6" />,
     bgColor: 'bg-gray-50',
@@ -35,23 +34,23 @@ const plans = [
   {
     id: 'pro_semipro',
     name: 'Pro',
-    subtitle: 'Semi-Pro',
+    subtitle: 'Para no perderte nada',
     price: 4.99,
     period: '/mes',
     annualPrice: 39.92,
-    description: 'Para jugadores y entrenadores serios',
+    description: 'Para quien no quiere perderse la oferta perfecta',
     popular: true,
     features: [
-      'Todas las funciones del plan Free',
-      'Acceso a TODAS las ofertas (básicas + exclusivas)',
-      'Perfil destacado en búsquedas',
+      'Todo lo del plan Free',
+      'Acceso a TODAS las ofertas exclusivas',
+      'Tu perfil aparece primero en búsquedas',
       'Aplicaciones ilimitadas',
       'Filtros avanzados (posición, país, categoría)',
+      'Estadísticas de quién visita tu perfil',
       'Soporte prioritario',
-      'Estadísticas básicas de perfil',
       'Notificaciones en tiempo real'
     ],
-    cta: 'Contratar plan',
+    cta: 'Empezar plan Pro',
     targetAudience: 'Jugadores y entrenadores que buscan visibilidad real',
     icon: <Zap className="w-6 h-6" />,
     bgColor: 'bg-orange-50',
@@ -60,20 +59,20 @@ const plans = [
   {
     id: 'club_agencia',
     name: 'Club',
-    subtitle: 'Agencia',
+    subtitle: 'Gratis para empezar',
     price: 0,
     period: '',
-    description: 'Para equipos, clubes y agencias',
+    description: 'Publica tu primera oferta y gestiona candidatos',
     popular: false,
     features: [
-      'Publicación de 1 oferta gratuita',
-      'Acceso a panel de gestión de candidatos',
-      'Contacto directo con postulantes',
-      'Estadísticas básicas de vacantes',
-      'Perfil de organización verificado'
+      '1 oferta publicada gratis',
+      'Panel de gestión de candidatos',
+      'Contacto directo con jugadores',
+      'Estadísticas básicas de tu oferta',
+      'Perfil de club verificado'
     ],
     cta: 'Crear perfil de club',
-    targetAudience: 'Equipos, clubes o agencias que buscan talento',
+    targetAudience: 'Clubes y agencias que quieren probar la plataforma',
     icon: <Trophy className="w-6 h-6" />,
     bgColor: 'bg-blue-50',
     borderColor: 'border-blue-200'
@@ -81,22 +80,22 @@ const plans = [
   {
     id: 'destacado',
     name: 'Destacado',
-    subtitle: 'Premium',
+    subtitle: 'Tu oferta en el top',
     price: 49,
     period: '/60 días',
-    description: 'Máxima visibilidad para tus ofertas',
+    description: 'Tu oferta, la primera que ven los jugadores',
     popular: false,
     features: [
-      'Todas las funciones del plan Club',
-      'Publicación destacada durante 60 días',
-      'Promoción en redes sociales WorkHoops',
-      'Soporte prioritario dedicado',
-      'Hasta 3 publicaciones simultáneas',
+      'Todo lo del plan Club',
+      'Posición TOP en el listado durante 60 días',
+      'Promoción de tu oferta en Instagram y TikTok de WorkHoops',
+      'Hasta 3 ofertas simultáneas',
       'Estadísticas avanzadas de candidatos',
-      'Posición premium en listados'
+      'Soporte prioritario dedicado',
+      'Badge "Destacada" en tu oferta'
     ],
-    cta: 'Destacar oferta',
-    targetAudience: 'Clubes y agencias que quieren promocionar sus ofertas',
+    cta: 'Destacar mi oferta',
+    targetAudience: 'Clubes que quieren llenar su plaza rápido',
     icon: <Star className="w-6 h-6" />,
     bgColor: 'bg-yellow-50',
     borderColor: 'border-yellow-200'
@@ -173,12 +172,13 @@ export default function PlanesPage() {
           <div className="space-y-8">
             <div className="space-y-4">
               <h1 className="text-4xl lg:text-6xl font-black text-workhoops-primary leading-tight">
-                Elige tu plan en{' '}
-                <span className="text-workhoops-accent">WorkHoops</span>
+                Empieza gratis.{' '}
+                <span className="text-workhoops-accent">Escala cuando encuentres tu oportunidad.</span>
               </h1>
-              
+
               <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Precios accesibles para maximizar el volumen y conectar a toda la comunidad del baloncesto español
+                Los jugadores siempre acceden gratis. Los clubes publican su primera oferta sin coste.
+                Solo pagas cuando quieres más visibilidad.
               </p>
             </div>
 

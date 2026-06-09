@@ -339,43 +339,26 @@ export default function TalentoPage() {
         </div>
       </section>
 
-      {/* Testimonios */}
+      {/* Testimonios — pendientes de reales */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Casos de éxito
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Descubre cómo otros profesionales han impulsado su carrera con WorkHoops
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            Somos una comunidad nueva
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10">
+            WorkHoops está creciendo. Si ya encontraste equipo o recibiste una oferta a través de la plataforma,
+            nos encantaría contarlo.
+          </p>
+          <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 inline-block max-w-xl mx-auto">
+            <Quote className="w-10 h-10 text-workhoops-accent mx-auto mb-4 opacity-60" />
+            <p className="text-gray-700 text-lg mb-6 italic">
+              "¿Conseguiste tu próximo club con WorkHoops? Cuéntanos tu historia."
             </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardContent className="pt-6">
-                  <div className="flex items-center mb-4">
-                    <div className="text-4xl mr-3">{testimonial.image}</div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                      <p className="text-sm text-gray-600">{testimonial.role}</p>
-                    </div>
-                  </div>
-                  
-                  <Quote className="w-8 h-8 text-workhoops-accent mb-3 opacity-50" />
-                  
-                  <p className="text-gray-700 mb-4 italic">
-                    "{testimonial.quote}"
-                  </p>
-                  
-                  <Badge className="bg-green-100 text-green-800">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    {testimonial.achievement}
-                  </Badge>
-                </CardContent>
-              </Card>
-            ))}
+            <a href="mailto:hola@workhoops.com?subject=Mi historia en WorkHoops">
+              <Button variant="outline" className="border-workhoops-accent text-workhoops-accent hover:bg-orange-50">
+                Escribir a hola@workhoops.com →
+              </Button>
+            </a>
           </div>
         </div>
       </section>
@@ -414,11 +397,28 @@ export default function TalentoPage() {
             ¿Listo para dar el siguiente paso en tu carrera?
           </h2>
           <p className="text-lg mb-8 opacity-90">
-            Únete a miles de jugadores y entrenadores que ya están conectando con oportunidades
+            Crea tu perfil gratis y aparece en las búsquedas de clubes de toda España y LATAM
           </p>
-          
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {getCTAButton()}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA para Clubes */}
+      <section className="py-12 bg-gray-50 border-t border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <p className="text-sm font-semibold text-workhoops-accent uppercase tracking-wide mb-1">¿Eres un club o agencia?</p>
+              <h3 className="text-2xl font-bold text-gray-900">Accede a estos perfiles de jugadores</h3>
+              <p className="text-gray-600 mt-1">Publica tu primera oferta gratis y conecta directamente con el talento que buscas.</p>
+            </div>
+            <Link href="/publicar" className="shrink-0">
+              <Button size="lg" variant="outline" className="border-2 border-workhoops-primary text-workhoops-primary hover:bg-gray-100 px-8">
+                Publicar oferta gratis →
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
