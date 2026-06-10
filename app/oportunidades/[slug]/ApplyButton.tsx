@@ -72,8 +72,9 @@ export default function ApplyButton({
         description: 'Tu aplicación ha sido enviada correctamente'
       })
     } catch (error) {
+      console.error('Apply error:', error)
       toast.error('Error al aplicar', {
-        description: error instanceof Error ? error.message : 'Inténtalo de nuevo'
+        description: error instanceof Error ? error.message : 'Inténtalo de nuevo más tarde'
       })
     } finally {
       setIsApplying(false)

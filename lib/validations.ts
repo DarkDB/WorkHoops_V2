@@ -48,7 +48,7 @@ export const opportunityCreateSchema = z.object({
 export const opportunityUpdateSchema = opportunityCreateSchema.partial()
 
 export const applicationCreateSchema = z.object({
-  opportunityId: z.string().cuid("ID de oportunidad inválido"),
+  opportunityId: z.string().min(1, "ID de oportunidad requerido"),
   message: z.string().max(1000, "El mensaje no puede superar los 1000 caracteres").optional().or(z.literal('')),
 })
 
