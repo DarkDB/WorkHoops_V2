@@ -234,7 +234,7 @@ export default async function TrabajoSlugPage({ params }: { params: { slug: stri
 
   const opportunities = await prisma.opportunity.findMany({
     where,
-    orderBy: [{ isFeatured: 'desc' }, { publishedAt: 'desc' }],
+    orderBy: [{ featured: 'desc' }, { publishedAt: 'desc' }],
     take: 20,
     include: {
       club: {
@@ -308,7 +308,7 @@ export default async function TrabajoSlugPage({ params }: { params: { slug: stri
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            {opp.isFeatured && (
+                            {opp.featured && (
                               <Badge className="bg-orange-100 text-orange-700 border-0 text-xs">
                                 Destacada
                               </Badge>
