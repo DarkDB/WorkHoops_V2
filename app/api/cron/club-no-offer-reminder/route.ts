@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         // No opportunities at all, or no active ones
         opportunities: {
           none: {
-            status: 'active',
+            status: 'publicada',
           }
         }
       },
