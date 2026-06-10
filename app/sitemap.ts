@@ -6,6 +6,11 @@ const APP_URL = process.env.APP_URL || 'https://workhoops.es'
 const PAISES = ['espana', 'mexico', 'argentina', 'colombia']
 const POSICIONES = ['base', 'escolta', 'alero', 'pivot', 'entrenador']
 
+// Programmatic SEO /trabajo/[slug] combinations
+const TRABAJO_POSITIONS = ['base', 'escolta', 'alero', 'pivot', 'entrenador']
+const TRABAJO_LEVELS = ['tercera-feb', 'segunda-feb', 'primera-feb', 'autonomica']
+const TRABAJO_CITIES = ['madrid', 'barcelona', 'valencia', 'sevilla', 'bilbao', 'zaragoza']
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static core pages
   const staticPages: MetadataRoute.Sitemap = [
@@ -82,5 +87,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Sitemap: error fetching opportunities', error)
   }
 
-  return [...staticPages, ...paisPages, ...posicionPages, ...opportunityPages]
+  // Programmatic SEO: /trabajo/[slug] pages
+  const trabajoPages: MetadataRoute.Sitemap = []
+  // position only
+  for (const p of TRABAJO_POSITIONS) {
+    trabajoPages.push({ url: `${APP_URL}/trabajo/${p}`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.8 })
+  }
+  // position + level
+  for (const p of TRABAJO_POSITIONS) {
+    for (const l of TRABAJO_LEVELS) {
+      trabajoPages.push({ url: `${APP_URL}/trabajo/${p}-${l}`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.85 })
+    }
+  }
+  // position + level + city
+  for (const p of ['base', 'pivot', 'entrenador']) {
+    for (const l of ['tercera-feb', 'segunda-feb']) {
+      for (const c of TRABAJO_CITIES) {
+        trabajoPages.push({ url: `${APP_URL}/trabajo/${p}-${l}-${c}`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.9 })
+      }
+    }
+  }
+
+  return [...staticPages, ...paisPages, ...posicionPages, ...trabajoPages, ...opportunityPages]
 }
