@@ -85,7 +85,7 @@ export default function ClubAgencyProfileOnboarding({
         description: 'Ya puedes usar WorkHoops como club y completar el resto después.',
       })
 
-      router.push('/dashboard')
+      router.push('/publicar?onboarding=1')
       router.refresh()
     } catch (error) {
       console.error('Error saving club onboarding:', error)
@@ -188,7 +188,7 @@ export default function ClubAgencyProfileOnboarding({
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, description: e.target.value }))
                 }
-                placeholder="Explica brevemente quiénes sois, vuestro proyecto deportivo y qué tipo de jugador buscáis."
+                placeholder="Ej: Club de baloncesto fundado en 2003 en Sabadell. Competimos en 3ª FEB y buscamos jugadores con perfil competitivo. Cuéntanos vuestra historia aquí — las plazas disponibles las publicáis como ofertas por separado."
               />
             </div>
 

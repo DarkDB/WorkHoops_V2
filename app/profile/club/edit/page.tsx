@@ -242,7 +242,7 @@ export default function EditClubProfilePage() {
                   rows={6}
                   value={formData.description}
                   onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Describe tu club, proyecto deportivo y objetivos de reclutamiento."
+                  placeholder="Ej: Club fundado en 2003 en Madrid. Competimos en 2ª FEB y apostamos por jugadores jóvenes con proyección. Cuéntanos vuestra historia aquí — las plazas disponibles se publican como ofertas por separado."
                 />
               </div>
             </CardContent>

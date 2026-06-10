@@ -1285,3 +1285,71 @@ export async function sendTalentInvitationReminderEmail(params: {
     throw new Error('Failed to send talent invitation reminder email')
   }
 }
+
+// ========== CLUB NO-OFFER REMINDER (24h after registration) ==========
+export async function sendClubNoOfferReminderEmail(params: {
+  clubEmail: string
+  clubName: string
+  publishUrl: string
+}) {
+  const { clubEmail, clubName, publishUrl } = params
+
+  if (!clubEmail) return null
+
+  try {
+    const safeClubName = escapeHtml(clubName)
+    const { data, error } = await getResendClient().emails.send({
+      from: 'WorkHoops <hola@workhoops.com>',
+      to: [clubEmail],
+      subject: '¿Tu club ya tiene jugadores mirando? Publica tu primera oferta gratis',
+      html: `
+        <div style="font-family: system-ui, -apple-system, Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #0f0f1a; padding: 40px 20px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold; letter-spacing: -0.5px;">WorkHoops</h1>
+            <p style="color: #FF6B1A; margin: 10px 0 0 0; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Tu club está registrado 🏀</p>
+          </div>
+          <div style="padding: 48px 36px; background: white;">
+            <h2 style="margin: 0 0 12px 0; color: #111; font-size: 22px;">Hola, ${safeClubName}</h2>
+            <p style="color: #555; margin: 0 0 20px 0; line-height: 1.7; font-size: 15px;">
+              Tu club ya está en WorkHoops, ¡genial! Pero hay un paso que falta:
+              <strong style="color: #111;">publicar una oferta</strong>.
+            </p>
+            <div style="background: #FFF7ED; border-left: 4px solid #FF6B1A; padding: 16px 20px; margin: 0 0 28px 0; border-radius: 0 8px 8px 0;">
+              <p style="margin: 0; color: #92400E; font-size: 14px; line-height: 1.6;">
+                Sin una oferta activa, los jugadores no pueden encontrarte ni aplicar a tu club.
+                La descripción del club es tu carta de presentación — la oferta es lo que activa las candidaturas.
+              </p>
+            </div>
+            <p style="color: #555; margin: 0 0 12px 0; line-height: 1.7; font-size: 15px;">
+              Publicar tu primera oferta es <strong>gratis</strong> y tarda menos de 3 minutos:
+            </p>
+            <ol style="color: #555; margin: 0 0 28px 0; padding-left: 20px; line-height: 2; font-size: 15px;">
+              <li>Entra a WorkHoops y ve a <em>Publicar oferta</em></li>
+              <li>Elige el tipo (empleo, prueba, beca...)</li>
+              <li>Describe la posición y la categoría</li>
+              <li>¡Listo! Los jugadores ya pueden encontrarte</li>
+            </ol>
+            <div style="text-align: center; margin-top: 16px;">
+              <a href="${publishUrl}" style="background: #FF6B1A; color: white; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
+                Publicar mi primera oferta →
+              </a>
+            </div>
+            <p style="color: #999; margin: 28px 0 0 0; font-size: 13px; text-align: center;">
+              Cualquier duda, responde a este email y te ayudamos.
+            </p>
+          </div>
+          ${FOOTER_HTML}
+        </div>
+      `
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    logger.error({ err: error }, 'Error sending club no-offer reminder email')
+    throw new Error('Failed to send club no-offer reminder email')
+  }
+}

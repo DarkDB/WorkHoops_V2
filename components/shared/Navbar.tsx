@@ -108,14 +108,7 @@ export function Navbar() {
               <span>🏀</span>
               <span>Clubes</span>
             </Link>
-            <Link 
-              href="/recursos" 
-              className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
-            >
-              <span>📚</span>
-              <span>Recursos</span>
-            </Link>
-            <Link 
+            <Link
               href="/planes" 
               className="flex items-center space-x-1 text-gray-600 hover:text-workhoops-accent transition-colors"
             >
@@ -318,14 +311,6 @@ export function Navbar() {
               >
                 <span>🏀</span>
                 <span>Clubes</span>
-              </Link>
-              <Link
-                href="/recursos"
-                className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-600 hover:text-workhoops-accent"
-                onClick={() => setIsOpen(false)}
-              >
-                <span>📚</span>
-                <span>Recursos</span>
               </Link>
               <Link
                 href="/sobre"

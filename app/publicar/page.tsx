@@ -107,6 +107,8 @@ export default function PublicarPage() {
   const router = useRouter()
   const { data: session, status } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+  const isOnboarding = searchParams?.get('onboarding') === '1'
   const [userPlan, setUserPlan] = useState<string | null>(null)
   const [opportunitiesCount, setOpportunitiesCount] = useState(0)
   const [isLoadingPlan, setIsLoadingPlan] = useState(true)
@@ -554,14 +556,29 @@ export default function PublicarPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link 
-            href="/"
-            className="inline-flex items-center text-sm text-gray-500 hover:text-workhoops-accent transition-colors mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver al inicio
-          </Link>
-          
+          {isOnboarding ? (
+            <div className="mb-6 bg-green-50 border-2 border-green-300 rounded-xl p-5">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="w-6 h-6 text-green-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h3 className="font-bold text-green-900 text-lg">¡Perfil de club creado! 🎉</h3>
+                  <p className="text-green-800 mt-1">
+                    Ahora publica tu primera oferta para que los jugadores puedan encontrarte.
+                    Sin una oferta activa, tu club no aparece en las búsquedas.
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Link
+              href="/"
+              className="inline-flex items-center text-sm text-gray-500 hover:text-workhoops-accent transition-colors mb-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Volver al inicio
+            </Link>
+          )}
+
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
             Publicar una oportunidad
           </h1>
