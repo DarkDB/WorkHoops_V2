@@ -237,10 +237,10 @@ export default async function TrabajoSlugPage({ params }: { params: { slug: stri
     orderBy: [{ publishedAt: 'desc' }],
     take: 20,
     include: {
-      club: {
+      author: {
         select: {
           name: true,
-          clubAgencyProfile: { select: { commercialName: true, logo: true } },
+          clubAgencyProfile: { select: { commercialName: true } },
         },
       },
     },
@@ -299,8 +299,8 @@ export default async function TrabajoSlugPage({ params }: { params: { slug: stri
             <div className="space-y-4 mb-10">
               {opportunities.map((opp) => {
                 const clubName =
-                  opp.club?.clubAgencyProfile?.commercialName ||
-                  opp.club?.name ||
+                  opp.author?.clubAgencyProfile?.commercialName ||
+                  opp.author?.name ||
                   'Club'
                 return (
                   <Link key={opp.id} href={`/oportunidades/${opp.slug}`}>
