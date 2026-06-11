@@ -24,14 +24,14 @@ const POSITION_MAP: Record<string, { label: string; db: string[] }> = {
 }
 
 const LEVEL_MAP: Record<string, { label: string; db: string }> = {
-  'acb': { label: 'ACB', db: 'acb' },
-  'leb-oro': { label: 'LEB Oro', db: 'primera_feb' },
-  'primera-feb': { label: '1ª FEB', db: 'primera_feb' },
-  'segunda-feb': { label: '2ª FEB', db: 'segunda_feb' },
-  'tercera-feb': { label: '3ª FEB', db: 'tercera_feb' },
-  '3a-feb': { label: '3ª FEB', db: 'tercera_feb' },
-  'autonomica': { label: 'Autonómica', db: 'autonomica' },
-  'provincial': { label: 'Provincial', db: 'provincial' },
+  'acb': { label: 'ACB', db: 'profesional' },
+  'leb-oro': { label: 'LEB Oro', db: 'profesional' },
+  'primera-feb': { label: '1ª FEB', db: 'profesional' },
+  'segunda-feb': { label: '2ª FEB', db: 'semi_profesional' },
+  'tercera-feb': { label: '3ª FEB', db: 'semi_profesional' },
+  '3a-feb': { label: '3ª FEB', db: 'semi_profesional' },
+  'autonomica': { label: 'Autonómica', db: 'amateur' },
+  'provincial': { label: 'Provincial', db: 'amateur' },
   'cantera': { label: 'Cantera', db: 'cantera' },
   'amateur': { label: 'Amateur', db: 'amateur' },
 }
