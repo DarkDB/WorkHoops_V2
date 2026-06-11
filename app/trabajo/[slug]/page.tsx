@@ -221,14 +221,12 @@ export default async function TrabajoSlugPage({ params }: { params: { slug: stri
   }
 
   if (parsed.position) {
-    where.tags = { hasSome: parsed.position.db }
-    // Also try matching title for positions
-    delete where.tags
+    const tagContains = parsed.position.db.map((t: string) => ({ tags: { contains: t, mode: 'insensitive' as const } }))
     where.OR = [
       ...(where.OR || []),
       { title: { contains: parsed.position.db[0], mode: 'insensitive' } },
       { description: { contains: parsed.position.db[0], mode: 'insensitive' } },
-      ...(parsed.level || parsed.city ? [] : [{ tags: { hasSome: parsed.position.db } }]),
+      ...tagContains,
     ]
   }
 
