@@ -19,7 +19,7 @@ export default function ClubEntityStep({ formData, updateFormData }: ClubEntityS
   const years = Array.from({ length: 150 }, (_, i) => currentYear - i)
 
   const competitions = [
-    'ACB', 'LEB Oro', 'LEB Plata', 'EBA', 'Liga Femenina', 
+    'ACB', 'Primera FEB', 'Segunda FEB', 'Tercera FEB', 'Liga Femenina',
     'Liga Femenina 2', 'NCAA', 'FIBA', 'Ligas Europeas', 'Ligas Locales'
   ]
 

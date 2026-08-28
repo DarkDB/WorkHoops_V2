@@ -26,9 +26,9 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
 
   const categories = [
     'ACB',
-    'Primera FEB (LEB Oro)',
-    'Segunda FEB (LEB Plata)',
-    'Tercera FEB (EBA)',
+    'Primera FEB',
+    'Segunda FEB',
+    'Tercera FEB',
     '1ª División Autonómica',
     'Liga Provincial',
     'Juvenil',
@@ -78,6 +78,16 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               onChange={(e) => updateFormData({ city: e.target.value })}
               placeholder="Ej: Madrid"
               required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="country">País</Label>
+            <Input
+              id="country"
+              value={formData.country || ''}
+              onChange={(e) => updateFormData({ country: e.target.value })}
+              placeholder="Ej: España"
             />
           </div>
         </div>
@@ -134,8 +144,8 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               value={formData.height}
               onChange={(e) => updateFormData({ height: e.target.value })}
               placeholder="Ej: 185"
-              min="150"
-              max="250"
+              min="140"
+              max="240"
               required
             />
           </div>
@@ -148,8 +158,8 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               value={formData.weight}
               onChange={(e) => updateFormData({ weight: e.target.value })}
               placeholder="Ej: 80"
-              min="50"
-              max="150"
+              min="40"
+              max="180"
             />
           </div>
 
@@ -161,8 +171,8 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               value={formData.wingspan}
               onChange={(e) => updateFormData({ wingspan: e.target.value })}
               placeholder="Ej: 190"
-              min="150"
-              max="250"
+              min="140"
+              max="260"
             />
           </div>
 

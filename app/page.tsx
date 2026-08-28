@@ -44,12 +44,7 @@ async function getHomeData() {
     console.error('Error fetching home data:', error)
     return {
       featuredOpportunities: [],
-      stats: {
-        opportunities: 50,
-        organizations: 25,
-        users: 200,
-        profiles: 150,
-      },
+      stats: null,
     }
   }
 }
@@ -162,7 +157,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {stats && (
       <section className="py-16 bg-gradient-to-br from-workhoops-accent to-orange-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -177,34 +172,35 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 fade-in-stagger">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                {stats.opportunities.toLocaleString('es-ES')}+
+                {stats.opportunities.toLocaleString('es-ES')}
               </div>
               <div className="text-orange-100 font-medium">Oportunidades publicadas</div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                {stats.users.toLocaleString('es-ES')}+
+                {stats.users.toLocaleString('es-ES')}
               </div>
               <div className="text-orange-100 font-medium">Usuarios registrados</div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                {stats.organizations.toLocaleString('es-ES')}+
+                {stats.organizations.toLocaleString('es-ES')}
               </div>
               <div className="text-orange-100 font-medium">Clubes verificados</div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                {stats.profiles.toLocaleString('es-ES')}+
+                {stats.profiles.toLocaleString('es-ES')}
               </div>
               <div className="text-orange-100 font-medium">Perfiles de talento</div>
             </div>
           </div>
         </div>
       </section>
+      )}
 
       {/* How it Works */}
       <section className="py-16 bg-white">

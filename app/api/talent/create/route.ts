@@ -9,6 +9,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { normalizeOptionalNumber, PHYSICAL_LIMITS, validateNumberRange } from '@/lib/physical-validations'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,6 +18,7 @@ const talentProfileSchema = z.object({
   birthDate: z.string(),
   role: z.string(),
   city: z.string().min(2, 'La ciudad es requerida'),
+  country: z.string().optional(),
   position: z.string().optional(),
   height: z.string().optional(),
   weight: z.string().optional(),
@@ -38,6 +40,10 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const validatedData = talentProfileSchema.parse(body)
+    const height = normalizeOptionalNumber(validatedData.height)
+    const weight = normalizeOptionalNumber(validatedData.weight)
+    validateNumberRange(height, PHYSICAL_LIMITS.height.min, PHYSICAL_LIMITS.height.max, 'La altura')
+    validateNumberRange(weight, PHYSICAL_LIMITS.weight.min, PHYSICAL_LIMITS.weight.max, 'El peso')
 
     // Check if user already has a talent profile
     const existingProfile = await prisma.talentProfile.findUnique({
@@ -53,9 +59,10 @@ export async function POST(request: NextRequest) {
           birthDate: new Date(validatedData.birthDate),
           role: validatedData.role,
           city: validatedData.city,
+          country: validatedData.country?.trim() || existingProfile.country,
           position: validatedData.position || null,
-          height: validatedData.height ? parseInt(validatedData.height) : null,
-          weight: validatedData.weight ? parseInt(validatedData.weight) : null,
+          height,
+          weight,
           bio: validatedData.bio || null,
           videoUrl: validatedData.video || null,
           socialUrl: validatedData.social || null,
@@ -76,9 +83,10 @@ export async function POST(request: NextRequest) {
         birthDate: new Date(validatedData.birthDate),
         role: validatedData.role,
         city: validatedData.city,
+        country: validatedData.country?.trim() || '',
         position: validatedData.position || null,
-        height: validatedData.height ? parseInt(validatedData.height) : null,
-        weight: validatedData.weight ? parseInt(validatedData.weight) : null,
+        height,
+        weight,
         bio: validatedData.bio || null,
         videoUrl: validatedData.video || null,
         socialUrl: validatedData.social || null,
@@ -101,6 +109,13 @@ export async function POST(request: NextRequest) {
     }, { status: 201 })
 
   } catch (error) {
+    if (error instanceof Error && error.message.includes('debe estar entre')) {
+      return NextResponse.json(
+        { message: error.message },
+        { status: 400 }
+      )
+    }
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { message: 'Datos inválidos', errors: error.errors },

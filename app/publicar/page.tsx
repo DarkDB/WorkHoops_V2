@@ -73,9 +73,9 @@ const planFeatures = [
 const levels = [
   // Profesional
   { value: 'acb', label: 'ACB - Liga Endesa', description: 'Primera división profesional' },
-  { value: 'primera_feb', label: 'Primera FEB (LEB Oro)', description: 'Segunda división nacional' },
-  { value: 'segunda_feb', label: 'Segunda FEB (LEB Plata)', description: 'Tercera división nacional' },
-  { value: 'tercera_feb', label: 'Tercera FEB (EBA)', description: 'Cuarta división nacional' },
+  { value: 'primera_feb', label: 'Primera FEB', description: 'Segunda división nacional' },
+  { value: 'segunda_feb', label: 'Segunda FEB', description: 'Tercera división nacional' },
+  { value: 'tercera_feb', label: 'Tercera FEB', description: 'Cuarta división nacional' },
   
   // Autonómicas
   { value: 'autonomica', label: '1ª División Autonómica', description: 'Ligas regionales' },
@@ -450,7 +450,7 @@ export default function PublicarPage() {
                 Solo Clubs y Agencias pueden publicar
               </h2>
               <p className="text-gray-600 mb-6">
-                Tu cuenta actual es de tipo <strong>"{session.user.role}"</strong>. Solo los Clubs y Agencias pueden publicar ofertas.
+                Tu cuenta actual es de tipo <strong>&quot;{session.user.role}&quot;</strong>. Solo los Clubs y Agencias pueden publicar ofertas.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/dashboard">
@@ -663,7 +663,7 @@ export default function PublicarPage() {
                     id="title"
                     value={formData.title}
                     onChange={(e) => handleInputChange('title', e.target.value)}
-                    placeholder="ej. Entrenador/a Base para Liga EBA"
+                    placeholder="ej. Base para equipo de Tercera FEB"
                     className="mt-1"
                     required
                   />
@@ -867,7 +867,7 @@ export default function PublicarPage() {
                     value={formData.contactPhone}
                     onChange={(e) => handleInputChange('contactPhone', e.target.value)}
                     type="tel"
-                    placeholder="+34 600 000 000"
+                    placeholder="+34 612 345 678"
                     className="mt-1"
                   />
                 </div>
@@ -927,7 +927,7 @@ export default function PublicarPage() {
                             </li>
                             <li className="flex items-center">
                               <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
-                              Badge "Destacado"
+                              Badge &quot;Destacado&quot;
                             </li>
                             <li className="flex items-center">
                               <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
@@ -1030,7 +1030,7 @@ export default function PublicarPage() {
                       </li>
                       <li className="flex items-center">
                         <Shield className="w-4 h-4 mr-2 text-workhoops-accent" />
-                        Badge "Destacado"
+                        Badge &quot;Destacado&quot;
                       </li>
                     </ul>
                     <Link href="/planes">

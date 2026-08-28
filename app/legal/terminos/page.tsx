@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft, FileText, AlertTriangle, CheckCircle, Gavel } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Navbar } from '@/components/shared/Navbar'
+import { SITE_CONTACT } from '@/lib/site-contact'
 
 export default function TerminosPage() {
   return (
@@ -61,8 +62,8 @@ export default function TerminosPage() {
               </p>
               <div className="bg-gray-50 border-l-4 border-workhoops-accent p-4">
                 <p className="text-sm">
-                  <strong>Entidad responsable:</strong> WorkHoops SL, sociedad española con CIF B12345678, 
-                  con domicilio en Calle Ejemplo 123, 08001 Barcelona, España.
+                  <strong>Entidad responsable:</strong> WorkHoops. Para cuestiones legales o de cumplimiento,
+                  puedes escribir a {SITE_CONTACT.legalEmail}.
                 </p>
               </div>
             </CardContent>
@@ -333,10 +334,8 @@ export default function TerminosPage() {
             </CardHeader>
             <CardContent>
               <div className="bg-gray-50 rounded-lg p-4">
-                <p><strong>Email legal:</strong> legal@workhoops.es</p>
-                <p><strong>Email general:</strong> hola@workhoops.es</p>
-                <p><strong>Dirección:</strong> Calle Ejemplo 123, 08001 Barcelona, España</p>
-                <p><strong>Teléfono:</strong> +34 600 000 000</p>
+                <p><strong>Email legal:</strong> {SITE_CONTACT.legalEmail}</p>
+                <p><strong>Email general:</strong> {SITE_CONTACT.email}</p>
               </div>
             </CardContent>
           </Card>

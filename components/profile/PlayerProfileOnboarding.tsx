@@ -47,6 +47,7 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
     fullName: existingProfile?.fullName || user.name || '',
     birthDate: existingProfile?.birthDate || '',
     city: existingProfile?.city || '',
+    country: existingProfile?.country || '',
     position: existingProfile?.position || '',
     secondaryPosition: existingProfile?.secondaryPosition || '',
     height: existingProfile?.height || '',

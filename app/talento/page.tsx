@@ -54,30 +54,6 @@ const processSteps = [
   }
 ]
 
-const testimonials = [
-  {
-    name: 'Carlos Martínez',
-    role: 'Base - ACB',
-    image: '👤',
-    quote: 'Gracias a WorkHoops conseguí mi primer contrato profesional en ACB. El proceso fue muy sencillo y los clubes pudieron ver todo mi potencial.',
-    achievement: 'Fichó por CB Estudiantes'
-  },
-  {
-    name: 'Laura Sánchez',
-    role: 'Entrenadora - EBA',
-    image: '👤',
-    quote: 'Como entrenadora, tener un perfil completo me ayudó a destacar. Ahora dirijo un equipo de EBA y todo empezó aquí.',
-    achievement: 'Primer entrenador en CB Morón'
-  },
-  {
-    name: 'Miguel Ángel Torres',
-    role: 'Alero - LEB Oro',
-    image: '👤',
-    quote: 'La visibilidad que da WorkHoops es increíble. Recibí varias ofertas de clubes que nunca hubieran sabido de mí sin esta plataforma.',
-    achievement: 'Fichó por Tizona Burgos'
-  }
-]
-
 const faqs = [
   {
     question: '¿Qué incluye mi perfil?',
@@ -253,7 +229,7 @@ export default function TalentoPage() {
               
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-lg border">
                 <div className="text-2xl font-bold text-workhoops-accent">
-                  {profileCount !== null ? `${profileCount.toLocaleString('es-ES')}+` : 'Perfil activo'}
+                  {profileCount !== null ? profileCount.toLocaleString('es-ES') : 'Perfil activo'}
                 </div>
                 <div className="text-sm text-gray-600">
                   {profileCount !== null ? 'Perfiles de talento' : 'Visible para clubes'}
@@ -397,7 +373,7 @@ export default function TalentoPage() {
             ¿Listo para dar el siguiente paso en tu carrera?
           </h2>
           <p className="text-lg mb-8 opacity-90">
-            Crea tu perfil gratis y aparece en las búsquedas de clubes de toda España y LATAM
+            Crea tu perfil gratis y aparece en las búsquedas de clubes
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {getCTAButton()}

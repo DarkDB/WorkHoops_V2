@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { EmptyState } from '@/components/shared/EmptyState'
 import ClubRecruitmentActions from '@/components/talent/ClubRecruitmentActions'
+import { formatLocation, toValidDate } from '@/lib/utils'
 import {
   Search,
   MapPin,
@@ -28,8 +29,8 @@ interface TalentProfile {
   id: string
   fullName: string
   role: string
-  city: string
-  country: string
+  city: string | null
+  country: string | null
   position: string | null
   height: number | null
   weight: number | null
@@ -176,24 +177,20 @@ export default function PerfilesPage() {
   }
 
   const formatAvailableFrom = (date: string | null) => {
-    if (!date) return null
-    try {
-      return new Date(date).toLocaleDateString('es-ES')
-    } catch {
-      return null
-    }
+    const availableFrom = toValidDate(date)
+    return availableFrom ? availableFrom.toLocaleDateString('es-ES') : null
   }
 
   const getAge = (birthDate: string | null) => {
-    if (!birthDate) return null
-    const birth = new Date(birthDate)
+    const birth = toValidDate(birthDate)
+    if (!birth) return null
     const today = new Date()
     let age = today.getFullYear() - birth.getFullYear()
     const monthDiff = today.getMonth() - birth.getMonth()
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
       age--
     }
-    return age
+    return age >= 0 ? age : null
   }
 
   if (isLoading) {
@@ -212,7 +209,7 @@ export default function PerfilesPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Perfiles de Talento</h1>
           <p className="text-gray-600">
-            Jugadores y entrenadores buscando equipo en España y LATAM
+            Jugadores y entrenadores disponibles para nuevas oportunidades
           </p>
         </div>
 
@@ -330,7 +327,7 @@ export default function PerfilesPage() {
                     Solo jugadores disponibles
                   </label>
                 )}
-                <p className="text-sm text-gray-600">{session ? profiles.length : '150+'} perfiles encontrados</p>
+                <p className="text-sm text-gray-600">{profiles.length} perfiles encontrados</p>
               </div>
 
               <div className="md:col-span-1 flex justify-end">
@@ -414,7 +411,7 @@ export default function PerfilesPage() {
 
                         <div className="flex items-center text-sm text-gray-500 mb-2">
                           <MapPin className="w-4 h-4 mr-1" />
-                          {profile.city}, {profile.country}
+                          {formatLocation(profile.city, profile.country)}
                         </div>
 
                         <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">

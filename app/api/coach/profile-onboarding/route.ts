@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     const profileData = {
       fullName: validatedData.fullName || '',
       birthYear: validatedData.birthYear || null,
-      nationality: validatedData.nationality || 'España',
+      nationality: validatedData.nationality?.trim() || existingProfile?.nationality || '',
       languages: validatedData.languages ? JSON.stringify(validatedData.languages) : null,
       city: validatedData.city || '',
       willingToRelocate: validatedData.willingToRelocate || false,

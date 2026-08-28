@@ -32,7 +32,7 @@ const contactMethods = [
     icon: <MessageCircle className="w-6 h-6 text-workhoops-accent" />,
     title: 'WhatsApp',
     description: 'Respuesta inmediata en horario laboral',
-    contact: '+34 600 000 000',
+    contact: 'Disponible por email',
     action: 'Abrir WhatsApp'
   },
   {
@@ -178,7 +178,7 @@ export default function ContactoPage() {
                       <Input 
                         id="phone" 
                         type="tel"
-                        placeholder="+34 600 000 000"
+                        placeholder="+34 612 345 678"
                         className="mt-1"
                       />
                     </div>
@@ -287,7 +287,7 @@ export default function ContactoPage() {
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-900">Teléfono/WhatsApp</h4>
-                      <p className="text-gray-600">+34 600 000 000</p>
+                      <p className="text-gray-600">Atención principal por email</p>
                     </div>
                   </div>
 

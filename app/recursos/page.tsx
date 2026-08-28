@@ -238,7 +238,7 @@ export default async function RecursosPage({
         <section className="mt-16 bg-gradient-to-r from-workhoops-primary to-workhoops-accent rounded-2xl p-8 md:p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">¿Buscas oportunidades?</h2>
           <p className="text-xl mb-8 text-white/90">
-            Explora cientos de ofertas de clubes profesionales en toda España
+            Explora oportunidades activas y descubre cómo se está moviendo el mercado
           </p>
           <Link href="/oportunidades">
             <Button size="lg" variant="secondary">

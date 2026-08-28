@@ -1,15 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+let supabaseAdmin: SupabaseClient | null = null
 
-// Use service role key for backend operations (bypasses RLS)
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+function getSupabaseAdmin(): SupabaseClient {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required')
+  }
+
+  if (!supabaseAdmin) {
+    // Use service role key for backend operations after admin authorization.
+    supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+  }
+
+  return supabaseAdmin
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,6 +75,7 @@ export async function POST(request: NextRequest) {
     console.log('[UPLOAD] Buffer size:', buffer.length)
     console.log('[UPLOAD] Uploading to Supabase bucket: uploads')
 
+    const supabase = getSupabaseAdmin()
     const { data, error } = await supabase.storage
       .from('uploads')
       .upload(fileName, buffer, {

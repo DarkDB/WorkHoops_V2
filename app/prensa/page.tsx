@@ -61,12 +61,12 @@ export const revalidate = 300
 
 export default async function PrensaPage() {
   const stats = await getSiteStats()
-  const statItems = [
+  const statItems = stats ? [
     { number: `${stats.users.toLocaleString('es-ES')}+`, label: 'Usuarios registrados', icon: <Users className="w-6 h-6" /> },
     { number: `${stats.organizations.toLocaleString('es-ES')}+`, label: 'Clubes verificados', icon: <Award className="w-6 h-6" /> },
     { number: `${stats.opportunities.toLocaleString('es-ES')}+`, label: 'Oportunidades publicadas', icon: <TrendingUp className="w-6 h-6" /> },
     { number: `${stats.profiles.toLocaleString('es-ES')}+`, label: 'Perfiles de talento', icon: <Award className="w-6 h-6" /> }
-  ]
+  ] : null
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -107,37 +107,38 @@ export default async function PrensaPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              WorkHoops en cifras
-            </h2>
-            <p className="text-lg text-gray-600">
-              Datos actualizados automaticamente desde la plataforma
-            </p>
-          </div>
+      {statItems && (
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                WorkHoops en cifras
+              </h2>
+              <p className="text-lg text-gray-600">
+                Datos actualizados automaticamente desde la plataforma
+              </p>
+            </div>
 
-          <div className="grid md:grid-cols-4 gap-8">
-            {statItems.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <div className="text-workhoops-accent">
-                    {stat.icon}
+            <div className="grid md:grid-cols-4 gap-8">
+              {statItems.map((stat, index) => (
+                <div key={index} className="text-center">
+                  <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <div className="text-workhoops-accent">
+                      {stat.icon}
+                    </div>
+                  </div>
+                  <div className="text-3xl font-black text-workhoops-accent mb-2">
+                    {stat.number}
+                  </div>
+                  <div className="text-gray-600 font-medium">
+                    {stat.label}
                   </div>
                 </div>
-                <div className="text-3xl font-black text-workhoops-accent mb-2">
-                  {stat.number}
-                </div>
-                <div className="text-gray-600 font-medium">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Press Releases */}
       <section className="py-16 bg-gray-50">
@@ -256,12 +257,14 @@ export default async function PrensaPage() {
                   en hacer más fácil el scouting básico, la captación de jugadores y la
                   gestión del interés desde una sola plataforma.
                 </p>
-                <p>
-                  Actualmente WorkHoops cuenta con {stats.users.toLocaleString('es-ES')}+ usuarios
-                  registrados y {stats.organizations.toLocaleString('es-ES')}+ clubes verificados,
-                  consolidando una base real para conectar talento y organizaciones dentro del
-                  ecosistema del baloncesto.
-                </p>
+                {stats && (
+                  <p>
+                    Actualmente WorkHoops cuenta con {stats.users.toLocaleString('es-ES')}+ usuarios
+                    registrados y {stats.organizations.toLocaleString('es-ES')}+ clubes verificados,
+                    consolidando una base real para conectar talento y organizaciones dentro del
+                    ecosistema del baloncesto.
+                  </p>
+                )}
               </div>
             </div>
 

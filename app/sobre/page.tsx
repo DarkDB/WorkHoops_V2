@@ -29,76 +29,16 @@ const values = [
   }
 ]
 
-const team = [
-  {
-    name: 'Eduardo Jiménez',
-    role: 'CEO & Fundador',
-    bio: 'Amante del baloncesto y la tecnología, con más de 12 años en las canchas y la misión de conectar el talento con nuevas oportunidades',
-    icon: 'user'
-  },
-  {
-    name: 'Equipo de Operaciones',
-    role: 'Head of Operations',
-    bio: 'Especialistas en desarrollo deportivo y gestión de talento',
-    icon: 'users'
-  },
-  {
-    name: 'Equipo Técnico',
-    role: 'Technology Team',
-    bio: 'Ingenieros con experiencia en plataformas de alto rendimiento',
-    icon: 'zap'
-  }
-]
-
-const testimonials = [
-  {
-    name: 'Carlos M.',
-    role: 'Base - CB Alcázar',
-    text: 'Gracias a WorkHoops conseguí mi primera oportunidad en LEB Plata. La plataforma es clara y directa, sin intermediarios innecesarios.',
-    rating: 5
-  },
-  {
-    name: 'Laura P.',
-    role: 'Alero - Basket Ferrol',
-    text: 'Me encanta poder ver todas las ofertas en un solo lugar. Antes perdía horas buscando en diferentes sitios. Ahora aplico en minutos.',
-    rating: 5
-  },
-  {
-    name: 'Javier S.',
-    role: 'Entrenador - Baloncesto Ciudad Real',
-    text: 'Encontré un puesto de entrenador asistente perfecto para mi. El proceso fue transparente y rápido.',
-    rating: 5
-  },
-  {
-    name: 'Club Basket Valladolid',
-    role: 'Director Deportivo',
-    text: 'Hemos fichado a 3 jugadores excelentes a través de WorkHoops. La calidad de los perfiles es muy buena.',
-    rating: 5
-  },
-  {
-    name: 'Miguel A.',
-    role: 'Pívot - Melilla Baloncesto',
-    text: 'Después de 2 años sin equipo, WorkHoops me ayudó a volver a las pistas. Eternamente agradecido.',
-    rating: 5
-  },
-  {
-    name: 'Ana R.',
-    role: 'Escolta - CB Conquero',
-    text: 'Lo mejor es que puedo crear mi perfil completo con video y estadísticas. Los clubs se toman en serio las candidaturas.',
-    rating: 5
-  }
-]
-
 export const revalidate = 300
 
 export default async function SobrePage() {
   const stats = await getSiteStats()
-  const statItems = [
-    { number: `${stats.users.toLocaleString('es-ES')}+`, label: 'Usuarios registrados' },
-    { number: `${stats.organizations.toLocaleString('es-ES')}+`, label: 'Clubes verificados' },
-    { number: `${stats.opportunities.toLocaleString('es-ES')}+`, label: 'Oportunidades publicadas' },
-    { number: `${stats.profiles.toLocaleString('es-ES')}+`, label: 'Perfiles de talento' }
-  ]
+  const statItems = stats ? [
+    { number: stats.users.toLocaleString('es-ES'), label: 'Usuarios registrados' },
+    { number: stats.organizations.toLocaleString('es-ES'), label: 'Clubes verificados' },
+    { number: stats.opportunities.toLocaleString('es-ES'), label: 'Oportunidades publicadas' },
+    { number: stats.profiles.toLocaleString('es-ES'), label: 'Perfiles de talento' }
+  ] : []
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -162,7 +102,7 @@ export default async function SobrePage() {
         </div>
       </section>
 
-      {/* Stats */}
+      {stats && (
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
@@ -179,6 +119,7 @@ export default async function SobrePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Mission */}
       <section className="py-16 bg-gray-50">

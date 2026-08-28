@@ -92,7 +92,7 @@ export default function CoachExperienceStep({ formData, updateFormData }: CoachE
             id="achievements"
             value={formData.achievements}
             onChange={(e) => updateFormData({ achievements: e.target.value })}
-            placeholder="Ascenso a LEB Plata (2020), Campeón territorial junior (2018)..."
+            placeholder="Ascenso a Segunda FEB (2020), Campeón territorial junior (2018)..."
             rows={4}
           />
           <p className="text-xs text-gray-500 mt-1">

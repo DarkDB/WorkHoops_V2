@@ -7,12 +7,13 @@ import { createNotification } from '@/lib/notifications'
 import { sendClubLeadReceivedEmail } from '@/lib/email'
 import { trackFunnelEvent } from '@/lib/funnel-events'
 import { logEmailEvent, shouldSendEmail } from '@/lib/email-lifecycle'
+import { PHYSICAL_LIMITS } from '@/lib/physical-validations'
 
 const createClubLeadSchema = z.object({
   fullName: z.string().min(2, 'El nombre es requerido'),
   age: z.number().int().min(12).max(60).optional().nullable(),
   position: z.string().max(100).optional().nullable(),
-  height: z.number().int().min(120).max(250).optional().nullable(),
+  height: z.number().int().min(PHYSICAL_LIMITS.height.min).max(PHYSICAL_LIMITS.height.max).optional().nullable(),
   city: z.string().max(120).optional().nullable(),
   email: z.string().email('Email inválido'),
   phone: z.string().max(40).optional().nullable(),

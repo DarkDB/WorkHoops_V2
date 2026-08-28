@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     const level = searchParams.get('level')
     const availabilityStatus = searchParams.get('availabilityStatus')
     const availableOnly = searchParams.get('availableOnly') === 'true'
-    const minHeight = clampNumber(searchParams.get('minHeight'), 120, 250)
-    const maxHeight = clampNumber(searchParams.get('maxHeight'), 120, 250)
+    const minHeight = clampNumber(searchParams.get('minHeight'), 140, 240)
+    const maxHeight = clampNumber(searchParams.get('maxHeight'), 140, 240)
     const minAge = clampNumber(searchParams.get('minAge'), 10, 60)
     const maxAge = clampNumber(searchParams.get('maxAge'), 10, 60)
 
@@ -172,7 +172,7 @@ export async function GET(request: NextRequest) {
         fullName: c.fullName,
         role: 'entrenador',
         city: c.city,
-        country: c.nationality || 'España',
+        country: null,
         position: c.currentLevel || null,
         height: null,
         weight: null,

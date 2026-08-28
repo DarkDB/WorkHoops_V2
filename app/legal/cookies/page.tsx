@@ -3,6 +3,7 @@ import { ArrowLeft, Cookie, Settings, BarChart, Target } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/shared/Navbar'
+import { SITE_CONTACT } from '@/lib/site-contact'
 
 export default function CookiesPage() {
   return (
@@ -343,8 +344,7 @@ export default function CookiesPage() {
                 Si tienes preguntas sobre esta política de cookies:
               </p>
               <div className="bg-gray-50 rounded-lg p-4">
-                <p><strong>Email:</strong> privacidad@workhoops.es</p>
-                <p><strong>Dirección:</strong> Calle Ejemplo 123, 08001 Barcelona, España</p>
+                <p><strong>Email:</strong> {SITE_CONTACT.privacyEmail}</p>
               </div>
             </CardContent>
           </Card>

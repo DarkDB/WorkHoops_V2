@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import logger from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       // ignore — returnUrl stays as default
     }
 
-    const portalSession = await stripe.billingPortal.sessions.create({
+    const portalSession = await getStripe().billingPortal.sessions.create({
       customer: user.stripeCustomerId,
       return_url: returnUrl,
     })

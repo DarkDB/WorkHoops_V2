@@ -45,7 +45,7 @@ export default function CoachObjectivesStep({ formData, updateFormData }: CoachO
             id="currentGoal"
             value={formData.currentGoal}
             onChange={(e) => updateFormData({ currentGoal: e.target.value })}
-            placeholder="Encontrar equipo profesional en Liga LEB, entrenar fuera de España, colaborar con academias..."
+            placeholder="Encontrar equipo profesional en Primera FEB, entrenar fuera de España, colaborar con academias..."
             rows={3}
           />
         </div>
