@@ -85,7 +85,7 @@ export default function ClubInterestForm({ clubSlug, initialValues }: ClubIntere
         <p className="font-semibold text-green-900">Solicitud enviada</p>
         {session?.user ? (
           <p className="text-sm text-green-800 mt-1">
-            El club revisará tu información. Mientras tanto, puedes completar tu perfil en WorkHoops para aumentar tus opciones.
+            El club revisará tu información y podrá contactarte si encajas con su búsqueda.
           </p>
         ) : (
           <p className="text-sm text-green-800 mt-1">
@@ -149,8 +149,8 @@ export default function ClubInterestForm({ clubSlug, initialValues }: ClubIntere
           <Input
             id="height"
             type="number"
-            min={120}
-            max={250}
+            min={140}
+            max={240}
             value={formData.height}
             onChange={(e) => setFormData((prev) => ({ ...prev, height: e.target.value }))}
           />
@@ -171,7 +171,7 @@ export default function ClubInterestForm({ clubSlug, initialValues }: ClubIntere
           id="phone"
           value={formData.phone}
           onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
-          placeholder="+34 600 000 000"
+          placeholder="+34 612 345 678"
         />
       </div>
 

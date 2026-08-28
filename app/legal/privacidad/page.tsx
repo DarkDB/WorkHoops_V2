@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft, Shield, Lock, Eye, UserCheck } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Navbar } from '@/components/shared/Navbar'
+import { SITE_CONTACT } from '@/lib/site-contact'
 
 export default function PrivacidadPage() {
   return (
@@ -48,10 +49,10 @@ export default function PrivacidadPage() {
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                 <h4 className="font-semibold text-orange-800 mb-2">Responsable del tratamiento:</h4>
                 <p className="text-orange-700">
-                  WorkHoops SL<br/>
-                  CIF: B12345678<br/>
-                  Dirección: Calle Ejemplo 123, 08001 Barcelona, España<br/>
-                  Email: privacidad@workhoops.es
+                  {SITE_CONTACT.legalOwner}, actuando bajo el nombre comercial {SITE_CONTACT.tradeName}<br/>
+                  NIF: {SITE_CONTACT.legalTaxId}<br/>
+                  Domicilio: {SITE_CONTACT.legalAddress}<br/>
+                  Email: {SITE_CONTACT.privacyEmail}
                 </p>
               </div>
             </CardContent>
@@ -192,7 +193,7 @@ export default function PrivacidadPage() {
               </div>
               
               <div>
-                <h4 className="font-semibold">Derecho de supresión ("derecho al olvido"):</h4>
+                <h4 className="font-semibold">Derecho de supresión (&quot;derecho al olvido&quot;):</h4>
                 <p className="text-gray-600 text-sm">Puedes solicitar la eliminación de tus datos personales.</p>
               </div>
               
@@ -208,7 +209,7 @@ export default function PrivacidadPage() {
 
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
                 <p className="text-green-800">
-                  <strong>Para ejercer tus derechos:</strong> Envía un email a privacidad@workhoops.es 
+                  <strong>Para ejercer tus derechos:</strong> Envía un email a {SITE_CONTACT.privacyEmail}{' '}
                   incluyendo tu nombre completo y una copia de tu documento de identidad.
                 </p>
               </div>
@@ -262,9 +263,10 @@ export default function PrivacidadPage() {
                 Si tienes preguntas sobre esta política de privacidad o el tratamiento de tus datos:
               </p>
               <div className="bg-gray-50 rounded-lg p-4">
-                <p><strong>Email:</strong> privacidad@workhoops.es</p>
-                <p><strong>Dirección:</strong> Calle Ejemplo 123, 08001 Barcelona, España</p>
-                <p><strong>Teléfono:</strong> +34 600 000 000</p>
+                <p><strong>Responsable:</strong> {SITE_CONTACT.legalOwner}, bajo el nombre comercial {SITE_CONTACT.tradeName}</p>
+                <p><strong>NIF:</strong> {SITE_CONTACT.legalTaxId}</p>
+                <p><strong>Domicilio:</strong> {SITE_CONTACT.legalAddress}</p>
+                <p><strong>Email:</strong> {SITE_CONTACT.privacyEmail}</p>
               </div>
               <p className="mt-4 text-sm text-gray-600">
                 También puedes presentar una reclamación ante la Agencia Española de Protección de Datos (AEPD) 

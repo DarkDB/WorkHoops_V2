@@ -136,7 +136,7 @@ export default function MultimediaStep({ formData, updateFormData }: MultimediaS
           </li>
           <li className="flex items-start">
             <span className="text-workhoops-accent mr-2">•</span>
-            <span>Asegúrate de que los videos sean públicos o "no listados" en YouTube</span>
+            <span>Asegúrate de que los videos sean públicos o &quot;no listados&quot; en YouTube</span>
           </li>
           <li className="flex items-start">
             <span className="text-workhoops-accent mr-2">•</span>

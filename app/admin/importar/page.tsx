@@ -135,7 +135,7 @@ export default function ImportarPage() {
       jugadores: 'email,nombre_completo,fecha_nacimiento,ciudad,pais,posicion,altura,peso,telefono,nivel_actual\njugador@ejemplo.com,Juan Pérez,1995-05-15,Madrid,España,Base,185,80,+34600000000,Semi-profesional',
       entrenadores: 'email,nombre_completo,ciudad,pais,experiencia_años,licencia,especialidad,telefono\nentrenador@ejemplo.com,María García,Barcelona,España,10,Nivel 3,Formación,+34600000000',
       clubes: 'email_responsable,nombre_club,descripcion,ciudad,website,tipo\nclub@ejemplo.com,Club Baloncesto Madrid,Club de baloncesto profesional,Madrid,https://clubmadrid.com,club',
-      ofertas: 'titulo,tipo,nivel,ciudad,descripcion,email_contacto,fecha_limite,salario_min,salario_max\nBusco Base para Liga EBA,empleo,semi_profesional,Madrid,Buscamos base con experiencia,contacto@club.com,2025-12-31,800,1200',
+      ofertas: 'titulo,tipo,nivel,ciudad,descripcion,email_contacto,fecha_limite,salario_min,salario_max\nBusco base para Tercera FEB,empleo,semi_profesional,Madrid,Buscamos base con experiencia,contacto@club.com,2025-12-31,800,1200',
     }
 
     const content = templates[type]

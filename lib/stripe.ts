@@ -1,14 +1,22 @@
 import Stripe from 'stripe'
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+let stripeClient: Stripe | null = null
 
-if (!stripeSecretKey) {
-  throw new Error('STRIPE_SECRET_KEY is required')
+export function getStripe(): Stripe {
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY?.trim()
+
+  if (!stripeSecretKey) {
+    throw new Error('STRIPE_SECRET_KEY is required')
+  }
+
+  if (!stripeClient) {
+    stripeClient = new Stripe(stripeSecretKey, {
+      apiVersion: '2024-06-20',
+    })
+  }
+
+  return stripeClient
 }
-
-export const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2024-06-20',
-})
 
 // Stripe Price IDs - Need to be created in Stripe Dashboard
 // After creating products in Stripe, update these IDs
@@ -100,7 +108,7 @@ export async function createSubscriptionCheckout(
     throw new Error(`Price ID not configured for ${billingCycle} billing`)
   }
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     payment_method_types: ['card'],
     mode: 'subscription',
     line_items: [
@@ -146,7 +154,7 @@ export async function createOneTimeCheckout(
     throw new Error('This plan does not require payment')
   }
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     payment_method_types: ['card'],
     mode: 'payment',
     line_items: [
@@ -239,5 +247,5 @@ export function constructWebhookEvent(
     throw new Error('STRIPE_WEBHOOK_SECRET is required')
   }
 
-  return stripe.webhooks.constructEvent(payload, signature, webhookSecret)
+  return getStripe().webhooks.constructEvent(payload, signature, webhookSecret)
 }

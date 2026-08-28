@@ -40,7 +40,7 @@ export default function CoachProfileOnboarding({ user, existingProfile }: CoachP
     // Paso 1: Datos Generales
     fullName: existingProfile?.fullName || user?.name || '',
     birthYear: existingProfile?.birthYear || null,
-    nationality: existingProfile?.nationality || 'España',
+    nationality: existingProfile?.nationality || '',
     languages: existingProfile?.languages ? (
       typeof existingProfile.languages === 'string'
         ? JSON.parse(existingProfile.languages)

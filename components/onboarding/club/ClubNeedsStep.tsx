@@ -143,7 +143,7 @@ export default function ClubNeedsStep({ formData, updateFormData }: ClubNeedsSte
             id="competitiveReqs"
             value={formData.competitiveReqs}
             onChange={(e) => updateFormData({ competitiveReqs: e.target.value })}
-            placeholder="Experiencia en LEB Plata, mínimo 15 minutos por partido..."
+            placeholder="Experiencia en Segunda FEB, mínimo 15 minutos por partido..."
             rows={3}
           />
         </div>

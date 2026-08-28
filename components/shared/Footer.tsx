@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Mail, MapPin, Phone, Twitter, Instagram, Linkedin, Youtube, Shield, Lock, CheckCircle, Award } from 'lucide-react'
+import { Mail, MapPin, Twitter, Instagram, Linkedin, Youtube, Shield, Lock, CheckCircle, Award } from 'lucide-react'
+import { SITE_CONTACT } from '@/lib/site-contact'
 
 const FooterSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div>
@@ -34,8 +35,7 @@ export function Footer() {
               <span className="font-bold text-xl text-white">WorkHoops</span>
             </div>
             <p className="text-gray-300 text-sm mb-4 leading-relaxed">
-              La plataforma líder para conectar talento y oportunidades en el baloncesto español. 
-              Democratizando el acceso a pruebas, empleos, torneos y becas.
+              Herramienta de reclutamiento para clubes que quieren descubrir talento y gestionar oportunidades dentro del baloncesto.
             </p>
             <div className="flex space-x-4">
               <Link href="#" className="text-gray-500 hover:text-workhoops-accent transition-colors">
@@ -89,18 +89,8 @@ export function Footer() {
               <Mail className="w-5 h-5 text-workhoops-accent mt-0.5" />
               <div>
                 <p className="font-medium text-gray-900 text-sm">Email</p>
-                <Link href="mailto:hola@workhoops.es" className="text-gray-600 text-sm hover:text-workhoops-accent">
-                  hola@workhoops.es
-                </Link>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <Phone className="w-5 h-5 text-workhoops-accent mt-0.5" />
-              <div>
-                <p className="font-medium text-gray-900 text-sm">Teléfono</p>
-                <Link href="tel:+34600000000" className="text-gray-600 text-sm hover:text-workhoops-accent">
-                  +34 600 000 000
+                <Link href={`mailto:${SITE_CONTACT.email}`} className="text-gray-600 text-sm hover:text-workhoops-accent">
+                  {SITE_CONTACT.email}
                 </Link>
               </div>
             </div>
@@ -109,7 +99,7 @@ export function Footer() {
               <MapPin className="w-5 h-5 text-workhoops-accent mt-0.5" />
               <div>
                 <p className="font-medium text-gray-900 text-sm">Oficina</p>
-                <p className="text-gray-600 text-sm">Barcelona, España</p>
+                <p className="text-gray-600 text-sm">{SITE_CONTACT.locationLabel}</p>
               </div>
             </div>
           </div>
@@ -143,8 +133,8 @@ export function Footer() {
                 <CheckCircle className="w-6 h-6 text-orange-500" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-white">100% Verificado</p>
-                <p className="text-xs text-gray-400">Cero spam</p>
+                <p className="text-xs font-semibold text-white">Controles básicos</p>
+                <p className="text-xs text-gray-400">Revisión manual inicial</p>
               </div>
             </div>
 
@@ -164,7 +154,7 @@ export function Footer() {
         <div className="pt-8 border-t border-gray-700 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-gray-400">
-              © 2025 WorkHoops SL. Todos los derechos reservados.
+              © 2026 WorkHoops. Todos los derechos reservados.
             </div>
             
             <div className="flex flex-wrap items-center space-x-6 text-sm text-gray-400">

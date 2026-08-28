@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft, FileText, AlertTriangle, CheckCircle, Gavel } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Navbar } from '@/components/shared/Navbar'
+import { SITE_CONTACT } from '@/lib/site-contact'
 
 export default function TerminosPage() {
   return (
@@ -61,8 +62,11 @@ export default function TerminosPage() {
               </p>
               <div className="bg-gray-50 border-l-4 border-workhoops-accent p-4">
                 <p className="text-sm">
-                  <strong>Entidad responsable:</strong> WorkHoops SL, sociedad española con CIF B12345678, 
-                  con domicilio en Calle Ejemplo 123, 08001 Barcelona, España.
+                  <strong>Titular:</strong> {SITE_CONTACT.legalOwner}, {SITE_CONTACT.legalStatus},
+                  actuando bajo el nombre comercial {SITE_CONTACT.tradeName}.<br />
+                  <strong>NIF:</strong> {SITE_CONTACT.legalTaxId}<br />
+                  <strong>Domicilio:</strong> {SITE_CONTACT.legalAddress}<br />
+                  <strong>Email:</strong> {SITE_CONTACT.legalEmail}
                 </p>
               </div>
             </CardContent>
@@ -75,19 +79,19 @@ export default function TerminosPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
-                <strong>"Plataforma":</strong> <span className="text-gray-600">La web WorkHoops y todos sus servicios asociados.</span>
+                <strong>&quot;Plataforma&quot;:</strong> <span className="text-gray-600">La web WorkHoops y todos sus servicios asociados.</span>
               </div>
               <div>
-                <strong>"Usuario":</strong> <span className="text-gray-600">Cualquier persona que accede o usa la plataforma.</span>
+                <strong>&quot;Usuario&quot;:</strong> <span className="text-gray-600">Cualquier persona que accede o usa la plataforma.</span>
               </div>
               <div>
-                <strong>"Talento":</strong> <span className="text-gray-600">Jugadores, entrenadores y otros profesionales del baloncesto.</span>
+                <strong>&quot;Talento&quot;:</strong> <span className="text-gray-600">Jugadores, entrenadores y otros profesionales del baloncesto.</span>
               </div>
               <div>
-                <strong>"Organizador":</strong> <span className="text-gray-600">Clubes, empresas o entidades que publican oportunidades.</span>
+                <strong>&quot;Organizador&quot;:</strong> <span className="text-gray-600">Clubes, empresas o entidades que publican oportunidades.</span>
               </div>
               <div>
-                <strong>"Oportunidad":</strong> <span className="text-gray-600">Empleos, pruebas, torneos, becas y otros servicios publicados.</span>
+                <strong>&quot;Oportunidad&quot;:</strong> <span className="text-gray-600">Empleos, pruebas, torneos, becas y otros servicios publicados.</span>
               </div>
             </CardContent>
           </Card>
@@ -333,10 +337,10 @@ export default function TerminosPage() {
             </CardHeader>
             <CardContent>
               <div className="bg-gray-50 rounded-lg p-4">
-                <p><strong>Email legal:</strong> legal@workhoops.es</p>
-                <p><strong>Email general:</strong> hola@workhoops.es</p>
-                <p><strong>Dirección:</strong> Calle Ejemplo 123, 08001 Barcelona, España</p>
-                <p><strong>Teléfono:</strong> +34 600 000 000</p>
+                <p><strong>Titular:</strong> {SITE_CONTACT.legalOwner}, actuando bajo el nombre comercial {SITE_CONTACT.tradeName}</p>
+                <p><strong>NIF:</strong> {SITE_CONTACT.legalTaxId}</p>
+                <p><strong>Domicilio:</strong> {SITE_CONTACT.legalAddress}</p>
+                <p><strong>Email legal:</strong> {SITE_CONTACT.legalEmail}</p>
               </div>
             </CardContent>
           </Card>

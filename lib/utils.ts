@@ -23,8 +23,9 @@ export function formatCurrency(amount: number, currency = 'EUR'): string {
 
 // Removed duplicate function definitions - keeping the improved versions below
 
-export function formatDate(date: Date | string): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date
+export function formatDate(date: Date | string | null | undefined): string {
+  const dateObj = toValidDate(date)
+  if (!dateObj) return 'Fecha no disponible'
   return new Intl.DateTimeFormat('es-ES', {
     year: 'numeric',
     month: 'long',
@@ -32,8 +33,9 @@ export function formatDate(date: Date | string): string {
   }).format(dateObj)
 }
 
-export function formatRelativeTime(date: Date | string): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date
+export function formatRelativeTime(date: Date | string | null | undefined): string {
+  const dateObj = toValidDate(date)
+  if (!dateObj) return 'Fecha no disponible'
   const rtf = new Intl.RelativeTimeFormat('es-ES', { numeric: 'auto' })
   
   const diffInSeconds = (dateObj.getTime() - Date.now()) / 1000
@@ -48,6 +50,17 @@ export function formatRelativeTime(date: Date | string): string {
   } else {
     return rtf.format(Math.round(diffInMinutes), 'minute')
   }
+}
+
+export function toValidDate(date: Date | string | null | undefined): Date | null {
+  if (!date) return null
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  return Number.isNaN(dateObj.getTime()) ? null : dateObj
+}
+
+export function formatLocation(city?: string | null, country?: string | null): string {
+  const parts = [city?.trim(), country?.trim()].filter(Boolean)
+  return parts.length > 0 ? parts.join(', ') : 'Ubicación no disponible'
 }
 
 export function truncate(text: string, maxLength: number): string {

@@ -336,7 +336,7 @@ export default function CandidatesManager({ opportunity: initialOpportunity }: C
 
                         {application.message && (
                           <div className="mt-2 text-sm text-gray-700 italic bg-gray-50 p-2 rounded">
-                            "{application.message}"
+                            &quot;{application.message}&quot;
                           </div>
                         )}
                       </div>

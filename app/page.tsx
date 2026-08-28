@@ -44,12 +44,7 @@ async function getHomeData() {
     console.error('Error fetching home data:', error)
     return {
       featuredOpportunities: [],
-      stats: {
-        opportunities: 50,
-        organizations: 25,
-        users: 200,
-        profiles: 150,
-      },
+      stats: null,
     }
   }
 }
@@ -162,7 +157,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {stats && (
       <section className="py-16 bg-gradient-to-br from-workhoops-accent to-orange-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -177,34 +172,35 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 fade-in-stagger">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                {stats.opportunities.toLocaleString('es-ES')}+
+                {stats.opportunities.toLocaleString('es-ES')}
               </div>
               <div className="text-orange-100 font-medium">Oportunidades publicadas</div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                {stats.users.toLocaleString('es-ES')}+
+                {stats.users.toLocaleString('es-ES')}
               </div>
               <div className="text-orange-100 font-medium">Usuarios registrados</div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                {stats.organizations.toLocaleString('es-ES')}+
+                {stats.organizations.toLocaleString('es-ES')}
               </div>
               <div className="text-orange-100 font-medium">Clubes verificados</div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center card-hover">
               <div className="text-4xl lg:text-5xl font-black text-white mb-2">
-                {stats.profiles.toLocaleString('es-ES')}+
+                {stats.profiles.toLocaleString('es-ES')}
               </div>
               <div className="text-orange-100 font-medium">Perfiles de talento</div>
             </div>
           </div>
         </div>
       </section>
+      )}
 
       {/* How it Works */}
       <section className="py-16 bg-white">
@@ -333,67 +329,6 @@ export default async function HomePage() {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Historias de éxito
-            </h2>
-            <p className="text-lg text-gray-600">
-              Lo que dicen quienes ya usan WorkHoops
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6 fade-in-stagger">
-            <Card className="card-hover">
-              <CardContent className="pt-6">
-                <div className="flex items-center mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-4 italic">"Gracias a WorkHoops conseguí mi primera oportunidad en LEB Plata. La plataforma es clara y directa, sin intermediarios innecesarios."</p>
-                <div className="border-t pt-4">
-                  <p className="font-semibold text-gray-900">Carlos M.</p>
-                  <p className="text-sm text-gray-500">Base - CB Alcázar</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover">
-              <CardContent className="pt-6">
-                <div className="flex items-center mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-4 italic">"Hemos fichado a 3 jugadores excelentes a través de WorkHoops. La calidad de los perfiles es muy buena."</p>
-                <div className="border-t pt-4">
-                  <p className="font-semibold text-gray-900">Club Basket Valladolid</p>
-                  <p className="text-sm text-gray-500">Director Deportivo</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover">
-              <CardContent className="pt-6">
-                <div className="flex items-center mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-4 italic">"Después de 2 años sin equipo, WorkHoops me ayudó a volver a las pistas. Eternamente agradecido."</p>
-                <div className="border-t pt-4">
-                  <p className="font-semibold text-gray-900">Miguel A.</p>
-                  <p className="text-sm text-gray-500">Pívot - Melilla Baloncesto</p>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>

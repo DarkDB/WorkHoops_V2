@@ -57,7 +57,7 @@ export function RegistrationGate({ slug }: RegistrationGateProps) {
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                 <Zap className="w-4 h-4" />
               </div>
-              <span className="text-sm">Aplica con 1 click a cientos de oportunidades</span>
+              <span className="text-sm">Aplica rápido y centraliza tus candidaturas</span>
             </div>
 
             <div className="flex items-center gap-3">

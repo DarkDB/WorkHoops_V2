@@ -119,7 +119,7 @@ export default function ClubVerificationStep({ formData, updateFormData }: ClubV
           ¡Último paso!
         </h3>
         <p className="text-sm text-green-800">
-          Cuando hagas clic en "Finalizar", tu perfil de {formData.entityType || 'organización'} 
+          Cuando hagas clic en &quot;Finalizar&quot;, tu perfil de {formData.entityType || 'organización'}
           estará listo y podrás empezar a buscar talento, publicar ofertas y conectar con jugadores y entrenadores.
         </p>
       </Card>

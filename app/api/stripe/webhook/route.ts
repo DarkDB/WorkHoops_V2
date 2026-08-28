@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
               if (stripeSubscriptionId) {
                 const stripeSub = await import('@/lib/stripe').then(m =>
-                  m.stripe.subscriptions.retrieve(stripeSubscriptionId)
+                  m.getStripe().subscriptions.retrieve(stripeSubscriptionId)
                 )
 
                 await prisma.subscription.upsert({

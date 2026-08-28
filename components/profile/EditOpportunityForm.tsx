@@ -46,9 +46,9 @@ export default function EditOpportunityForm({ opportunity }: EditOpportunityForm
 
   const levels = [
     { value: 'acb', label: 'ACB - Liga Endesa' },
-    { value: 'primera_feb', label: 'Primera FEB (LEB Oro)' },
-    { value: 'segunda_feb', label: 'Segunda FEB (LEB Plata)' },
-    { value: 'tercera_feb', label: 'Tercera FEB (EBA)' },
+    { value: 'primera_feb', label: 'Primera FEB' },
+    { value: 'segunda_feb', label: 'Segunda FEB' },
+    { value: 'tercera_feb', label: 'Tercera FEB' },
     { value: 'autonomica', label: '1ª División Autonómica' },
     { value: 'provincial', label: 'Liga Provincial' },
     { value: 'cantera', label: 'Cantera / Formación' },
@@ -128,7 +128,7 @@ export default function EditOpportunityForm({ opportunity }: EditOpportunityForm
                 id="title"
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                placeholder="Ej: Base para equipo de LEB Plata"
+                placeholder="Ej: Base para equipo de Segunda FEB"
                 className="mt-1"
                 required
               />
@@ -324,7 +324,7 @@ export default function EditOpportunityForm({ opportunity }: EditOpportunityForm
                   id="contactPhone"
                   value={formData.contactPhone}
                   onChange={(e) => handleInputChange('contactPhone', e.target.value)}
-                  placeholder="+34 600 000 000"
+                  placeholder="+34 612 345 678"
                   className="mt-1"
                 />
               </div>

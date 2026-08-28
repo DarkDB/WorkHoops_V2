@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { trackFunnelEvent } from '@/lib/funnel-events'
 import { calculateTalentProfileCompletion } from '@/lib/profile-completion'
+import { normalizeOptionalNumber, PHYSICAL_LIMITS, validateNumberRange } from '@/lib/physical-validations'
 
 // Esquema de validación para el onboarding
 const profileOnboardingSchema = z.object({
@@ -12,6 +13,7 @@ const profileOnboardingSchema = z.object({
   fullName: z.string().min(1, 'Nombre completo es requerido'),
   birthDate: z.string().optional(),
   city: z.string().min(1, 'Ciudad es requerida'),
+  country: z.string().optional(),
   position: z.string().min(1, 'Posición es requerida'),
   secondaryPosition: z.string().optional(),
   height: z.union([z.string().min(1, 'La altura es requerida'), z.number()]),
@@ -83,10 +85,10 @@ export async function POST(request: NextRequest) {
     const validatedData = profileOnboardingSchema.parse(body)
 
     // Convertir valores numéricos
-    const heightCm = validatedData.height ? parseInt(validatedData.height.toString()) : null
-    const weightKg = validatedData.weight ? parseInt(validatedData.weight.toString()) : null
-    const wingspanCm = validatedData.wingspan ? parseInt(validatedData.wingspan.toString()) : null
-    const weeklyCommitmentNum = validatedData.weeklyCommitment ? parseInt(validatedData.weeklyCommitment.toString()) : null
+    const heightCm = normalizeOptionalNumber(validatedData.height)
+    const weightKg = normalizeOptionalNumber(validatedData.weight)
+    const wingspanCm = normalizeOptionalNumber(validatedData.wingspan)
+    const weeklyCommitmentNum = normalizeOptionalNumber(validatedData.weeklyCommitment)
     const availabilityStatus = validatedData.availabilityStatus || 'OPEN_TO_OFFERS'
     const availableFromDate =
       availabilityStatus !== 'NOT_AVAILABLE' && validatedData.availableFrom
@@ -115,6 +117,9 @@ export async function POST(request: NextRequest) {
 
     // Convertir birthDate a DateTime
     const birthDateObj = validatedData.birthDate ? new Date(validatedData.birthDate) : null
+    validateNumberRange(heightCm, PHYSICAL_LIMITS.height.min, PHYSICAL_LIMITS.height.max, 'La altura')
+    validateNumberRange(weightKg, PHYSICAL_LIMITS.weight.min, PHYSICAL_LIMITS.weight.max, 'El peso')
+    validateNumberRange(wingspanCm, PHYSICAL_LIMITS.wingspan.min, PHYSICAL_LIMITS.wingspan.max, 'La envergadura')
 
     const profileCompletionPercentage = calculateTalentProfileCompletion({
       fullName: validatedData.fullName,
@@ -144,6 +149,7 @@ export async function POST(request: NextRequest) {
           birthDate: birthDateObj,
           role: session.user.role,
           city: validatedData.city,
+          country: validatedData.country?.trim() || existingProfile.country,
           position: validatedData.position || null,
           secondaryPosition: validatedData.secondaryPosition || null,
           height: heightCm,
@@ -227,6 +233,7 @@ export async function POST(request: NextRequest) {
           birthDate: birthDateObj,
           role: session.user.role,
           city: validatedData.city,
+          country: validatedData.country?.trim() || '',
           position: validatedData.position || null,
           secondaryPosition: validatedData.secondaryPosition || null,
           height: heightCm,
@@ -310,6 +317,13 @@ export async function POST(request: NextRequest) {
     }
   } catch (error: any) {
     console.error('Error in profile-onboarding:', error)
+
+    if (error instanceof Error && error.message.includes('debe estar entre')) {
+      return NextResponse.json({
+        error: 'Datos inválidos',
+        message: error.message
+      }, { status: 400 })
+    }
 
     if (error.name === 'ZodError') {
       return NextResponse.json({

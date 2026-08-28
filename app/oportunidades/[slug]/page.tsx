@@ -27,6 +27,7 @@ import Link from 'next/link'
 import ApplyButton from './ApplyButton'
 import FavoriteButton from './FavoriteButton'
 import ShareButton from './ShareButton'
+import { formatDate, toValidDate } from '@/lib/utils'
 
 interface PageProps {
   params: {
@@ -132,16 +133,17 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
   }
 
   const daysUntilDeadline = () => {
-    if (!opportunity.deadline) return null
+    const deadline = toValidDate(opportunity.deadline)
+    if (!deadline) return null
     const now = new Date()
-    const deadline = new Date(opportunity.deadline)
     const diffTime = deadline.getTime() - now.getTime()
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     return diffDays
   }
 
   // Check if deadline has passed
-  const isExpired = opportunity.deadline && new Date(opportunity.deadline) < new Date()
+  const deadlineDate = toValidDate(opportunity.deadline)
+  const isExpired = deadlineDate ? deadlineDate < new Date() : false
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -348,18 +350,20 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
                     </dd>
                   </div>
                   
+                  {deadlineDate && (
                   <div>
                     <dt className="text-sm font-medium text-gray-600">Fecha límite</dt>
                     <dd className="flex items-center text-sm text-gray-900 mt-1">
                       <Calendar className="w-4 h-4 mr-2" />
-                      {new Date(opportunity.deadline).toLocaleDateString('es-ES')}
+                      {formatDate(deadlineDate)}
                     </dd>
                   </div>
+                  )}
                   
                   <div>
                     <dt className="text-sm font-medium text-gray-600">Publicado</dt>
                     <dd className="text-sm text-gray-900 mt-1">
-                      {new Date(opportunity.publishedAt).toLocaleDateString('es-ES')}
+                      {formatDate(opportunity.publishedAt)}
                     </dd>
                   </div>
                 </div>

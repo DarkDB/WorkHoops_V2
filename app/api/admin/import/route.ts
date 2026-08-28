@@ -132,7 +132,7 @@ async function importJugadores(rows: any[]): Promise<ImportResult> {
           birthDate,
           role: 'jugador',
           city: row.ciudad || 'Madrid',
-          country: row.pais || 'España',
+          country: row.pais?.trim() || '',
           position: row.posicion || null,
           height,
           weight,
@@ -196,7 +196,7 @@ async function importEntrenadores(rows: any[]): Promise<ImportResult> {
           userId: user.id,
           fullName: row.nombre_completo || 'Sin nombre',
           city: row.ciudad || 'Madrid',
-          nationality: row.pais || 'España',
+          nationality: row.pais?.trim() || '',
           totalExperience,
           federativeLicense: row.licencia || null,
           categoriesCoached: row.especialidad || null,
@@ -345,7 +345,7 @@ function normalizeOpportunityLevel(level: string): string | null {
     return 'profesional'
   }
   
-  // LEB Oro/Plata
+  // Primera/Segunda FEB
   if (normalized.includes('leb')) {
     return 'semi_profesional'
   }

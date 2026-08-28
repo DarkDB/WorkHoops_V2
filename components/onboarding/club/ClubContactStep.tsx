@@ -70,7 +70,7 @@ export default function ClubContactStep({ formData, updateFormData }: ClubContac
               type="tel"
               value={formData.contactPhone}
               onChange={(e) => updateFormData({ contactPhone: e.target.value })}
-              placeholder="+34 600 000 000"
+              placeholder="+34 612 345 678"
             />
           </div>
 

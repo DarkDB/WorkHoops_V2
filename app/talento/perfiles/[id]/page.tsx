@@ -28,6 +28,7 @@ import {
 import Link from 'next/link'
 import ContactButton from './ContactButton'
 import ClubRecruitmentActions from '@/components/talent/ClubRecruitmentActions'
+import { formatLocation, toValidDate } from '@/lib/utils'
 
 interface PageProps {
   params: {
@@ -83,6 +84,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
   // Determine which profile to use
   const profile = talentProfile || coachProfile
   const isCoach = !!coachProfile
+  const profileCountry = talentProfile?.country ?? null
   const isClubOrAgencyViewer = session?.user?.role === 'club' || session?.user?.role === 'agencia'
   
   if (!profile) {
@@ -143,12 +145,8 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
   }
 
   const formatAvailableFrom = (date?: Date | null) => {
-    if (!date) return null
-    try {
-      return new Date(date).toLocaleDateString('es-ES')
-    } catch {
-      return null
-    }
+    const validDate = toValidDate(date ?? null)
+    return validDate ? validDate.toLocaleDateString('es-ES') : null
   }
 
   const getPositionLabel = (position: string | null) => {
@@ -320,7 +318,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                   <div className="flex items-center text-gray-700">
                     <MapPin className="w-5 h-5 mr-2 text-gray-400" />
-                    <span>{profile.city}, {isCoach ? (profile as any).nationality : (profile as any).country}</span>
+                    <span>{formatLocation(profile.city, isCoach ? null : profileCountry)}</span>
                   </div>
                   {age && (
                     <div className="flex items-center text-gray-700">
@@ -814,7 +812,7 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-gray-600 mb-2">
-                  Perfil creado el {new Date(profile.createdAt).toLocaleDateString('es-ES')}
+                  Perfil creado el {toValidDate(profile.createdAt)?.toLocaleDateString('es-ES') || 'Fecha no disponible'}
                 </p>
               </CardContent>
             </Card>
