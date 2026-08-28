@@ -49,8 +49,10 @@ export default function PrivacidadPage() {
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                 <h4 className="font-semibold text-orange-800 mb-2">Responsable del tratamiento:</h4>
                 <p className="text-orange-700">
-                  WorkHoops<br/>
-                  Contacto de privacidad: {SITE_CONTACT.privacyEmail}
+                  {SITE_CONTACT.legalOwner}, actuando bajo el nombre comercial {SITE_CONTACT.tradeName}<br/>
+                  NIF: {SITE_CONTACT.legalTaxId}<br/>
+                  Domicilio: {SITE_CONTACT.legalAddress}<br/>
+                  Email: {SITE_CONTACT.privacyEmail}
                 </p>
               </div>
             </CardContent>
@@ -261,6 +263,9 @@ export default function PrivacidadPage() {
                 Si tienes preguntas sobre esta política de privacidad o el tratamiento de tus datos:
               </p>
               <div className="bg-gray-50 rounded-lg p-4">
+                <p><strong>Responsable:</strong> {SITE_CONTACT.legalOwner}, bajo el nombre comercial {SITE_CONTACT.tradeName}</p>
+                <p><strong>NIF:</strong> {SITE_CONTACT.legalTaxId}</p>
+                <p><strong>Domicilio:</strong> {SITE_CONTACT.legalAddress}</p>
                 <p><strong>Email:</strong> {SITE_CONTACT.privacyEmail}</p>
               </div>
               <p className="mt-4 text-sm text-gray-600">

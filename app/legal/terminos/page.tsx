@@ -62,8 +62,11 @@ export default function TerminosPage() {
               </p>
               <div className="bg-gray-50 border-l-4 border-workhoops-accent p-4">
                 <p className="text-sm">
-                  <strong>Entidad responsable:</strong> WorkHoops. Para cuestiones legales o de cumplimiento,
-                  puedes escribir a {SITE_CONTACT.legalEmail}.
+                  <strong>Titular:</strong> {SITE_CONTACT.legalOwner}, {SITE_CONTACT.legalStatus},
+                  actuando bajo el nombre comercial {SITE_CONTACT.tradeName}.<br />
+                  <strong>NIF:</strong> {SITE_CONTACT.legalTaxId}<br />
+                  <strong>Domicilio:</strong> {SITE_CONTACT.legalAddress}<br />
+                  <strong>Email:</strong> {SITE_CONTACT.legalEmail}
                 </p>
               </div>
             </CardContent>
@@ -334,8 +337,10 @@ export default function TerminosPage() {
             </CardHeader>
             <CardContent>
               <div className="bg-gray-50 rounded-lg p-4">
+                <p><strong>Titular:</strong> {SITE_CONTACT.legalOwner}, actuando bajo el nombre comercial {SITE_CONTACT.tradeName}</p>
+                <p><strong>NIF:</strong> {SITE_CONTACT.legalTaxId}</p>
+                <p><strong>Domicilio:</strong> {SITE_CONTACT.legalAddress}</p>
                 <p><strong>Email legal:</strong> {SITE_CONTACT.legalEmail}</p>
-                <p><strong>Email general:</strong> {SITE_CONTACT.email}</p>
               </div>
             </CardContent>
           </Card>

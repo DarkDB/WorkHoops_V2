@@ -344,7 +344,10 @@ export default function CookiesPage() {
                 Si tienes preguntas sobre esta política de cookies:
               </p>
               <div className="bg-gray-50 rounded-lg p-4">
-                <p><strong>Email:</strong> {SITE_CONTACT.privacyEmail}</p>
+                <p><strong>Titular/editor:</strong> {SITE_CONTACT.legalOwner}, {SITE_CONTACT.legalStatus}, bajo el nombre comercial {SITE_CONTACT.tradeName}</p>
+                <p><strong>NIF:</strong> {SITE_CONTACT.legalTaxId}</p>
+                <p><strong>Domicilio:</strong> {SITE_CONTACT.legalAddress}</p>
+                <p><strong>Email:</strong> {SITE_CONTACT.email}</p>
               </div>
             </CardContent>
           </Card>
