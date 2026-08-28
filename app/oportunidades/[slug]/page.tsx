@@ -335,7 +335,6 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {deadlineDate && (
                   <div>
                     <dt className="text-sm font-medium text-gray-600">Ubicación</dt>
                     <dd className="flex items-center text-sm text-gray-900 mt-1">
@@ -351,6 +350,7 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
                     </dd>
                   </div>
                   
+                  {deadlineDate && (
                   <div>
                     <dt className="text-sm font-medium text-gray-600">Fecha límite</dt>
                     <dd className="flex items-center text-sm text-gray-900 mt-1">

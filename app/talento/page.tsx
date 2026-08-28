@@ -328,7 +328,7 @@ export default function TalentoPage() {
           <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 inline-block max-w-xl mx-auto">
             <Quote className="w-10 h-10 text-workhoops-accent mx-auto mb-4 opacity-60" />
             <p className="text-gray-700 text-lg mb-6 italic">
-              "¿Conseguiste tu próximo club con WorkHoops? Cuéntanos tu historia."
+              &quot;¿Conseguiste tu próximo club con WorkHoops? Cuéntanos tu historia.&quot;
             </p>
             <a href="mailto:hola@workhoops.com?subject=Mi historia en WorkHoops">
               <Button variant="outline" className="border-workhoops-accent text-workhoops-accent hover:bg-orange-50">

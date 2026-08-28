@@ -191,7 +191,7 @@ export default function PrivacidadPage() {
               </div>
               
               <div>
-                <h4 className="font-semibold">Derecho de supresión ("derecho al olvido"):</h4>
+                <h4 className="font-semibold">Derecho de supresión (&quot;derecho al olvido&quot;):</h4>
                 <p className="text-gray-600 text-sm">Puedes solicitar la eliminación de tus datos personales.</p>
               </div>
               

@@ -76,19 +76,19 @@ export default function TerminosPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
-                <strong>"Plataforma":</strong> <span className="text-gray-600">La web WorkHoops y todos sus servicios asociados.</span>
+                <strong>&quot;Plataforma&quot;:</strong> <span className="text-gray-600">La web WorkHoops y todos sus servicios asociados.</span>
               </div>
               <div>
-                <strong>"Usuario":</strong> <span className="text-gray-600">Cualquier persona que accede o usa la plataforma.</span>
+                <strong>&quot;Usuario&quot;:</strong> <span className="text-gray-600">Cualquier persona que accede o usa la plataforma.</span>
               </div>
               <div>
-                <strong>"Talento":</strong> <span className="text-gray-600">Jugadores, entrenadores y otros profesionales del baloncesto.</span>
+                <strong>&quot;Talento&quot;:</strong> <span className="text-gray-600">Jugadores, entrenadores y otros profesionales del baloncesto.</span>
               </div>
               <div>
-                <strong>"Organizador":</strong> <span className="text-gray-600">Clubes, empresas o entidades que publican oportunidades.</span>
+                <strong>&quot;Organizador&quot;:</strong> <span className="text-gray-600">Clubes, empresas o entidades que publican oportunidades.</span>
               </div>
               <div>
-                <strong>"Oportunidad":</strong> <span className="text-gray-600">Empleos, pruebas, torneos, becas y otros servicios publicados.</span>
+                <strong>&quot;Oportunidad&quot;:</strong> <span className="text-gray-600">Empleos, pruebas, torneos, becas y otros servicios publicados.</span>
               </div>
             </CardContent>
           </Card>
