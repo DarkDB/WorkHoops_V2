@@ -7,8 +7,10 @@ import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/shared/Navbar'
 import { prisma } from '@/lib/prisma'
 import { getOpportunityTypeLabel, getOpportunityLevelLabel, formatRelativeTime } from '@/lib/utils'
+import { Prisma } from '@prisma/client'
 
 export const revalidate = 3600 // Revalidate every hour
+export const dynamicParams = true
 
 // ─── Slug → DB field mappings ─────────────────────────────────────────────
 
@@ -139,6 +141,18 @@ function buildMetaDescription(parsed: ParsedSlug, count: number): string {
 // ─── Static params for most common combinations ────────────────────────────
 
 export async function generateStaticParams() {
+  try {
+    // Only pre-render SEO combinations when the database is reachable at build time.
+    await prisma.opportunity.findFirst({ select: { id: true } })
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      console.warn('Skipping Trabajo static params because the database is unavailable during build')
+      return []
+    }
+
+    throw error
+  }
+
   const positions = ['base', 'escolta', 'alero', 'pivot', 'entrenador']
   const levels = ['tercera-feb', 'segunda-feb', 'primera-feb', 'autonomica']
   const cities = ['madrid', 'barcelona', 'valencia', 'sevilla', 'bilbao']
