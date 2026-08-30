@@ -26,49 +26,85 @@ const opportunityCreateSchema = z.object({
   featured: z.boolean().default(false)
 })
 
+function getPublicPositionSummary(tags: string | null): string | null {
+  if (!tags) return null
+
+  const positionTag = tags
+    .split(',')
+    .map((tag) => tag.trim())
+    .find((tag) => tag.toLowerCase().startsWith('posición:'))
+
+  return positionTag?.slice('posición:'.length).trim() || null
+}
+
 export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
     const searchParams = request.nextUrl.searchParams
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'))
     const limit = 12
     const skip = (page - 1) * limit
 
-    const opportunities = await prisma.opportunity.findMany({
-      where: {
-        status: 'publicada',
-        publishedAt: { not: null },
-      },
-      include: {
-        organization: {
-          select: {
-            name: true,
-            verified: true,
-          }
-        },
-        author: {
-          select: {
-            name: true,
-          }
-        },
-        _count: {
-          select: {
-            applications: true,
-            favorites: true,
-          }
-        }
-      },
-      orderBy: {
-        publishedAt: 'desc'
-      },
+    const where = {
+      status: 'publicada' as const,
+      publishedAt: { not: null },
+    }
+    const queryOptions = {
+      where,
+      orderBy: { publishedAt: 'desc' as const },
       skip,
       take: limit,
-    })
+    }
+
+    const opportunities = session?.user?.id
+      ? await prisma.opportunity.findMany({
+          ...queryOptions,
+          include: {
+            organization: {
+              select: {
+                name: true,
+                verified: true,
+              }
+            },
+            author: {
+              select: {
+                name: true,
+              }
+            },
+            _count: {
+              select: {
+                applications: true,
+                favorites: true,
+              }
+            }
+          },
+        })
+      : (await prisma.opportunity.findMany({
+          ...queryOptions,
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            type: true,
+            level: true,
+            city: true,
+            country: true,
+            modality: true,
+            publishedAt: true,
+            benefits: true,
+            tags: true,
+          },
+        })).map(({ benefits, tags, ...opportunity }) => ({
+          ...opportunity,
+          teaser: {
+            hasAccommodation: benefits?.toLowerCase().includes('alojamiento') || false,
+            hasCompensation: benefits?.toLowerCase().includes('gratificaci') || false,
+            position: getPublicPositionSummary(tags),
+          },
+        }))
 
     const total = await prisma.opportunity.count({
-      where: {
-        status: 'publicada',
-        publishedAt: { not: null },
-      },
+      where,
     })
 
     return NextResponse.json({

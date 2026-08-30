@@ -21,6 +21,17 @@ interface Params {
   }
 }
 
+function getPublicPositionSummary(tags: string | null): string | null {
+  if (!tags) return null
+
+  const positionTag = tags
+    .split(',')
+    .map((tag) => tag.trim())
+    .find((tag) => tag.toLowerCase().startsWith('posición:'))
+
+  return positionTag?.slice('posición:'.length).trim() || null
+}
+
 // GET /api/opportunities/[slug] - Get single opportunity
 export async function GET(request: NextRequest, { params }: Params) {
   try {
@@ -69,6 +80,27 @@ export async function GET(request: NextRequest, { params }: Params) {
         { error: 'Opportunity not found' },
         { status: 404 }
       )
+    }
+
+    if (!session?.user?.id) {
+      const benefits = opportunity.benefits?.toLowerCase() || ''
+
+      return NextResponse.json({
+        id: opportunity.id,
+        slug: opportunity.slug,
+        title: opportunity.title,
+        type: opportunity.type,
+        level: opportunity.level,
+        city: opportunity.city,
+        country: opportunity.country,
+        modality: opportunity.modality,
+        publishedAt: opportunity.publishedAt,
+        teaser: {
+          hasAccommodation: benefits.includes('alojamiento'),
+          hasCompensation: benefits.includes('gratificaci'),
+          position: getPublicPositionSummary(opportunity.tags),
+        },
+      })
     }
 
     return NextResponse.json(opportunity)
