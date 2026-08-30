@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
+import type { Metadata } from 'next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Navbar } from '@/components/shared/Navbar'
@@ -35,8 +36,46 @@ interface PageProps {
   }
 }
 
+function getPublicPositionSummary(tags: string | null): string | null {
+  if (!tags) return null
+
+  const positionTag = tags
+    .split(',')
+    .map((tag) => tag.trim())
+    .find((tag) => tag.toLowerCase().startsWith('posición:'))
+
+  return positionTag?.slice('posición:'.length).trim() || null
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const opportunity = await prisma.opportunity.findUnique({
+    where: { slug: params.slug },
+    select: {
+      title: true,
+      city: true,
+      benefits: true,
+    },
+  })
+
+  if (!opportunity) {
+    return { title: 'Oportunidad de baloncesto | WorkHoops' }
+  }
+
+  const isWomenNationalLeague = /1[ªa]\s*nacional\s*femenina/i.test(opportunity.title)
+  const hasAccommodation = opportunity.benefits?.toLowerCase().includes('alojamiento')
+  const hasCompensation = opportunity.benefits?.toLowerCase().includes('gratificaci')
+
+  return {
+    title: `${opportunity.title} | WorkHoops`,
+    description: isWomenNationalLeague
+      ? `Club de 1ª Nacional Femenina busca jugadora en ${opportunity.city || 'España'}${hasAccommodation ? '. Alojamiento incluido' : ''}${hasCompensation ? ' y gratificación' : ''}. Consulta requisitos y condiciones en WorkHoops.`
+      : `Oportunidad de baloncesto en ${opportunity.city || 'España'}. Consulta requisitos y condiciones en WorkHoops.`,
+  }
+}
+
 export default async function OpportunityDetailPage({ params }: PageProps) {
   const session = await getServerSession(authOptions)
+  const isAuthenticated = Boolean(session?.user?.id)
   
   // Fetch opportunity from database
   const opportunity = await prisma.opportunity.findUnique({
@@ -67,10 +106,10 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
   }
 
   // Check if user has already applied
-  const hasApplied = Boolean(session?.user?.id && Array.isArray(opportunity.applications) && opportunity.applications.length > 0)
+  const hasApplied = Boolean(isAuthenticated && Array.isArray(opportunity.applications) && opportunity.applications.length > 0)
   
   // Check if user has favorited this opportunity
-  const isFavorited = Boolean(session?.user?.id && Array.isArray(opportunity.favorites) && opportunity.favorites.length > 0)
+  const isFavorited = Boolean(isAuthenticated && Array.isArray(opportunity.favorites) && opportunity.favorites.length > 0)
 
   const getTypeLabel = (type: string) => {
     switch (type) {
@@ -144,6 +183,10 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
   // Check if deadline has passed
   const deadlineDate = toValidDate(opportunity.deadline)
   const isExpired = deadlineDate ? deadlineDate < new Date() : false
+  const isWomenNationalLeague = /1[ªa]\s*nacional\s*femenina/i.test(opportunity.title)
+  const hasAccommodation = opportunity.benefits?.toLowerCase().includes('alojamiento')
+  const hasCompensation = opportunity.benefits?.toLowerCase().includes('gratificaci')
+  const publicPositionSummary = getPublicPositionSummary(opportunity.tags)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -165,7 +208,7 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4">
-                {opportunity.organization?.logo && (
+                {isAuthenticated && opportunity.organization?.logo && (
                   <img 
                     src={opportunity.organization.logo}
                     alt={opportunity.organization.name}
@@ -199,8 +242,12 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
                   </h1>
                   
                   <div className="flex items-center space-x-2 text-gray-600">
-                    <span className="font-medium">{opportunity.organization?.name || opportunity.author?.name || 'WorkHoops'}</span>
-                    {opportunity.organization?.verified && (
+                    <span className="font-medium">
+                      {isAuthenticated
+                        ? opportunity.organization?.name || opportunity.author?.name || 'WorkHoops'
+                        : 'Club de baloncesto'}
+                    </span>
+                    {isAuthenticated && opportunity.organization?.verified && (
                       <CheckCircle className="w-4 h-4 text-blue-500" />
                     )}
                   </div>
@@ -208,11 +255,13 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
               </div>
               
               <div className="flex items-center space-x-2">
-                <FavoriteButton 
-                  opportunityId={opportunity.id}
-                  isFavorited={isFavorited}
-                  isLoggedIn={!!session}
-                />
+                {isAuthenticated && (
+                  <FavoriteButton
+                    opportunityId={opportunity.id}
+                    isFavorited={isFavorited}
+                    isLoggedIn
+                  />
+                )}
                 <ShareButton 
                   opportunityTitle={opportunity.title}
                   opportunityUrl={`${process.env.APP_URL || 'https://workhoops.es'}/oportunidades/${opportunity.slug}`}
@@ -231,23 +280,20 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
                 <CardTitle>Descripción de la oferta</CardTitle>
               </CardHeader>
               <CardContent>
-                {!session ? (
-                  <>
-                    <div
-                      className="prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{
-                        __html: opportunity.description.substring(0, 150) + '...',
-                      }}
-                    />
-                    <div className="relative mt-4">
-                      <div
-                        className="prose prose-sm max-w-none select-none pointer-events-none"
-                        style={{ filter: 'blur(6px)' }}
-                        dangerouslySetInnerHTML={{ __html: opportunity.description }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/60 to-white" />
-                    </div>
-                  </>
+                {!isAuthenticated ? (
+                  <div className="space-y-3 text-sm text-gray-700">
+                    <p>
+                      {isWomenNationalLeague
+                        ? 'Oportunidad real de baloncesto para competir en un proyecto de 1ª Nacional Femenina.'
+                        : 'Oportunidad real de baloncesto en un proyecto competitivo.'}
+                    </p>
+                    <ul className="space-y-2">
+                      <li>Ubicación: {opportunity.city || 'España'}{opportunity.country ? `, ${opportunity.country}` : ''}</li>
+                      {publicPositionSummary && <li>Posición: {publicPositionSummary}.</li>}
+                      {hasAccommodation && <li>Alojamiento incluido.</li>}
+                      {hasCompensation && <li>Incluye gratificación económica.</li>}
+                    </ul>
+                  </div>
                 ) : (
                   <div
                     className="prose prose-sm max-w-none"
@@ -258,12 +304,12 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
             </Card>
 
             {/* Registration Gate — shown prominently for unauthenticated users */}
-            {!session && (
+            {!isAuthenticated && (
               <RegistrationGate slug={params.slug} />
             )}
 
             {/* Organization */}
-            {opportunity.organization && (
+            {isAuthenticated && opportunity.organization && (
               <Card>
                 <CardHeader>
                   <CardTitle>Sobre la organización</CardTitle>
@@ -310,20 +356,30 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
             <Card>
               <CardContent className="p-6">
                 <div className="text-center space-y-4">
-                  <div className="text-lg font-semibold text-gray-900">
-                    {formatRemuneration()}
-                  </div>
-                  
-                  <ApplyButton 
-                    opportunityId={opportunity.id}
-                    hasApplied={hasApplied}
-                    deadline={opportunity.deadline}
-                    applicationUrl={opportunity.applicationUrl}
-                  />
-                  
-                  <p className="text-xs text-gray-500">
-                    Al aplicar, tu perfil será enviado directamente a la organización
-                  </p>
+                  {isAuthenticated ? (
+                    <>
+                      <div className="text-lg font-semibold text-gray-900">
+                        {opportunity.remunerationMin
+                          ? formatRemuneration()
+                          : 'Consulta las condiciones económicas en la descripción'}
+                      </div>
+                      <ApplyButton
+                        opportunityId={opportunity.id}
+                        hasApplied={hasApplied}
+                        deadline={opportunity.deadline}
+                        applicationUrl={opportunity.applicationUrl}
+                      />
+                      <p className="text-xs text-gray-500">
+                        Al aplicar, tu perfil será enviado directamente a la organización
+                      </p>
+                    </>
+                  ) : (
+                    <Link href={`/auth/register?redirect=${encodeURIComponent(`/oportunidades/${opportunity.slug}`)}`}>
+                      <Button className="w-full bg-workhoops-accent hover:bg-orange-600" size="lg">
+                        Regístrate gratis para ver la oportunidad completa
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -371,7 +427,7 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
             </Card>
 
             {/* Contact - Gated for non-authenticated users */}
-            {session ? (
+            {isAuthenticated ? (
               <Card>
                 <CardHeader>
                   <CardTitle>Contacto</CardTitle>
@@ -402,9 +458,7 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
                   </div>
                 </CardContent>
               </Card>
-            ) : (
-              <RegistrationGate slug={params.slug} />
-            )}
+            ) : null}
           </div>
         </div>
       </div>

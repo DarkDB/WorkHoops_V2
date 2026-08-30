@@ -9,19 +9,10 @@ interface RegistrationGateProps {
   slug?: string
 }
 
-function slugToViewerCount(slug: string): number {
-  let hash = 0
-  for (let i = 0; i < slug.length; i++) {
-    hash = (hash * 31 + slug.charCodeAt(i)) & 0xffffffff
-  }
-  return 8 + (Math.abs(hash) % 17) // 8–24
-}
-
 export function RegistrationGate({ slug }: RegistrationGateProps) {
   const router = useRouter()
   const redirectPath = slug ? `/oportunidades/${slug}` : '/oportunidades'
   const registerUrl = `/auth/register?redirect=${encodeURIComponent(redirectPath)}`
-  const viewerCount = slug ? slugToViewerCount(slug) : 12
 
   return (
     <Card className="bg-gradient-to-br from-workhoops-accent to-orange-600 border-0 text-white">
@@ -30,18 +21,12 @@ export function RegistrationGate({ slug }: RegistrationGateProps) {
           <span className="text-3xl">⚡</span>
         </div>
 
-        {slug && (
-          <p className="text-orange-100 text-sm mb-3 font-medium">
-            ⚡ {viewerCount} jugadores han visto esta oferta hoy
-          </p>
-        )}
-
         <h3 className="text-2xl font-bold mb-2">
           Regístrate gratis para ver esta oferta completa
         </h3>
 
         <p className="text-orange-100 mb-6">
-          Accede a los datos de contacto y aplica directamente
+          Consulta condiciones completas, club y forma de aplicar.
         </p>
 
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 mb-6">
@@ -50,21 +35,21 @@ export function RegistrationGate({ slug }: RegistrationGateProps) {
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                 <Zap className="w-4 h-4" />
               </div>
-              <span className="text-sm">Acceso instantáneo al email y teléfono de contacto</span>
+              <span className="text-sm">Consulta todos los requisitos y condiciones</span>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                 <Zap className="w-4 h-4" />
               </div>
-              <span className="text-sm">Aplica rápido y centraliza tus candidaturas</span>
+              <span className="text-sm">Conoce el club antes de aplicar</span>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                 <Zap className="w-4 h-4" />
               </div>
-              <span className="text-sm">Guarda tus favoritos y recibe alertas</span>
+              <span className="text-sm">Aplica desde WorkHoops con tu perfil</span>
             </div>
           </div>
         </div>
@@ -76,7 +61,7 @@ export function RegistrationGate({ slug }: RegistrationGateProps) {
             onClick={() => router.push(registerUrl)}
           >
             <UserPlus className="w-5 h-5 mr-2" />
-            Crear Cuenta Gratis
+            Crear cuenta gratis y ver condiciones
           </Button>
 
           <button
@@ -87,9 +72,7 @@ export function RegistrationGate({ slug }: RegistrationGateProps) {
           </button>
         </div>
 
-        <p className="text-xs text-orange-100 mt-4">
-          ⚡ Registro en menos de 30 segundos • 100% Gratis
-        </p>
+        <p className="text-xs text-orange-100 mt-4">Registro gratuito</p>
       </CardContent>
     </Card>
   )
