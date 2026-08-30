@@ -1,28 +1,25 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
 import type { Metadata } from 'next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Navbar } from '@/components/shared/Navbar'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { RegistrationGate } from '@/components/auth/RegistrationGate'
-import { 
+import {
   ArrowLeft,
   Calendar,
-  MapPin,
-  Briefcase,
-  Users,
-  Clock,
   CheckCircle,
+  Clock,
   ExternalLink,
-  Heart,
-  Share2,
-  Euro,
-  Building2,
+  MapPin,
   Mail,
-  Phone
+  Phone,
+  Share2,
+  Trophy,
+  Users,
 } from 'lucide-react'
 import Link from 'next/link'
 import ApplyButton from './ApplyButton'
@@ -45,6 +42,39 @@ function getPublicPositionSummary(tags: string | null): string | null {
     .find((tag) => tag.toLowerCase().startsWith('posición:'))
 
   return positionTag?.slice('posición:'.length).trim() || null
+}
+
+function getListItems(value: string | null): string[] {
+  if (!value) return []
+
+  return value
+    .split(/[;\n•]/)
+    .map((item) => item.trim().replace(/^[\-–]\s*/, ''))
+    .filter(Boolean)
+}
+
+function getProfileTags(tags: string | null): string[] {
+  const benefitKeywords = [
+    'alojamiento',
+    'vivienda',
+    'manutención',
+    'comida',
+    'transporte',
+    'gratificación',
+    'compensación',
+    'seguro',
+    'viaje',
+  ]
+
+  return (tags || '')
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter(Boolean)
+    .filter((tag) => !benefitKeywords.some((keyword) => tag.toLowerCase().includes(keyword)))
+}
+
+function getLocationLabel(city: string | null, country: string | null): string {
+  return [city, country].filter(Boolean).join(', ') || 'Ubicación por concretar'
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -76,8 +106,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function OpportunityDetailPage({ params }: PageProps) {
   const session = await getServerSession(authOptions)
   const isAuthenticated = Boolean(session?.user?.id)
-  
-  // Fetch opportunity from database
+
   const opportunity = await prisma.opportunity.findUnique({
     where: { slug: params.slug },
     include: {
@@ -85,31 +114,46 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
       author: {
         select: {
           name: true,
-          email: true
-        }
+          email: true,
+          clubAgencyProfile: {
+            select: {
+              slug: true,
+              legalName: true,
+              commercialName: true,
+              city: true,
+              logo: true,
+              verified: true,
+            },
+          },
+        },
       },
-      applications: session?.user?.id ? {
-        where: {
-          userId: session.user.id
-        }
-      } : false,
-      favorites: session?.user?.id ? {
-        where: {
-          userId: session.user.id
-        }
-      } : false
-    }
+      applications: session?.user?.id
+        ? {
+            where: {
+              userId: session.user.id,
+            },
+          }
+        : false,
+      favorites: session?.user?.id
+        ? {
+            where: {
+              userId: session.user.id,
+            },
+          }
+        : false,
+    },
   })
-  
+
   if (!opportunity) {
     notFound()
   }
 
-  // Check if user has already applied
-  const hasApplied = Boolean(isAuthenticated && Array.isArray(opportunity.applications) && opportunity.applications.length > 0)
-  
-  // Check if user has favorited this opportunity
-  const isFavorited = Boolean(isAuthenticated && Array.isArray(opportunity.favorites) && opportunity.favorites.length > 0)
+  const hasApplied = Boolean(
+    isAuthenticated && Array.isArray(opportunity.applications) && opportunity.applications.length > 0,
+  )
+  const isFavorited = Boolean(
+    isAuthenticated && Array.isArray(opportunity.favorites) && opportunity.favorites.length > 0,
+  )
 
   const getTypeLabel = (type: string) => {
     switch (type) {
@@ -144,12 +188,12 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
   }
 
   const formatRemuneration = () => {
-    if (!opportunity.remunerationMin) return 'No especificado'
-    
+    if (opportunity.remunerationMin === null) return 'Consulta las condiciones en la descripción'
+
     const min = opportunity.remunerationMin
     const max = opportunity.remunerationMax
     const type = opportunity.remunerationType
-    
+
     let suffix = ''
     switch (type) {
       case 'hourly':
@@ -161,307 +205,307 @@ export default async function OpportunityDetailPage({ params }: PageProps) {
       case 'annual':
         suffix = '/año'
         break
-      default:
-        suffix = ''
     }
-    
+
     if (max && max !== min) {
       return `€${min} - €${max}${suffix}`
     }
     return `€${min}${suffix}`
   }
 
-  const daysUntilDeadline = () => {
-    const deadline = toValidDate(opportunity.deadline)
-    if (!deadline) return null
-    const now = new Date()
-    const diffTime = deadline.getTime() - now.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays
-  }
-
-  // Check if deadline has passed
   const deadlineDate = toValidDate(opportunity.deadline)
   const isExpired = deadlineDate ? deadlineDate < new Date() : false
   const isWomenNationalLeague = /1[ªa]\s*nacional\s*femenina/i.test(opportunity.title)
-  const hasAccommodation = opportunity.benefits?.toLowerCase().includes('alojamiento')
-  const hasCompensation = opportunity.benefits?.toLowerCase().includes('gratificaci')
+  const hasAccommodation = opportunity.benefits?.toLowerCase().includes('alojamiento') || false
+  const hasCompensation = opportunity.benefits?.toLowerCase().includes('gratificaci') || false
   const publicPositionSummary = getPublicPositionSummary(opportunity.tags)
+  const benefitItems = getListItems(opportunity.benefits)
+  const profileTags = getProfileTags(opportunity.tags)
+  const location = getLocationLabel(opportunity.city, opportunity.country)
+  const clubProfile = opportunity.author?.clubAgencyProfile
+  const clubName = opportunity.organization?.name || clubProfile?.commercialName || clubProfile?.legalName || opportunity.author?.name
+  const clubLogo = opportunity.organization?.logo || clubProfile?.logo
+  const clubVerified = opportunity.organization?.verified || clubProfile?.verified
+  const clubLocation = clubProfile ? getLocationLabel(clubProfile.city, null) : null
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
-      
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Button */}
+
+      <main className="mx-auto max-w-6xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
         <div className="mb-6">
           <Link href="/oportunidades">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <Button variant="ghost" size="sm" className="-ml-3 text-slate-600 hover:text-slate-950">
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Volver a oportunidades
             </Button>
           </Link>
         </div>
 
-        {/* Header */}
-        <Card className="mb-6">
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div className="flex items-start space-x-4">
-                {isAuthenticated && opportunity.organization?.logo && (
-                  <img 
-                    src={opportunity.organization.logo}
-                    alt={opportunity.organization.name}
-                    className="w-16 h-16 rounded-lg object-cover"
-                  />
+        <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white px-5 py-7 shadow-sm sm:px-8 sm:py-9">
+          <div className="absolute inset-x-0 top-0 h-1 bg-workhoops-accent" />
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+            <div className="max-w-3xl">
+              <div className="mb-4 flex flex-wrap gap-2">
+                <Badge className="bg-slate-900 text-white hover:bg-slate-900">{getTypeLabel(opportunity.type)}</Badge>
+                {opportunity.verified && (
+                  <Badge className="border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-50">
+                    <CheckCircle className="mr-1 h-3.5 w-3.5" />
+                    Verificada
+                  </Badge>
                 )}
-                <div>
-                  <div className="flex items-center flex-wrap gap-2 mb-2">
-                    <Badge variant="secondary">
-                      {getTypeLabel(opportunity.type)}
-                    </Badge>
-                    <Badge variant="outline">
-                      {getLevelLabel(opportunity.level)}
-                    </Badge>
-                    {opportunity.verified && (
-                      <Badge className="bg-green-100 text-green-800">
-                        <CheckCircle className="w-3 h-3 mr-1" />
-                        Verificada
-                      </Badge>
-                    )}
-                    {isExpired && (
-                      <Badge className="bg-red-100 text-red-800 border-red-200">
-                        <Clock className="w-3 h-3 mr-1" />
-                        Plazo cerrado
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    {opportunity.title}
-                  </h1>
-                  
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <span className="font-medium">
-                      {isAuthenticated
-                        ? opportunity.organization?.name || opportunity.author?.name || 'WorkHoops'
-                        : 'Club de baloncesto'}
-                    </span>
-                    {isAuthenticated && opportunity.organization?.verified && (
-                      <CheckCircle className="w-4 h-4 text-blue-500" />
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                {isAuthenticated && (
-                  <FavoriteButton
-                    opportunityId={opportunity.id}
-                    isFavorited={isFavorited}
-                    isLoggedIn
-                  />
-                )}
-                <ShareButton 
-                  opportunityTitle={opportunity.title}
-                  opportunityUrl={`${process.env.APP_URL || 'https://workhoops.es'}/oportunidades/${opportunity.slug}`}
-                />
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
-
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Description */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Descripción de la oferta</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {!isAuthenticated ? (
-                  <div className="space-y-3 text-sm text-gray-700">
-                    <p>
-                      {isWomenNationalLeague
-                        ? 'Oportunidad real de baloncesto para competir en un proyecto de 1ª Nacional Femenina.'
-                        : 'Oportunidad real de baloncesto en un proyecto competitivo.'}
-                    </p>
-                    <ul className="space-y-2">
-                      <li>Ubicación: {opportunity.city || 'España'}{opportunity.country ? `, ${opportunity.country}` : ''}</li>
-                      {publicPositionSummary && <li>Posición: {publicPositionSummary}.</li>}
-                      {hasAccommodation && <li>Alojamiento incluido.</li>}
-                      {hasCompensation && <li>Incluye gratificación económica.</li>}
-                    </ul>
-                  </div>
+                {isExpired ? (
+                  <Badge className="border-red-200 bg-red-50 text-red-800 hover:bg-red-50">
+                    <Clock className="mr-1 h-3.5 w-3.5" />
+                    Plazo cerrado
+                  </Badge>
                 ) : (
-                  <div
-                    className="prose prose-sm max-w-none"
-                    dangerouslySetInnerHTML={{ __html: opportunity.description }}
-                  />
+                  <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-800">
+                    Oferta abierta
+                  </Badge>
                 )}
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* Registration Gate — shown prominently for unauthenticated users */}
-            {!isAuthenticated && (
+              <h1 className="max-w-3xl text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl sm:leading-tight">
+                {opportunity.title}
+              </h1>
+
+              <div className="mt-5 flex flex-wrap gap-2.5 text-sm">
+                <Badge variant="outline" className="gap-1.5 rounded-full border-slate-200 bg-slate-50 px-3 py-1.5 text-slate-700">
+                  <MapPin className="h-3.5 w-3.5 text-workhoops-accent" />
+                  {location}
+                </Badge>
+                <Badge variant="outline" className="gap-1.5 rounded-full border-slate-200 bg-slate-50 px-3 py-1.5 text-slate-700">
+                  <Trophy className="h-3.5 w-3.5 text-workhoops-accent" />
+                  {getLevelLabel(opportunity.level)}
+                </Badge>
+                {publicPositionSummary && (
+                  <Badge variant="outline" className="gap-1.5 rounded-full border-slate-200 bg-slate-50 px-3 py-1.5 text-slate-700">
+                    <Users className="h-3.5 w-3.5 text-workhoops-accent" />
+                    {publicPositionSummary}
+                  </Badge>
+                )}
+                <Badge variant="outline" className="rounded-full border-slate-200 bg-slate-50 px-3 py-1.5 capitalize text-slate-700">
+                  {opportunity.modality}
+                </Badge>
+              </div>
+
+              <p className="mt-5 text-sm font-medium text-slate-600">
+                {isAuthenticated ? clubName || 'Club de baloncesto' : 'Club de baloncesto'}
+                {clubVerified && isAuthenticated && <CheckCircle className="ml-1 inline h-4 w-4 text-blue-600" />}
+              </p>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2 self-start">
+              {isAuthenticated && (
+                <FavoriteButton opportunityId={opportunity.id} isFavorited={isFavorited} isLoggedIn />
+              )}
+              <ShareButton
+                opportunityTitle={opportunity.title}
+                opportunityUrl={`${process.env.APP_URL || 'https://workhoops.es'}/oportunidades/${opportunity.slug}`}
+              />
+            </div>
+          </div>
+        </section>
+
+        <div className="mt-7 grid gap-7 lg:grid-cols-[minmax(0,1.9fr)_minmax(280px,0.9fr)] lg:items-start">
+          <aside className="order-1 space-y-5 lg:order-2 lg:sticky lg:top-24">
+            {isAuthenticated ? (
+              <Card className="border-slate-200 shadow-sm">
+                <CardContent className="p-6">
+                  <p className="text-sm font-semibold text-workhoops-accent">Candidatura</p>
+                  <h2 className="mt-1 text-xl font-bold tracking-tight text-slate-950">¿Te interesa esta oportunidad?</h2>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Presenta tu perfil al club directamente desde WorkHoops.
+                  </p>
+                  <div className="mt-5">
+                    <ApplyButton
+                      opportunityId={opportunity.id}
+                      hasApplied={hasApplied}
+                      deadline={opportunity.deadline}
+                      applicationUrl={opportunity.applicationUrl}
+                    />
+                  </div>
+                  <p className="mt-4 text-xs leading-5 text-slate-500">
+                    Al presentar tu candidatura, el club recibirá la información de tu perfil.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
               <RegistrationGate slug={params.slug} />
             )}
 
-            {/* Organization */}
-            {isAuthenticated && opportunity.organization && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sobre la organización</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-start space-x-4">
-                    {opportunity.organization.logo && (
-                      <img 
-                        src={opportunity.organization.logo}
-                        alt={opportunity.organization.name}
-                        className="w-12 h-12 rounded-lg object-cover"
-                      />
-                    )}
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <h3 className="font-semibold text-gray-900">
-                          {opportunity.organization.name}
-                        </h3>
-                        {opportunity.organization.verified && (
-                          <CheckCircle className="w-4 h-4 text-blue-500" />
-                        )}
+            <Card className="border-slate-200 shadow-sm">
+              <CardContent className="p-6">
+                <h2 className="text-base font-bold text-slate-950">Resumen de la oportunidad</h2>
+                <dl className="mt-5 space-y-4 text-sm">
+                  <div className="flex gap-3">
+                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-workhoops-accent" />
+                    <div>
+                      <dt className="text-slate-500">Ubicación</dt>
+                      <dd className="mt-0.5 font-medium text-slate-900">{location}</dd>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Trophy className="mt-0.5 h-4 w-4 shrink-0 text-workhoops-accent" />
+                    <div>
+                      <dt className="text-slate-500">Nivel</dt>
+                      <dd className="mt-0.5 font-medium text-slate-900">{getLevelLabel(opportunity.level)}</dd>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Share2 className="mt-0.5 h-4 w-4 shrink-0 text-workhoops-accent" />
+                    <div>
+                      <dt className="text-slate-500">Modalidad</dt>
+                      <dd className="mt-0.5 capitalize font-medium text-slate-900">{opportunity.modality}</dd>
+                    </div>
+                  </div>
+                  {deadlineDate && (
+                    <div className="flex gap-3">
+                      <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-workhoops-accent" />
+                      <div>
+                        <dt className="text-slate-500">Fecha límite</dt>
+                        <dd className="mt-0.5 font-medium text-slate-900">{formatDate(deadlineDate)}</dd>
                       </div>
-                      <p className="text-gray-600 mb-3">
-                        {opportunity.organization.description}
-                      </p>
-                      {opportunity.organization.website && (
+                    </div>
+                  )}
+                  {opportunity.publishedAt && (
+                    <div className="flex gap-3">
+                      <Clock className="mt-0.5 h-4 w-4 shrink-0 text-workhoops-accent" />
+                      <div>
+                        <dt className="text-slate-500">Publicada</dt>
+                        <dd className="mt-0.5 font-medium text-slate-900">{formatDate(opportunity.publishedAt)}</dd>
+                      </div>
+                    </div>
+                  )}
+                </dl>
+              </CardContent>
+            </Card>
+
+            {isAuthenticated && (
+              <Card className="border-slate-200 shadow-sm">
+                <CardContent className="p-6">
+                  <h2 className="text-base font-bold text-slate-950">Contacto</h2>
+                  <div className="mt-4 space-y-3 text-sm">
+                    <a href={`mailto:${opportunity.contactEmail}`} className="flex items-center gap-3 text-slate-700 hover:text-workhoops-accent">
+                      <Mail className="h-4 w-4 shrink-0 text-workhoops-accent" />
+                      <span className="break-all">{opportunity.contactEmail}</span>
+                    </a>
+                    {opportunity.contactPhone && (
+                      <a href={`tel:${opportunity.contactPhone}`} className="flex items-center gap-3 text-slate-700 hover:text-workhoops-accent">
+                        <Phone className="h-4 w-4 shrink-0 text-workhoops-accent" />
+                        <span>{opportunity.contactPhone}</span>
+                      </a>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </aside>
+
+          <div className="order-2 space-y-7 lg:order-1">
+            <section className="rounded-2xl border border-slate-200 bg-white px-5 py-6 shadow-sm sm:px-7 sm:py-7">
+              <h2 className="text-xl font-bold tracking-tight text-slate-950">Sobre la oportunidad</h2>
+              {!isAuthenticated ? (
+                <div className="mt-4 space-y-4 text-[15px] leading-7 text-slate-700">
+                  <p>
+                    {isWomenNationalLeague
+                      ? 'Oportunidad real para competir en un proyecto de 1ª Nacional Femenina.'
+                      : 'Oportunidad real de baloncesto en un proyecto competitivo.'}
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-xl bg-slate-50 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Ubicación</p>
+                      <p className="mt-1 font-medium text-slate-900">{location}</p>
+                    </div>
+                    {publicPositionSummary && (
+                      <div className="rounded-xl bg-slate-50 p-4">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Posición</p>
+                        <p className="mt-1 font-medium text-slate-900">{publicPositionSummary}</p>
+                      </div>
+                    )}
+                  </div>
+                  {(hasAccommodation || hasCompensation) && (
+                    <div className="flex flex-wrap gap-2">
+                      {hasAccommodation && <Badge className="bg-emerald-50 text-emerald-800 hover:bg-emerald-50">Alojamiento incluido</Badge>}
+                      {hasCompensation && <Badge className="bg-emerald-50 text-emerald-800 hover:bg-emerald-50">Incluye gratificación económica</Badge>}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="prose prose-slate mt-4 max-w-none prose-p:leading-7 prose-li:leading-7" dangerouslySetInnerHTML={{ __html: opportunity.description }} />
+              )}
+            </section>
+
+            {isAuthenticated && profileTags.length > 0 && (
+              <section className="rounded-2xl border border-slate-200 bg-white px-5 py-6 shadow-sm sm:px-7 sm:py-7">
+                <h2 className="text-xl font-bold tracking-tight text-slate-950">Perfil que buscamos</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">Requisitos y preferencias indicados por el club.</p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {profileTags.map((tag) => (
+                    <Badge key={tag} variant="outline" className="rounded-full border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-700">
+                      <CheckCircle className="mr-1.5 h-3.5 w-3.5 text-workhoops-accent" />
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {isAuthenticated && benefitItems.length > 0 && (
+              <section className="rounded-2xl border border-slate-200 bg-white px-5 py-6 shadow-sm sm:px-7 sm:py-7">
+                <h2 className="text-xl font-bold tracking-tight text-slate-950">Lo que ofrece el club</h2>
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {benefitItems.map((benefit) => (
+                    <div key={benefit} className="flex gap-3 rounded-xl border border-slate-100 bg-slate-50 p-4">
+                      <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-workhoops-accent" />
+                      <p className="text-sm leading-6 text-slate-700">{benefit}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {isAuthenticated && clubName && (
+              <section className="rounded-2xl border border-slate-200 bg-white px-5 py-6 shadow-sm sm:px-7 sm:py-7">
+                <h2 className="text-xl font-bold tracking-tight text-slate-950">Sobre el club</h2>
+                <div className="mt-5 flex items-start gap-4">
+                  {clubLogo ? (
+                    <img src={clubLogo} alt={clubName} className="h-14 w-14 rounded-xl object-cover" />
+                  ) : (
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+                      <Trophy className="h-6 w-6" />
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-semibold text-slate-950">{clubName}</h3>
+                      {clubVerified && <CheckCircle className="h-4 w-4 text-blue-600" />}
+                    </div>
+                    {clubLocation && <p className="mt-1 text-sm text-slate-600">{clubLocation}</p>}
+                    {opportunity.organization?.description && <p className="mt-3 text-sm leading-6 text-slate-600">{opportunity.organization.description}</p>}
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      {clubProfile?.slug && (
+                        <Link href={`/club/${clubProfile.slug}`}>
+                          <Button variant="outline" size="sm">Ver perfil del club</Button>
+                        </Link>
+                      )}
+                      {opportunity.organization?.website && (
                         <Link href={opportunity.organization.website} target="_blank">
                           <Button variant="outline" size="sm">
-                            <ExternalLink className="w-4 h-4 mr-2" />
+                            <ExternalLink className="mr-2 h-4 w-4" />
                             Visitar web
                           </Button>
                         </Link>
                       )}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </section>
             )}
           </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Apply Button */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="text-center space-y-4">
-                  {isAuthenticated ? (
-                    <>
-                      <div className="text-lg font-semibold text-gray-900">
-                        {opportunity.remunerationMin
-                          ? formatRemuneration()
-                          : 'Consulta las condiciones económicas en la descripción'}
-                      </div>
-                      <ApplyButton
-                        opportunityId={opportunity.id}
-                        hasApplied={hasApplied}
-                        deadline={opportunity.deadline}
-                        applicationUrl={opportunity.applicationUrl}
-                      />
-                      <p className="text-xs text-gray-500">
-                        Al aplicar, tu perfil será enviado directamente a la organización
-                      </p>
-                    </>
-                  ) : (
-                    <Link href={`/auth/register?redirect=${encodeURIComponent(`/oportunidades/${opportunity.slug}`)}`}>
-                      <Button className="w-full bg-workhoops-accent hover:bg-orange-600" size="lg">
-                        Regístrate gratis para ver la oportunidad completa
-                      </Button>
-                    </Link>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Detalles</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <dt className="text-sm font-medium text-gray-600">Ubicación</dt>
-                    <dd className="flex items-center text-sm text-gray-900 mt-1">
-                      <MapPin className="w-4 h-4 mr-2" />
-                      {opportunity.city}, {opportunity.country}
-                    </dd>
-                  </div>
-                  
-                  <div>
-                    <dt className="text-sm font-medium text-gray-600">Modalidad</dt>
-                    <dd className="text-sm text-gray-900 mt-1 capitalize">
-                      {opportunity.modality}
-                    </dd>
-                  </div>
-                  
-                  {deadlineDate && (
-                  <div>
-                    <dt className="text-sm font-medium text-gray-600">Fecha límite</dt>
-                    <dd className="flex items-center text-sm text-gray-900 mt-1">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      {formatDate(deadlineDate)}
-                    </dd>
-                  </div>
-                  )}
-                  
-                  <div>
-                    <dt className="text-sm font-medium text-gray-600">Publicado</dt>
-                    <dd className="text-sm text-gray-900 mt-1">
-                      {formatDate(opportunity.publishedAt)}
-                    </dd>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Contact - Gated for non-authenticated users */}
-            {isAuthenticated ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Contacto</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div>
-                      <dt className="text-sm font-medium text-gray-600">Email</dt>
-                      <dd className="flex items-center text-sm text-gray-900 mt-1">
-                        <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                        <a href={`mailto:${opportunity.contactEmail}`} className="text-blue-600 hover:underline">
-                          {opportunity.contactEmail}
-                        </a>
-                      </dd>
-                    </div>
-                    
-                    {opportunity.contactPhone && (
-                      <div>
-                        <dt className="text-sm font-medium text-gray-600">Teléfono</dt>
-                        <dd className="flex items-center text-sm text-gray-900 mt-1">
-                          <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                          <a href={`tel:${opportunity.contactPhone}`} className="text-blue-600 hover:underline">
-                            {opportunity.contactPhone}
-                          </a>
-                        </dd>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ) : null}
-          </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
