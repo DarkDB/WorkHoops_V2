@@ -108,7 +108,7 @@ export default function ApplyButton({
       onClick={handleApply}
       disabled={isApplying}
     >
-      {isApplying ? 'Aplicando...' : !session ? '🔒 Regístrate para Aplicar' : applicationUrl ? 'Aplicar en web externa' : 'Aplicar ahora'}
+      {isApplying ? 'Aplicando...' : !session ? '🔒 Regístrate para Aplicar' : applicationUrl ? 'Aplicar en web externa' : 'Presentar candidatura'}
     </Button>
   )
 }

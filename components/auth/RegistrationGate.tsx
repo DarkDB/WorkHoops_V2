@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { UserPlus, Zap } from 'lucide-react'
+import { CheckCircle, UserPlus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 interface RegistrationGateProps {
@@ -15,64 +15,31 @@ export function RegistrationGate({ slug }: RegistrationGateProps) {
   const registerUrl = `/auth/register?redirect=${encodeURIComponent(redirectPath)}`
 
   return (
-    <Card className="bg-gradient-to-br from-workhoops-accent to-orange-600 border-0 text-white">
-      <CardContent className="p-8 text-center">
-        <div className="flex justify-center mb-3">
-          <span className="text-3xl">⚡</span>
+    <Card className="overflow-hidden border-0 bg-gradient-to-br from-workhoops-accent to-orange-600 text-white shadow-md">
+      <CardContent className="p-6">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
+          <UserPlus className="h-5 w-5" />
         </div>
-
-        <h3 className="text-2xl font-bold mb-2">
-          Regístrate gratis para ver esta oferta completa
-        </h3>
-
-        <p className="text-orange-100 mb-6">
-          Consulta condiciones completas, club y forma de aplicar.
+        <h2 className="mt-4 text-xl font-bold leading-tight">Regístrate gratis para ver la oportunidad completa</h2>
+        <p className="mt-2 text-sm leading-6 text-orange-50">
+          Crea tu perfil en WorkHoops y accede a las condiciones completas, el club y la candidatura.
         </p>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 mb-6">
-          <div className="space-y-3 text-left">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <Zap className="w-4 h-4" />
-              </div>
-              <span className="text-sm">Consulta todos los requisitos y condiciones</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <Zap className="w-4 h-4" />
-              </div>
-              <span className="text-sm">Conoce el club antes de aplicar</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <Zap className="w-4 h-4" />
-              </div>
-              <span className="text-sm">Aplica desde WorkHoops con tu perfil</span>
-            </div>
-          </div>
+        <div className="mt-5 space-y-2 text-sm text-orange-50">
+          <p className="flex gap-2"><CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />Consulta requisitos y condiciones.</p>
+          <p className="flex gap-2"><CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />Presenta tu candidatura desde tu perfil.</p>
         </div>
 
-        <div className="space-y-3">
-          <Button
-            size="lg"
-            className="w-full bg-white text-workhoops-accent hover:bg-gray-100 font-semibold text-lg py-6"
-            onClick={() => router.push(registerUrl)}
-          >
-            <UserPlus className="w-5 h-5 mr-2" />
-            Crear cuenta gratis y ver condiciones
-          </Button>
-
-          <button
-            className="text-white/80 hover:text-white text-sm underline"
-            onClick={() => router.push('/auth/login')}
-          >
-            ¿Ya tienes cuenta? Inicia sesión
-          </button>
-        </div>
-
-        <p className="text-xs text-orange-100 mt-4">Registro gratuito</p>
+        <Button
+          size="lg"
+          className="mt-6 w-full bg-white font-semibold text-workhoops-accent hover:bg-orange-50"
+          onClick={() => router.push(registerUrl)}
+        >
+          Crear cuenta gratis
+        </Button>
+        <button className="mt-3 w-full text-sm text-orange-100 underline-offset-4 hover:text-white hover:underline" onClick={() => router.push('/auth/login')}>
+          ¿Ya tienes cuenta? Inicia sesión
+        </button>
       </CardContent>
     </Card>
   )
