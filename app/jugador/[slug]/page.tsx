@@ -6,6 +6,7 @@ import { generateSlug } from '@/lib/slug'
 import ShareButton from '@/components/public-profile/ShareButton'
 import { ProfileViewTracker } from '@/components/public-profile/ProfileViewTracker'
 import { MapPin, Trophy, Globe } from 'lucide-react'
+import { euPassportLabel, relocationPreferenceLabel } from '@/lib/recruiting-preferences'
 
 interface PageProps {
   params: { slug: string }
@@ -191,6 +192,33 @@ export default async function JugadorPublicPage({ params }: PageProps) {
             </div>
           </div>
         )}
+
+        {(() => {
+          const passport = euPassportLabel(profile.euPassportStatus)
+          const relocation = relocationPreferenceLabel(profile.relocationPreference)
+          const hasPreferences = Boolean(
+            profile.nationality ||
+            (passport && profile.euPassportStatus !== 'NOT_PROVIDED') ||
+            profile.targetCountries.length ||
+            (relocation && profile.relocationPreference !== 'NOT_PROVIDED') ||
+            profile.isStudent !== null
+          )
+
+          if (!hasPreferences) return null
+
+          return (
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h2 className="text-lg font-bold text-gray-900 mb-3">Preferencias para encontrar equipo</h2>
+              <div className="space-y-2 text-sm text-gray-600">
+                {profile.nationality && <p><span className="font-medium text-gray-900">Nacionalidad:</span> {profile.nationality}</p>}
+                {passport && profile.euPassportStatus !== 'NOT_PROVIDED' && <p><span className="font-medium text-gray-900">Pasaporte UE:</span> {passport}</p>}
+                {profile.targetCountries.length > 0 && <p><span className="font-medium text-gray-900">Países de interés:</span> {profile.targetCountries.join(', ')}</p>}
+                {relocation && profile.relocationPreference !== 'NOT_PROVIDED' && <p><span className="font-medium text-gray-900">Movilidad:</span> {relocation}</p>}
+                {profile.isStudent !== null && <p><span className="font-medium text-gray-900">Estudia actualmente:</span> {profile.isStudent ? 'Sí' : 'No'}</p>}
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Playing style */}
         {playingStyles.length > 0 && (

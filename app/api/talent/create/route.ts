@@ -10,6 +10,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { normalizeOptionalNumber, PHYSICAL_LIMITS, validateNumberRange } from '@/lib/physical-validations'
+import { COUNTRY_OPTIONS } from '@/lib/recruiting-preferences'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,7 +25,13 @@ const talentProfileSchema = z.object({
   weight: z.string().optional(),
   bio: z.string().max(500).optional(),
   video: z.string().url().optional().or(z.literal('')),
-  social: z.string().url().optional().or(z.literal(''))
+  social: z.string().url().optional().or(z.literal('')),
+  nationality: z.string().trim().max(100).optional(),
+  euPassportStatus: z.enum(['YES', 'NO', 'NOT_PROVIDED']).optional(),
+  targetCountries: z.array(z.enum(COUNTRY_OPTIONS)).max(12).optional(),
+  relocationPreference: z.enum(['YES', 'DOMESTIC_ONLY', 'STUDIES_ONLY', 'DEPENDS_ON_CONDITIONS', 'NO', 'NOT_PROVIDED']).optional(),
+  isStudent: z.boolean().nullable().optional(),
+  availabilityStatus: z.enum(['AVAILABLE', 'OPEN_TO_OFFERS', 'NOT_AVAILABLE']).optional()
 })
 
 export async function POST(request: NextRequest) {
@@ -42,6 +49,7 @@ export async function POST(request: NextRequest) {
     const validatedData = talentProfileSchema.parse(body)
     const height = normalizeOptionalNumber(validatedData.height)
     const weight = normalizeOptionalNumber(validatedData.weight)
+    const targetCountries = Array.from(new Set(validatedData.targetCountries || []))
     validateNumberRange(height, PHYSICAL_LIMITS.height.min, PHYSICAL_LIMITS.height.max, 'La altura')
     validateNumberRange(weight, PHYSICAL_LIMITS.weight.min, PHYSICAL_LIMITS.weight.max, 'El peso')
 
@@ -51,6 +59,9 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingProfile) {
+      const availabilityStatusChanged =
+        validatedData.availabilityStatus !== undefined &&
+        existingProfile.availabilityStatus !== validatedData.availabilityStatus
       // Update existing profile
       const updatedProfile = await prisma.talentProfile.update({
         where: { userId: session.user.id },
@@ -66,6 +77,17 @@ export async function POST(request: NextRequest) {
           bio: validatedData.bio || null,
           videoUrl: validatedData.video || null,
           socialUrl: validatedData.social || null,
+          ...(validatedData.nationality !== undefined ? { nationality: validatedData.nationality || null } : {}),
+          ...(validatedData.euPassportStatus !== undefined ? { euPassportStatus: validatedData.euPassportStatus } : {}),
+          ...(validatedData.targetCountries !== undefined ? { targetCountries } : {}),
+          ...(validatedData.relocationPreference !== undefined ? { relocationPreference: validatedData.relocationPreference } : {}),
+          ...(validatedData.isStudent !== undefined ? { isStudent: validatedData.isStudent } : {}),
+          ...(validatedData.availabilityStatus ? {
+            availabilityStatus: validatedData.availabilityStatus,
+            availabilityConfirmedAt: availabilityStatusChanged && validatedData.availabilityStatus !== 'NOT_AVAILABLE'
+              ? new Date()
+              : existingProfile.availabilityConfirmedAt
+          } : {}),
         }
       })
 
@@ -90,6 +112,12 @@ export async function POST(request: NextRequest) {
         bio: validatedData.bio || null,
         videoUrl: validatedData.video || null,
         socialUrl: validatedData.social || null,
+        nationality: validatedData.nationality || null,
+        euPassportStatus: validatedData.euPassportStatus || 'NOT_PROVIDED',
+        targetCountries,
+        relocationPreference: validatedData.relocationPreference || 'NOT_PROVIDED',
+        isStudent: validatedData.isStudent ?? null,
+        ...(validatedData.availabilityStatus ? { availabilityStatus: validatedData.availabilityStatus } : {}),
         userId: session.user.id
       }
     })

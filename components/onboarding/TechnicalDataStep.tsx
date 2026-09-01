@@ -3,6 +3,7 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { EU_PASSPORT_OPTIONS } from '@/lib/recruiting-preferences'
 
 interface TechnicalDataStepProps {
   formData: any
@@ -89,6 +90,33 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               onChange={(e) => updateFormData({ country: e.target.value })}
               placeholder="Ej: España"
             />
+          </div>
+
+          <div>
+            <Label htmlFor="nationality">Nacionalidad</Label>
+            <Input
+              id="nationality"
+              value={formData.nationality || ''}
+              onChange={(e) => updateFormData({ nationality: e.target.value })}
+              placeholder="Ej: Española"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="euPassportStatus">Pasaporte de la UE</Label>
+            <Select
+              value={formData.euPassportStatus || 'NOT_PROVIDED'}
+              onValueChange={(value) => updateFormData({ euPassportStatus: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona una opción" />
+              </SelectTrigger>
+              <SelectContent>
+                {EU_PASSPORT_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>

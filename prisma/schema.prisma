@@ -231,6 +231,12 @@ model TalentProfile {
   availabilityStatus          AvailabilityStatus     @default(OPEN_TO_OFFERS)
   availableFrom               DateTime?
   availabilityUpdatedAt       DateTime?
+  nationality                 String?
+  euPassportStatus            EuPassportStatus       @default(NOT_PROVIDED)
+  targetCountries             String[]               @default([])
+  relocationPreference        RelocationPreference   @default(NOT_PROVIDED)
+  isStudent                   Boolean?
+  availabilityConfirmedAt     DateTime?
   interestNotifications       InterestNotification[]
   playerSkills                PlayerSkills?
   invitations                 TalentInvitation[]
@@ -677,6 +683,21 @@ enum AvailabilityStatus {
   AVAILABLE
   OPEN_TO_OFFERS
   NOT_AVAILABLE
+}
+
+enum EuPassportStatus {
+  YES
+  NO
+  NOT_PROVIDED
+}
+
+enum RelocationPreference {
+  YES
+  DOMESTIC_ONLY
+  STUDIES_ONLY
+  DEPENDS_ON_CONDITIONS
+  NO
+  NOT_PROVIDED
 }
 
 enum TalentPipelineStatus {

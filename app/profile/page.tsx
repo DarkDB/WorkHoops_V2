@@ -17,6 +17,7 @@ import {
   CheckCircle
 } from 'lucide-react'
 import Link from 'next/link'
+import ConfirmAvailabilityButton from '@/components/profile/ConfirmAvailabilityButton'
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions)
@@ -197,6 +198,12 @@ export default async function ProfilePage() {
                       <p className="text-sm text-gray-500 mb-1">Disponibilidad</p>
                       <p className="text-sm text-gray-700">{user.talentProfile.availabilityStatus}</p>
                     </div>
+
+                    {user.talentProfile.availabilityStatus !== 'NOT_AVAILABLE' && (
+                      <ConfirmAvailabilityButton
+                        confirmedAt={user.talentProfile.availabilityConfirmedAt?.toISOString() || null}
+                      />
+                    )}
 
                     <div className="pt-4 border-t">
                       <Link href="/profile/complete">

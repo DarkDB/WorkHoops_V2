@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { trackFunnelEvent } from '@/lib/funnel-events'
 import { calculateTalentProfileCompletion } from '@/lib/profile-completion'
 import { normalizeOptionalNumber, PHYSICAL_LIMITS, validateNumberRange } from '@/lib/physical-validations'
+import { COUNTRY_OPTIONS } from '@/lib/recruiting-preferences'
 
 // Esquema de validación para el onboarding
 const profileOnboardingSchema = z.object({
@@ -53,7 +54,13 @@ const profileOnboardingSchema = z.object({
   injuryHistory: z.string().optional(),
   currentGoal: z.string().optional(),
   bio: z.string().optional(),
+  nationality: z.string().trim().max(100).optional(),
+  euPassportStatus: z.enum(['YES', 'NO', 'NOT_PROVIDED']).optional(),
+  targetCountries: z.array(z.enum(COUNTRY_OPTIONS)).max(12).optional(),
+  relocationPreference: z.enum(['YES', 'DOMESTIC_ONLY', 'STUDIES_ONLY', 'DEPENDS_ON_CONDITIONS', 'NO', 'NOT_PROVIDED']).optional(),
+  isStudent: z.boolean().nullable().optional(),
   availabilityStatus: z.enum(['AVAILABLE', 'OPEN_TO_OFFERS', 'NOT_AVAILABLE']).optional(),
+  availabilityConfirmationRequested: z.boolean().optional(),
   availableFrom: z.string().optional(),
   
   // Paso 4: Multimedia
@@ -94,6 +101,7 @@ export async function POST(request: NextRequest) {
       availabilityStatus !== 'NOT_AVAILABLE' && validatedData.availableFrom
         ? new Date(validatedData.availableFrom)
         : null
+    const targetCountries = Array.from(new Set(validatedData.targetCountries || []))
 
     const defaultSkills = {
       threePointShot: 3,
@@ -140,6 +148,9 @@ export async function POST(request: NextRequest) {
         ((existingProfile.availableFrom && availableFromDate)
           ? existingProfile.availableFrom.getTime() !== availableFromDate.getTime()
           : existingProfile.availableFrom !== availableFromDate)
+      const availabilityStatusChanged = existingProfile.availabilityStatus !== availabilityStatus
+      const availabilityWasExplicitlyConfirmed =
+        availabilityStatusChanged && availabilityStatus !== 'NOT_AVAILABLE'
 
       // Actualizar perfil existente
       const updatedProfile = await prisma.talentProfile.update({
@@ -167,10 +178,16 @@ export async function POST(request: NextRequest) {
           hasLicense: validatedData.hasLicense || false,
           injuryHistory: validatedData.injuryHistory || null,
           currentGoal: validatedData.currentGoal || null,
+          nationality: validatedData.nationality || null,
+          euPassportStatus: validatedData.euPassportStatus || 'NOT_PROVIDED',
+          targetCountries,
+          relocationPreference: validatedData.relocationPreference || 'NOT_PROVIDED',
+          isStudent: validatedData.isStudent ?? null,
           bio: validatedData.bio || null,
           availabilityStatus,
           availableFrom: availableFromDate,
           availabilityUpdatedAt: availabilityChanged ? new Date() : existingProfile.availabilityUpdatedAt,
+          availabilityConfirmedAt: availabilityWasExplicitlyConfirmed ? new Date() : existingProfile.availabilityConfirmedAt,
           videoUrl: validatedData.videoUrl || null,
           fullGameUrl: validatedData.fullGameUrl || null,
           socialUrl: validatedData.socialUrl || null,
@@ -251,10 +268,20 @@ export async function POST(request: NextRequest) {
           hasLicense: validatedData.hasLicense || false,
           injuryHistory: validatedData.injuryHistory || null,
           currentGoal: validatedData.currentGoal || null,
+          nationality: validatedData.nationality || null,
+          euPassportStatus: validatedData.euPassportStatus || 'NOT_PROVIDED',
+          targetCountries,
+          relocationPreference: validatedData.relocationPreference || 'NOT_PROVIDED',
+          isStudent: validatedData.isStudent ?? null,
           bio: validatedData.bio || null,
           availabilityStatus,
           availableFrom: availableFromDate,
           availabilityUpdatedAt: new Date(),
+          // The default status is not treated as an explicit availability confirmation.
+          availabilityConfirmedAt:
+            validatedData.availabilityConfirmationRequested && availabilityStatus !== 'NOT_AVAILABLE'
+              ? new Date()
+              : null,
           videoUrl: validatedData.videoUrl || null,
           fullGameUrl: validatedData.fullGameUrl || null,
           socialUrl: validatedData.socialUrl || null,
