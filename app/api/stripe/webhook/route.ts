@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
-import { constructWebhookEvent, handleSubscriptionSuccess, handleOneTimePaymentSuccess } from '@/lib/stripe'
+import { constructWebhookEvent, getStripe, handleSubscriptionSuccess, handleOneTimePaymentSuccess } from '@/lib/stripe'
 import Stripe from 'stripe'
 import logger from '@/lib/logger'
 
@@ -42,37 +42,13 @@ export async function POST(request: NextRequest) {
         if (session.payment_status === 'paid') {
           try {
             if (session.mode === 'subscription') {
-              await handleSubscriptionSuccess(session)
-
-              // Upsert Subscription record
-              const { prisma } = await import('@/lib/prisma')
               const stripeSubscriptionId = session.subscription as string
 
               if (stripeSubscriptionId) {
-                const stripeSub = await import('@/lib/stripe').then(m =>
-                  m.getStripe().subscriptions.retrieve(stripeSubscriptionId)
-                )
-
-                await prisma.subscription.upsert({
-                  where: { stripeSubscriptionId },
-                  create: {
-                    userId: session.client_reference_id!,
-                    stripeSubscriptionId,
-                    stripePriceId: stripeSub.items.data[0]?.price.id ?? '',
-                    stripeCustomerId: session.customer as string,
-                    status: stripeSub.status,
-                    planType: session.metadata?.planType ?? 'pro_semipro',
-                    currentPeriodStart: new Date(stripeSub.current_period_start * 1000),
-                    currentPeriodEnd: new Date(stripeSub.current_period_end * 1000),
-                    cancelAtPeriodEnd: stripeSub.cancel_at_period_end,
-                  },
-                  update: {
-                    status: stripeSub.status,
-                    currentPeriodStart: new Date(stripeSub.current_period_start * 1000),
-                    currentPeriodEnd: new Date(stripeSub.current_period_end * 1000),
-                    cancelAtPeriodEnd: stripeSub.cancel_at_period_end,
-                  },
-                })
+                const stripeSubscription = await getStripe().subscriptions.retrieve(stripeSubscriptionId)
+                await handleSubscriptionSuccess(session, stripeSubscription)
+              } else {
+                throw new Error('Subscription checkout completed without a subscription ID')
               }
 
               logger.info({ sessionId: session.id }, 'Subscription checkout completed successfully')
@@ -118,11 +94,6 @@ export async function POST(request: NextRequest) {
             logger.warn({ subscriptionId: subscription.id }, 'customer.subscription.deleted: no user found for subscription')
           }
 
-          // Mark subscription record as canceled
-          await prisma.subscription.updateMany({
-            where: { stripeSubscriptionId: subscription.id },
-            data: { status: 'canceled' },
-          })
         } catch (error) {
           logger.error({ error, subscriptionId: subscription.id }, 'Error handling customer.subscription.deleted')
           return NextResponse.json(
@@ -144,13 +115,7 @@ export async function POST(request: NextRequest) {
             : invoice.subscription?.id
 
           if (stripeSubscriptionId) {
-            // Mark subscription as past_due
-            await prisma.subscription.updateMany({
-              where: { stripeSubscriptionId },
-              data: { status: 'past_due' },
-            })
-
-            // Find user and mark their subscription as past_due
+            // Users stores the local billing state until a subscription ledger is introduced.
             const user = await prisma.user.findFirst({
               where: { stripeSubscriptionId },
             })
@@ -181,17 +146,21 @@ export async function POST(request: NextRequest) {
         try {
           const { prisma } = await import('@/lib/prisma')
 
-          await prisma.subscription.updateMany({
+          const updatedUsers = await prisma.user.updateMany({
             where: { stripeSubscriptionId: subscription.id },
             data: {
-              status: subscription.status,
-              currentPeriodStart: new Date(subscription.current_period_start * 1000),
-              currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-              cancelAtPeriodEnd: subscription.cancel_at_period_end,
+              ...(subscription.metadata.planType
+                ? { planType: subscription.metadata.planType }
+                : {}),
+              planStart: new Date(subscription.current_period_start * 1000),
+              planEnd: new Date(subscription.current_period_end * 1000),
             },
           })
 
-          logger.info({ subscriptionId: subscription.id, status: subscription.status }, 'Subscription updated')
+          logger.info(
+            { subscriptionId: subscription.id, status: subscription.status, updatedUsers: updatedUsers.count },
+            'Subscription updated'
+          )
         } catch (error) {
           logger.error({ error, subscriptionId: subscription.id }, 'Error handling customer.subscription.updated')
         }

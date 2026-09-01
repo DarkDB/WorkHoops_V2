@@ -7,7 +7,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
-import { createSubscriptionCheckout, createOneTimeCheckout } from '@/lib/stripe'
+import {
+  createSubscriptionCheckout,
+  createOneTimeCheckout,
+  getStripe,
+  hasBlockingSubscriptionStatus,
+} from '@/lib/stripe'
 import { z } from 'zod'
 import logger from '@/lib/logger'
 
@@ -34,24 +39,30 @@ export async function POST(request: NextRequest) {
     const validatedData = checkoutSchema.parse(body)
     const { planType, billingCycle, returnUrl } = validatedData
 
-    // ✅ VERIFICAR SI YA TIENE SUSCRIPCIÓN ACTIVA
+    // Stripe confirms whether the locally stored subscription is still billable.
     const { prisma } = await import('@/lib/prisma')
-    const existingSubscription = await prisma.subscription.findFirst({
+    const user = await prisma.user.findUnique({
       where: {
-        userId: session.user.id,
-        status: 'active',
-        planType: planType,
-      }
+        id: session.user.id,
+      },
+      select: {
+        planType: true,
+        stripeSubscriptionId: true,
+      },
     })
 
-    if (existingSubscription) {
-      return NextResponse.json(
-        { 
-          message: 'Ya tienes una suscripción activa a este plan',
-          error: 'ALREADY_SUBSCRIBED'
-        },
-        { status: 400 }
-      )
+    if (planType === 'pro_semipro' && user?.planType === planType && user.stripeSubscriptionId) {
+      const stripeSubscription = await getStripe().subscriptions.retrieve(user.stripeSubscriptionId)
+
+      if (hasBlockingSubscriptionStatus(stripeSubscription.status)) {
+        return NextResponse.json(
+          {
+            message: 'Ya tienes una suscripción activa a este plan',
+            error: 'ALREADY_SUBSCRIBED',
+          },
+          { status: 400 }
+        )
+      }
     }
 
     // Get the origin from the request or use provided returnUrl
