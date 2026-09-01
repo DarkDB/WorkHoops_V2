@@ -82,6 +82,18 @@ export const PLANS = {
 
 export type PlanType = keyof typeof PLANS
 
+const BLOCKING_SUBSCRIPTION_STATUSES = new Set<Stripe.Subscription.Status>([
+  'active',
+  'trialing',
+  'past_due',
+  'unpaid',
+  'incomplete',
+])
+
+export function hasBlockingSubscriptionStatus(status: Stripe.Subscription.Status): boolean {
+  return BLOCKING_SUBSCRIPTION_STATUSES.has(status)
+}
+
 /**
  * Create a Stripe checkout session for subscription (Pro Semipro)
  */
@@ -180,13 +192,15 @@ export async function createOneTimeCheckout(
  * Handle successful subscription payment
  */
 export async function handleSubscriptionSuccess(
-  session: Stripe.Checkout.Session
+  session: Stripe.Checkout.Session,
+  subscription: Stripe.Subscription
 ): Promise<void> {
   const userId = session.client_reference_id
   const planType = session.metadata?.planType
+  const stripeCustomerId = session.customer
 
-  if (!userId || !planType) {
-    throw new Error('Missing user ID or plan type in session metadata')
+  if (!userId || !planType || typeof stripeCustomerId !== 'string') {
+    throw new Error('Missing subscription checkout metadata')
   }
 
   const { prisma } = await import('@/lib/prisma')
@@ -196,9 +210,10 @@ export async function handleSubscriptionSuccess(
     where: { id: userId },
     data: {
       planType,
-      planStart: new Date(),
-      stripeCustomerId: session.customer as string,
-      stripeSubscriptionId: session.subscription as string,
+      planStart: new Date(subscription.current_period_start * 1000),
+      planEnd: new Date(subscription.current_period_end * 1000),
+      stripeCustomerId,
+      stripeSubscriptionId: subscription.id,
     }
   })
 }
