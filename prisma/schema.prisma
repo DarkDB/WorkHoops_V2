@@ -31,7 +31,7 @@ enum OpportunityStatus {
   pendiente
   publicada
   cerrada
-  cancelada
+  suspendida
 }
 
 enum OpportunityLevel {

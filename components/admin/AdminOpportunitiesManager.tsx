@@ -90,7 +90,7 @@ export default function AdminOpportunitiesManager({ opportunities: initialOpport
       ))
 
       toast.success('¡Actualizado!', {
-        description: `La oferta ha sido ${newStatus === 'publicada' ? 'aprobada' : 'rechazada'}`
+        description: `La oferta ahora está ${getStatusLabel(newStatus).toLowerCase()}`
       })
     } catch (error) {
       console.error('Error updating opportunity:', error)
@@ -110,8 +110,10 @@ export default function AdminOpportunitiesManager({ opportunities: initialOpport
         return 'bg-yellow-100 text-yellow-800'
       case 'cerrada':
         return 'bg-red-100 text-red-800'
-      case 'rechazada':
-        return 'bg-red-100 text-red-800'
+      case 'pendiente':
+        return 'bg-blue-100 text-blue-800'
+      case 'suspendida':
+        return 'bg-orange-100 text-orange-800'
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -122,7 +124,8 @@ export default function AdminOpportunitiesManager({ opportunities: initialOpport
       publicada: 'Publicada',
       borrador: 'Borrador',
       cerrada: 'Cerrada',
-      rechazada: 'Rechazada'
+      pendiente: 'Pendiente',
+      suspendida: 'Suspendida'
     }
     return labels[status] || status
   }
@@ -203,8 +206,9 @@ export default function AdminOpportunitiesManager({ opportunities: initialOpport
                   <SelectItem value="all">Todos los estados</SelectItem>
                   <SelectItem value="publicada">Publicadas</SelectItem>
                   <SelectItem value="borrador">Borradores</SelectItem>
+                  <SelectItem value="pendiente">Pendientes</SelectItem>
                   <SelectItem value="cerrada">Cerradas</SelectItem>
-                  <SelectItem value="rechazada">Rechazadas</SelectItem>
+                  <SelectItem value="suspendida">Suspendidas</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -282,11 +286,11 @@ export default function AdminOpportunitiesManager({ opportunities: initialOpport
                           <Button
                             size="sm"
                             variant="destructive"
-                            onClick={() => handleUpdateStatus(opportunity.id, opportunity.slug, 'rechazada')}
+                            onClick={() => handleUpdateStatus(opportunity.id, opportunity.slug, 'suspendida')}
                             disabled={loading === opportunity.id}
                           >
                             <XCircle className="w-4 h-4 mr-1" />
-                            Rechazar
+                            Suspender
                           </Button>
                         </>
                       )}
@@ -311,9 +315,18 @@ export default function AdminOpportunitiesManager({ opportunities: initialOpport
                             <XCircle className="w-4 h-4 mr-1" />
                             Cerrar
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-orange-600 hover:text-orange-700 border-orange-600"
+                            onClick={() => handleUpdateStatus(opportunity.id, opportunity.slug, 'suspendida')}
+                            disabled={loading === opportunity.id}
+                          >
+                            Suspender
+                          </Button>
                         </>
                       )}
-                      {(opportunity.status === 'cerrada' || opportunity.status === 'rechazada') && (
+                      {(opportunity.status === 'cerrada' || opportunity.status === 'suspendida') && (
                         <Button
                           size="sm"
                           className="bg-blue-600 hover:bg-blue-700"

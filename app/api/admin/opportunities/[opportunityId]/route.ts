@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,6 +11,14 @@ interface Params {
     opportunityId: string
   }
 }
+
+const opportunityStatusSchema = z.enum([
+  'borrador',
+  'pendiente',
+  'publicada',
+  'cerrada',
+  'suspendida',
+])
 
 // PATCH /api/admin/opportunities/[opportunityId] - Update opportunity status
 export async function PATCH(request: NextRequest, { params }: Params) {
@@ -31,27 +40,25 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     }
 
     const body = await request.json()
-    const { status } = body
-
-    // Validate status
-    const validStatuses = ['publicada', 'borrador', 'cerrada', 'rechazada']
-    if (!status || !validStatuses.includes(status)) {
+    const parsedStatus = opportunityStatusSchema.safeParse(body.status)
+    if (!parsedStatus.success) {
       return NextResponse.json(
-        { error: 'Invalid status. Must be one of: publicada, borrador, cerrada, rechazada' },
+        { error: 'Invalid status. Must be one of: borrador, pendiente, publicada, cerrada, suspendida' },
         { status: 400 }
       )
     }
+    const status = parsedStatus.data
 
     // Update opportunity status
-    const updateData: any = { status }
+    const updateData: { status: typeof status; publishedAt?: Date | null } = { status }
     
     // Si se está aprobando (cambiando a publicada), establecer publishedAt
     if (status === 'publicada') {
       updateData.publishedAt = new Date()
     }
     
-    // Si se está rechazando o cerrando, mantener publishedAt como null o como está
-    if (status === 'borrador' || status === 'rechazada') {
+    // Estados no públicos no deben conservar una fecha de publicación activa.
+    if (status === 'borrador' || status === 'pendiente' || status === 'suspendida') {
       updateData.publishedAt = null
     }
     
