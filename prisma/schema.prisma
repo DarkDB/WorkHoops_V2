@@ -1,4 +1,3 @@
-// This is your Prisma schema file for PostgreSQL production
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,11 +7,616 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enums for PostgreSQL
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model User {
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  emailVerified         DateTime?
+  name                  String?
+  image                 String?
+  role                  UserRole               @default(jugador)
+  locale                String                 @default("es")
+  verified              Boolean                @default(false)
+  planType              String                 @default("free_amateur")
+  planStart             DateTime?
+  planEnd               DateTime?
+  isActive              Boolean                @default(true)
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @default(now()) @updatedAt
+  passwordHash          String?
+  passwordUpdatedAt     DateTime?              @db.Timestamp(6)
+  failedLoginAttempts   Int                    @default(0)
+  lockedUntil           DateTime?              @db.Timestamp(6)
+  mustResetPassword     Boolean                @default(false)
+  accounts              Account[]
+  applications          Application[]
+  clubAgencyProfile     ClubAgencyProfile?
+  receivedClubLeads     ClubLead[]             @relation("ClubLeadClubUser")
+  submittedClubLeads    ClubLead[]             @relation("ClubLeadSourceUser")
+  coachProfile          CoachProfile?
+  emailEvents           EmailEvent[]
+  emailPreferences      EmailPreference[]
+  emailSubscriptions    EmailSubscription[]
+  favorites             Favorite[]
+  funnelEvents          FunnelEvent[]
+  interestNotifications InterestNotification[]
+  notifications         Notification[]
+  opportunities         Opportunity[]
+  organizations         Organization[]
+  otpTokens             OtpToken[]
+  profileViewsReceived  ProfileView[]          @relation("ProfileViews")
+  profileViewsMade      ProfileView[]          @relation("ViewsMade")
+  resources             Resource[]
+  sessions              Session[]
+  sentTalentInvitations TalentInvitation[]
+  talentProfile         TalentProfile?
+  talentShortlists      TalentShortlist[]
+
+  @@map("users")
+}
+
+model OtpToken {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @map("user_id")
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamp(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  usedAt    DateTime? @map("used_at") @db.Timestamp(6)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([usedAt])
+  @@map("otp_tokens")
+}
+
+model Organization {
+  id            String        @id @default(cuid())
+  name          String
+  slug          String        @unique
+  description   String?
+  website       String?
+  logo          String?
+  verified      Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
+  ownerId       String
+  opportunities Opportunity[]
+  owner         User          @relation(fields: [ownerId], references: [id], onUpdate: NoAction)
+
+  @@map("organizations")
+}
+
+model Opportunity {
+  id               String            @id @default(cuid())
+  title            String
+  slug             String            @unique
+  description      String
+  type             OpportunityType
+  level            OpportunityLevel
+  status           OpportunityStatus @default(borrador)
+  city             String?
+  country          String            @default("España")
+  latitude         Float?
+  longitude        Float?
+  modality         Modality          @default(presencial)
+  remunerationType String?
+  remunerationMin  Int?
+  remunerationMax  Int?
+  currency         String            @default("EUR")
+  benefits         String?
+  deadline         DateTime?
+  startDate        DateTime?
+  endDate          DateTime?
+  publishedAt      DateTime?
+  tags             String?
+  verified         Boolean           @default(false)
+  contactEmail     String
+  contactPhone     String?
+  applicationUrl   String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @default(now()) @updatedAt
+  organizationId   String?
+  authorId         String
+  applications     Application[]
+  favorites        Favorite[]
+  author           User              @relation(fields: [authorId], references: [id], onUpdate: NoAction)
+  organization     Organization?     @relation(fields: [organizationId], references: [id], onUpdate: NoAction)
+
+  @@map("opportunities")
+}
+
+model Application {
+  id            String           @id @default(cuid())
+  state         ApplicationState @default(enviada)
+  message       String?
+  metadata      String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @default(now()) @updatedAt
+  userId        String
+  opportunityId String
+  opportunity   Opportunity      @relation(fields: [opportunityId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user          User             @relation(fields: [userId], references: [id], onUpdate: NoAction)
+
+  @@unique([userId, opportunityId])
+  @@map("applications")
+}
+
+model Favorite {
+  id            String      @id @default(cuid())
+  createdAt     DateTime    @default(now())
+  userId        String
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user          User        @relation(fields: [userId], references: [id], onUpdate: NoAction)
+
+  @@unique([userId, opportunityId])
+  @@map("favorites")
+}
+
+model TalentProfile {
+  id                          String                 @id @default(cuid())
+  fullName                    String
+  birthDate                   DateTime?
+  role                        String
+  city                        String
+  country                     String                 @default("España")
+  position                    String?
+  height                      Int?
+  weight                      Int?
+  bio                         String?
+  videoUrl                    String?
+  socialUrl                   String?
+  isPublic                    Boolean                @default(true)
+  verified                    Boolean                @default(false)
+  createdAt                   DateTime               @default(now())
+  updatedAt                   DateTime               @updatedAt
+  userId                      String                 @unique
+  secondaryPosition           String?
+  wingspan                    Int?
+  dominantHand                String?
+  currentLevel                String?
+  lastTeam                    String?
+  currentCategory             String?
+  playingStyle                String?
+  languages                   String?
+  willingToTravel             Boolean?               @default(false)
+  weeklyCommitment            Int?
+  internationalExperience     Boolean?               @default(false)
+  hasLicense                  Boolean?               @default(false)
+  injuryHistory               String?
+  currentGoal                 String?
+  fullGameUrl                 String?
+  photoUrls                   String?
+  profileCompletionPercentage Int?                   @default(0)
+  availabilityStatus          AvailabilityStatus     @default(OPEN_TO_OFFERS)
+  availableFrom               DateTime?
+  availabilityUpdatedAt       DateTime?
+  interestNotifications       InterestNotification[]
+  playerSkills                PlayerSkills?
+  invitations                 TalentInvitation[]
+  user                        User                   @relation(fields: [userId], references: [id], onDelete: Cascade, map: "talent_profiles_userid_fkey")
+  shortlists                  TalentShortlist[]
+
+  @@index([isPublic], map: "talent_profiles_ispublic_idx")
+  @@index([role])
+  @@index([userId], map: "talent_profiles_userid_idx")
+  @@map("talent_profiles")
+}
+
+model PlayerSkills {
+  id                String        @id @default(cuid())
+  talentProfileId   String        @unique
+  threePointShot    Int           @default(3)
+  midRangeShot      Int           @default(3)
+  finishing         Int           @default(3)
+  ballHandling      Int           @default(3)
+  playmaking        Int           @default(3)
+  offBallMovement   Int           @default(3)
+  individualDefense Int           @default(3)
+  teamDefense       Int           @default(3)
+  offensiveRebound  Int           @default(3)
+  defensiveRebound  Int           @default(3)
+  speed             Int           @default(3)
+  athleticism       Int           @default(3)
+  endurance         Int           @default(3)
+  leadership        Int           @default(3)
+  decisionMaking    Int           @default(3)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @default(now()) @updatedAt
+  talentProfile     TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("player_skills")
+}
+
+model CoachProfile {
+  id                          String    @id @default(cuid())
+  userId                      String    @unique
+  fullName                    String
+  birthYear                   Int?
+  nationality                 String?   @default("España")
+  languages                   String?
+  city                        String
+  willingToRelocate           Boolean?  @default(false)
+  currentLevel                String?
+  federativeLicense           String?
+  totalExperience             Int?
+  currentClub                 String?
+  previousClubs               String?
+  categoriesCoached           String?
+  achievements                String?
+  internationalExp            Boolean?  @default(false)
+  internationalExpDesc        String?
+  roleExperience              String?
+  nationalTeamExp             Boolean?  @default(false)
+  trainingPlanning            Int?      @default(3)
+  individualDevelopment       Int?      @default(3)
+  offensiveTactics            Int?      @default(3)
+  defensiveTactics            Int?      @default(3)
+  groupManagement             Int?      @default(3)
+  scoutingAnalysis            Int?      @default(3)
+  staffManagement             Int?      @default(3)
+  communication               Int?      @default(3)
+  tacticalAdaptability        Int?      @default(3)
+  digitalTools                Int?      @default(3)
+  physicalPreparation         Int?      @default(3)
+  youthDevelopment            Int?      @default(3)
+  playingStyle                String?
+  workPriority                String?
+  playerTypePreference        String?
+  inspirations                String?
+  academicDegrees             String?
+  certifications              String?
+  coursesAttended             String?
+  currentGoal                 String?
+  offerType                   String?
+  availability                String?
+  leadership                  Int?      @default(3)
+  teamwork                    Int?      @default(3)
+  conflictResolution          Int?      @default(3)
+  organization                Int?      @default(3)
+  adaptability                Int?      @default(3)
+  innovation                  Int?      @default(3)
+  videoUrl                    String?
+  presentationsUrl            String?
+  photoUrls                   String?
+  bio                         String?
+  isPublic                    Boolean?  @default(true)
+  verified                    Boolean?  @default(false)
+  profileCompletionPercentage Int?      @default(0)
+  createdAt                   DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt                   DateTime? @default(now()) @updatedAt @db.Timestamp(6)
+  user                        User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([city])
+  @@index([currentLevel])
+  @@index([isPublic])
+  @@index([userId])
+  @@map("coach_profiles")
+}
+
+model ClubAgencyProfile {
+  id                          String     @id @default(cuid())
+  userId                      String     @unique
+  legalName                   String
+  entityType                  String
+  foundedYear                 Int?
+  description                 String?
+  logo                        String?
+  coverImage                  String?
+  country                     String     @default("España")
+  city                        String
+  address                     String?
+  categories                  String[]   @default([])
+  divisions                   String[]   @default([])
+  contactPerson               String?
+  contactEmail                String?
+  contactPhone                String?
+  website                     String?
+  facebookUrl                 String?
+  twitterUrl                  String?
+  instagramUrl                String?
+  linkedinUrl                 String?
+  facilities                  String?
+  achievements                String?
+  isPublic                    Boolean    @default(true)
+  verified                    Boolean    @default(false)
+  createdAt                   DateTime   @default(now())
+  updatedAt                   DateTime   @default(now()) @updatedAt
+  commercialName              String?
+  province                    String?
+  youtubeUrl                  String?
+  competitions                String?
+  sections                    String?
+  rosterSize                  Int?
+  staffSize                   Int?
+  workingLanguages            String?
+  contactRole                 String?
+  fiscalDocument              String?
+  contactPreference           String?
+  profilesNeeded              String?
+  ageRangeMin                 Int?
+  ageRangeMax                 Int?
+  minHeightByPosition         String?
+  experienceRequired          String?
+  competitiveReqs             String?
+  keySkills                   String?
+  availabilityNeeded          String?
+  salaryRange                 String?
+  housingProvided             Boolean?   @default(false)
+  mealsTransport              Boolean?   @default(false)
+  medicalInsurance            Boolean?   @default(false)
+  contractType                String?
+  visaSupport                 Boolean?   @default(false)
+  requiredDocs                String?
+  agentPolicy                 String?
+  scoutingNotes               String?
+  facilityPhotos              String?
+  institutionalVideo          String?
+  showEmailPublic             Boolean?   @default(false)
+  showPhonePublic             Boolean?   @default(false)
+  candidatesViaPortal         Boolean?   @default(true)
+  profileCompletionPercentage Int?       @default(0)
+  slug                        String?    @unique
+  user                        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leads                       ClubLead[]
+
+  @@index([city])
+  @@index([entityType])
+  @@index([verified])
+  @@map("club_agency_profiles")
+}
+
+model ClubLead {
+  id            String            @id @default(cuid())
+  clubUserId    String
+  clubProfileId String
+  fullName      String
+  age           Int?
+  position      String?
+  height        Int?
+  city          String?
+  email         String
+  phone         String?
+  message       String?
+  status        ClubLeadStatus    @default(NEW)
+  sourceUserId  String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  clubProfile   ClubAgencyProfile @relation(fields: [clubProfileId], references: [id], onDelete: Cascade)
+  clubUser      User              @relation("ClubLeadClubUser", fields: [clubUserId], references: [id], onDelete: Cascade)
+  sourceUser    User?             @relation("ClubLeadSourceUser", fields: [sourceUserId], references: [id])
+
+  @@index([clubUserId, createdAt])
+  @@index([clubProfileId, status])
+  @@index([sourceUserId, createdAt])
+  @@map("club_leads")
+}
+
+model InterestNotification {
+  id               String        @id @default(cuid())
+  profileId        String
+  interestedUserId String
+  message          String?
+  status           String        @default("pending")
+  createdAt        DateTime      @default(now())
+  interestedUser   User          @relation(fields: [interestedUserId], references: [id], onDelete: Cascade)
+  talentProfile    TalentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@index([interestedUserId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("interest_notifications")
+}
+
+model TalentShortlist {
+  id              String               @id @default(cuid())
+  clubUserId      String
+  talentProfileId String
+  status          TalentPipelineStatus @default(SAVED)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  lastStatusAt    DateTime?
+  invitations     TalentInvitation[]
+  clubUser        User                 @relation(fields: [clubUserId], references: [id], onDelete: Cascade)
+  talentProfile   TalentProfile        @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([clubUserId, talentProfileId])
+  @@index([clubUserId, status])
+  @@index([talentProfileId])
+  @@map("talent_shortlists")
+}
+
+model TalentInvitation {
+  id              String             @id @default(cuid())
+  shortlistId     String?
+  clubUserId      String
+  talentProfileId String
+  type            TalentInviteType
+  status          TalentInviteStatus @default(SENT)
+  message         String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  respondedAt     DateTime?
+  clubUser        User               @relation(fields: [clubUserId], references: [id], onDelete: Cascade)
+  shortlist       TalentShortlist?   @relation(fields: [shortlistId], references: [id])
+  talentProfile   TalentProfile      @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([clubUserId, createdAt])
+  @@index([talentProfileId, createdAt])
+  @@index([status])
+  @@map("talent_invitations")
+}
+
+model Resource {
+  id              String           @id @default(cuid())
+  title           String
+  slug            String           @unique
+  excerpt         String
+  content         String
+  category        ResourceCategory
+  status          ResourceStatus   @default(draft)
+  featured        Boolean          @default(false)
+  featuredImage   String?
+  author          String
+  readTime        Int              @default(5)
+  views           Int              @default(0)
+  metaTitle       String?
+  metaDescription String?
+  userId          String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  publishedAt     DateTime?
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([slug])
+  @@index([category])
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([userId])
+  @@map("resources")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  title     String
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model FunnelEvent {
+  id        String   @id @default(cuid())
+  eventName String
+  userId    String?
+  role      String?
+  metadata  String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([eventName, createdAt])
+  @@index([userId, createdAt])
+  @@map("funnel_events")
+}
+
+model EmailPreference {
+  id        String   @id @default(cuid())
+  userId    String
+  category  String
+  enabled   Boolean  @default(true)
+  frequency String   @default("immediate")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+  @@index([userId])
+  @@map("email_preferences")
+}
+
+model ProfileView {
+  id            String   @id @default(cuid())
+  profileUserId String
+  viewerIp      String?
+  viewerUserId  String?
+  profileType   String
+  createdAt     DateTime @default(now())
+  profileUser   User     @relation("ProfileViews", fields: [profileUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  viewer        User?    @relation("ViewsMade", fields: [viewerUserId], references: [id], onUpdate: NoAction)
+
+  @@index([profileUserId, createdAt])
+  @@index([viewerIp, profileUserId, createdAt])
+  @@map("profile_views")
+}
+
+model EmailEvent {
+  id        String    @id @default(cuid())
+  userId    String?
+  email     String
+  template  String
+  category  String
+  dedupeKey String?
+  status    String
+  error     String?
+  createdAt DateTime  @default(now())
+  sentAt    DateTime?
+  user      User?     @relation(fields: [userId], references: [id])
+
+  @@index([userId, category, createdAt])
+  @@index([email, template, createdAt])
+  @@index([dedupeKey])
+  @@map("email_events")
+}
+
+/// This table has RLS and no runtime callers today, but remains part of the physical baseline.
+model EmailSubscription {
+  id        String   @id
+  email     String
+  filters   String
+  frequency String   @default("daily")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onUpdate: NoAction)
+
+  @@map("email_subscriptions")
+}
+
 enum UserRole {
   admin
   jugador
-  entrenador  
+  entrenador
   club
   agencia
 }
@@ -100,720 +704,4 @@ enum ClubLeadStatus {
   REVIEWED
   CONTACTED
   REJECTED
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verification_tokens")
-}
-
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified DateTime?
-  name          String?
-  image         String?
-  role          UserRole  @default(jugador)
-  locale        String    @default("es")
-  verified      Boolean   @default(false)
-  
-  // Security fields
-  passwordHash        String?
-  passwordUpdatedAt   DateTime?
-  failedLoginAttempts Int       @default(0)
-  lockedUntil         DateTime?
-  mustResetPassword   Boolean   @default(false)
-  
-  // Plan information
-  planType      String    @default("free_amateur") // free_amateur, pro_semipro, club_agencia, destacado
-  planStart     DateTime?
-  planEnd       DateTime?
-  isActive      Boolean   @default(true)
-  stripeCustomerId String?
-  stripeSubscriptionId String?
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Relations
-  accounts      Account[]
-  sessions      Session[]
-  organizations Organization[]
-  opportunities Opportunity[]
-  applications  Application[]
-  favorites     Favorite[]
-  auditLogs     AuditLog[]
-  subscriptions Subscription[]
-  talentProfile TalentProfile?
-  coachProfile  CoachProfile?
-  clubAgencyProfile ClubAgencyProfile?
-  interestNotifications InterestNotification[]
-  resources     Resource[]
-  notifications Notification[]
-  otpTokens     OtpToken[]
-  talentShortlists TalentShortlist[]
-  sentTalentInvitations TalentInvitation[]
-  funnelEvents FunnelEvent[]
-  receivedClubLeads ClubLead[] @relation("ClubLeadClubUser")
-  submittedClubLeads ClubLead[] @relation("ClubLeadSourceUser")
-  emailPreferences EmailPreference[]
-  emailEvents      EmailEvent[]
-  profileViewsReceived ProfileView[] @relation("ProfileViews")
-  profileViewsMade     ProfileView[] @relation("ViewsMade")
-
-  @@map("users")
-}
-
-model OtpToken {
-  id        String    @id @default(uuid()) @db.Uuid
-  userId    String    @map("user_id")
-  tokenHash String    @map("token_hash")
-  expiresAt DateTime  @map("expires_at")
-  createdAt DateTime  @default(now()) @map("created_at")
-  usedAt    DateTime? @map("used_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([expiresAt])
-  @@index([usedAt])
-  @@map("otp_tokens")
-}
-
-model Organization {
-  id          String    @id @default(cuid())
-  name        String
-  slug        String    @unique
-  description String?
-  website     String?
-  logo        String?
-  verified    Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  // Relations
-  owner         User          @relation(fields: [ownerId], references: [id])
-  ownerId       String
-  opportunities Opportunity[]
-
-  @@map("organizations")
-}
-
-model Opportunity {
-  id               String            @id @default(cuid())
-  title            String
-  slug             String            @unique
-  description      String
-  type             OpportunityType
-  status           OpportunityStatus @default(borrador)
-  level            OpportunityLevel
-
-  // Location
-  city      String?
-  country   String   @default("España")
-  latitude  Float?
-  longitude Float?
-  modality  Modality @default(presencial)
-
-  // Remuneration
-  remunerationType String? // hourly, monthly, annual, one_time
-  remunerationMin  Float?
-  remunerationMax  Float?
-  currency         String  @default("EUR")
-
-  // Details
-  benefits    String?
-  deadline    DateTime?
-  startDate   DateTime?
-  endDate     DateTime?
-  publishedAt DateTime?
-  tags        String?
-  verified    Boolean @default(false)
-
-  // Contact
-  contactEmail String
-  contactPhone String?
-  applicationUrl String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  organizationId String?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  authorId       String
-  author         User          @relation(fields: [authorId], references: [id])
-  applications   Application[]
-  favorites      Favorite[]
-
-  @@map("opportunities")
-}
-
-model Application {
-  id        String           @id @default(cuid())
-  state     ApplicationState @default(enviada)
-  message   String?
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-
-  // Relations
-  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
-  opportunityId String
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-
-  @@unique([userId, opportunityId])
-  @@map("applications")
-}
-
-model Favorite {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-
-  // Relations
-  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
-  opportunityId String
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-
-  @@unique([userId, opportunityId])
-  @@map("favorites")
-}
-
-model AuditLog {
-  id        String   @id @default(cuid())
-  actorId   String
-  action    String   // "created", "updated", "deleted", "applied", "state_changed"
-  entity    String   // "opportunity", "application", "organization"
-  entityId  String
-  metadata  String?  // JSON as string
-  createdAt DateTime @default(now())
-
-  // Relations
-  actor User @relation(fields: [actorId], references: [id])
-
-  @@map("audit_logs")
-}
-
-model Subscription {
-  id                   String    @id @default(cuid())
-  userId               String
-  stripeSubscriptionId String    @unique
-  stripePriceId        String
-  stripeCustomerId     String
-  status               String    // active, canceled, past_due, etc.
-  planType             String    // free_amateur, pro_semipro, club_agencia, destacado
-  currentPeriodStart   DateTime
-  currentPeriodEnd     DateTime
-  cancelAtPeriodEnd    Boolean   @default(false)
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("subscriptions")
-}
-
-model TalentProfile {
-  id          String   @id @default(cuid())
-  fullName    String
-  birthDate   DateTime?
-  role        String   // jugador, entrenador, staff
-  city        String
-  country     String   @default("España")
-  
-  // Sport specific (mainly for players)
-  position    String?  // Base, Escolta, Alero, Ala-pívot, Pívot
-  secondaryPosition String?
-  height      Int?     // in cm
-  weight      Int?     // in kg
-  wingspan    Int?     // Envergadura en cm
-  dominantHand String? // Derecha, Izquierda, Ambas
-  
-  // Career info
-  currentLevel String? // Amateur, Semi-pro, Profesional
-  lastTeam    String?
-  currentCategory String?
-  
-  // Playing style (JSON array of selected styles)
-  playingStyle String? // JSON: ["Playmaker", "Tirador", etc.]
-  
-  // Additional info
-  languages   String? // JSON array
-  willingToTravel Boolean @default(false)
-  weeklyCommitment Int? // horas por semana
-  internationalExperience Boolean @default(false)
-  hasLicense  Boolean @default(false)
-  injuryHistory String? // Opcional, texto libre
-  currentGoal String? // Encontrar equipo, Mejorar nivel, etc.
-  
-  // Biography and links
-  bio         String?
-  videoUrl    String?  // YouTube/Vimeo highlights
-  fullGameUrl String?  // Partido completo
-  socialUrl   String?
-  photoUrls   String?  // JSON array de URLs de fotos
-  
-  // Profile completion (para la barra de progreso)
-  profileCompletionPercentage Int @default(0)
-  
-  // Profile status
-  isPublic    Boolean  @default(true)
-  verified    Boolean  @default(false)
-  availabilityStatus   AvailabilityStatus @default(OPEN_TO_OFFERS)
-  availableFrom        DateTime?
-  availabilityUpdatedAt DateTime?
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Relation to skills
-  playerSkills PlayerSkills?
-  
-  // Interest notifications
-  interestNotifications InterestNotification[]
-  shortlists TalentShortlist[]
-  invitations TalentInvitation[]
-  
-  @@map("talent_profiles")
-}
-
-model PlayerSkills {
-  id                String   @id @default(cuid())
-  talentProfileId   String   @unique
-  
-  // Habilidades ofensivas (1-5)
-  threePointShot    Int @default(3) // Tiro exterior
-  midRangeShot      Int @default(3) // Tiro media distancia
-  finishing         Int @default(3) // Finalización en el aro
-  ballHandling      Int @default(3) // Manejo de balón
-  playmaking        Int @default(3) // Visión de juego / Asistencias
-  offBallMovement   Int @default(3) // Juego sin balón
-  
-  // Habilidades defensivas (1-5)
-  individualDefense Int @default(3) // Defensa individual
-  teamDefense       Int @default(3) // Defensa en equipo
-  offensiveRebound  Int @default(3) // Rebote ofensivo
-  defensiveRebound  Int @default(3) // Rebote defensivo
-  
-  // Atributos físicos (1-5)
-  speed             Int @default(3) // Velocidad / Agilidad
-  athleticism       Int @default(3) // Capacidad atlética / Salto
-  endurance         Int @default(3) // Resistencia física
-  
-  // Atributos mentales (1-5)
-  leadership        Int @default(3) // Comunicación / Liderazgo
-  decisionMaking    Int @default(3) // Toma de decisiones
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  // Relation
-  talentProfile     TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
-  
-  @@map("player_skills")
-}
-
-model CoachProfile {
-  id                    String    @id @default(cuid())
-  userId                String    @unique
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Datos Generales
-  fullName              String
-  birthYear             Int?
-  nationality           String    @default("España")
-  languages             String?   // JSON array
-  city                  String
-  willingToRelocate     Boolean   @default(false)
-  currentLevel          String?   // Base / Amateur / Semi-pro / Profesional
-  federativeLicense     String?   // Nivel 1, Nivel 2, Superior, etc.
-  totalExperience       Int?      // años
-  
-  // Experiencia y Trayectoria
-  currentClub           String?
-  previousClubs         String?   // texto libre o JSON
-  categoriesCoached     String?   // JSON array: Mini, Infantil, Junior, Senior, etc.
-  achievements          String?   // texto libre
-  internationalExp      Boolean   @default(false)
-  internationalExpDesc  String?
-  roleExperience        String?   // Asistente / Primer entrenador
-  nationalTeamExp       Boolean   @default(false)
-  
-  // Skills Técnicas y Tácticas (1-5)
-  trainingPlanning      Int       @default(3)
-  individualDevelopment Int       @default(3)
-  offensiveTactics      Int       @default(3)
-  defensiveTactics      Int       @default(3)
-  groupManagement       Int       @default(3)
-  scoutingAnalysis      Int       @default(3)
-  staffManagement       Int       @default(3)
-  communication         Int       @default(3)
-  tacticalAdaptability  Int       @default(3)
-  digitalTools          Int       @default(3)
-  physicalPreparation   Int       @default(3)
-  youthDevelopment      Int       @default(3)
-  
-  // Filosofía y Estilo
-  playingStyle          String?   // texto o JSON
-  workPriority          String?   // Desarrollo / Resultados / Formación
-  playerTypePreference  String?
-  inspirations          String?
-  
-  // Formación
-  academicDegrees       String?   // INEF, CAFD, etc.
-  certifications        String?   // FIBA, FEB, etc.
-  coursesAttended       String?
-  
-  // Objetivos
-  currentGoal           String?
-  offerType             String?   // Principal / Asistente / Formador
-  availability          String?   // Temporada / Campus / Verano
-  
-  // Competencias Personales (1-5)
-  leadership            Int       @default(3)
-  teamwork              Int       @default(3)
-  conflictResolution    Int       @default(3)
-  organization          Int       @default(3)
-  adaptability          Int       @default(3)
-  innovation            Int       @default(3)
-  
-  // Multimedia
-  videoUrl              String?
-  presentationsUrl      String?
-  photoUrls             String?   // JSON array
-  
-  // Meta
-  bio                   String?
-  isPublic              Boolean   @default(true)
-  verified              Boolean   @default(false)
-  profileCompletionPercentage Int @default(0)
-  
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  
-  @@map("coach_profiles")
-}
-
-model ClubAgencyProfile {
-  id                    String    @id @default(cuid())
-  userId                String    @unique
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  slug                  String?   @unique
-  
-  // Perfil de la Entidad
-  entityType            String    // club, agencia, academia, programa_universitario
-  legalName             String
-  commercialName        String?
-  country               String    @default("España")
-  province              String?
-  city                  String
-  website               String?
-  instagramUrl          String?
-  twitterUrl            String?
-  linkedinUrl           String?
-  youtubeUrl            String?
-  
-  competitions          String?   // JSON: ACB, LEB Oro, etc.
-  sections              String?   // JSON: Masculina, Femenina, Formación
-  foundedYear           Int?
-  rosterSize            Int?      // número de jugadores
-  staffSize             Int?      // número de staff
-  workingLanguages      String?   // JSON array
-  
-  // Contacto
-  contactPerson         String?
-  contactRole           String?
-  contactEmail          String?
-  contactPhone          String?
-  fiscalDocument        String?   // CIF/NIF/VAT (opcional)
-  contactPreference     String?   // email, whatsapp, phone, portal
-  
-  // Necesidades y Criterios de Fichaje
-  profilesNeeded        String?   // JSON: Base, Escolta, Entrenador, etc.
-  ageRangeMin           Int?
-  ageRangeMax           Int?
-  minHeightByPosition   String?   // JSON object
-  experienceRequired    String?   // Amateur, Semi-pro, Profesional
-  competitiveReqs       String?   // texto libre
-  keySkills             String?   // JSON: tirador, defensor, etc.
-  availabilityNeeded    String?   // inmediata, próxima ventana, etc.
-  
-  // Condiciones Ofrecidas
-  salaryRange           String?   // Opcional
-  housingProvided       Boolean   @default(false)
-  mealsTransport        Boolean   @default(false)
-  medicalInsurance      Boolean   @default(false)
-  contractType          String?   // profesional, beca, amateur
-  visaSupport           Boolean   @default(false)
-  requiredDocs          String?   // texto o JSON
-  agentPolicy           String?   // acepta, no acepta, indiferente
-  scoutingNotes         String?   // texto libre
-  
-  // Verificación y Multimedia
-  logo                  String?
-  facilityPhotos        String?   // JSON array de URLs
-  institutionalVideo    String?
-  verified              Boolean   @default(false)
-  showEmailPublic       Boolean   @default(false)
-  showPhonePublic       Boolean   @default(false)
-  candidatesViaPortal   Boolean   @default(true)
-  
-  // Meta
-  description           String?
-  isPublic              Boolean   @default(true)
-  profileCompletionPercentage Int @default(0)
-  
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  leads                 ClubLead[]
-  
-  @@map("club_agency_profiles")
-}
-
-model ClubLead {
-  id            String         @id @default(cuid())
-  clubUserId    String
-  clubProfileId String
-  fullName      String
-  age           Int?
-  position      String?
-  height        Int?
-  city          String?
-  email         String
-  phone         String?
-  message       String?
-  status        ClubLeadStatus @default(NEW)
-  sourceUserId  String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-
-  clubUser    User              @relation("ClubLeadClubUser", fields: [clubUserId], references: [id], onDelete: Cascade)
-  clubProfile ClubAgencyProfile @relation(fields: [clubProfileId], references: [id], onDelete: Cascade)
-  sourceUser  User?             @relation("ClubLeadSourceUser", fields: [sourceUserId], references: [id], onDelete: SetNull)
-
-  @@index([clubUserId, createdAt])
-  @@index([clubProfileId, status])
-  @@index([sourceUserId, createdAt])
-  @@map("club_leads")
-}
-
-model InterestNotification {
-  id                String    @id @default(cuid())
-  profileId         String
-  interestedUserId  String
-  message           String?
-  status            String    @default("pending") // pending, read, responded
-  createdAt         DateTime  @default(now())
-  
-  // Relations
-  talentProfile     TalentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  interestedUser    User          @relation(fields: [interestedUserId], references: [id], onDelete: Cascade)
-  
-  @@index([profileId])
-  @@index([interestedUserId])
-  @@index([status])
-  @@index([createdAt])
-  @@map("interest_notifications")
-}
-
-model TalentShortlist {
-  id              String               @id @default(cuid())
-  clubUserId      String
-  talentProfileId String
-  status          TalentPipelineStatus @default(SAVED)
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
-  lastStatusAt    DateTime?
-
-  clubUser      User          @relation(fields: [clubUserId], references: [id], onDelete: Cascade)
-  talentProfile TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
-  invitations   TalentInvitation[]
-
-  @@unique([clubUserId, talentProfileId])
-  @@index([clubUserId, status])
-  @@index([talentProfileId])
-  @@map("talent_shortlists")
-}
-
-model TalentInvitation {
-  id              String            @id @default(cuid())
-  shortlistId     String?
-  clubUserId      String
-  talentProfileId String
-  type            TalentInviteType
-  status          TalentInviteStatus @default(SENT)
-  message         String?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  respondedAt     DateTime?
-
-  shortlist     TalentShortlist? @relation(fields: [shortlistId], references: [id], onDelete: SetNull)
-  clubUser      User             @relation(fields: [clubUserId], references: [id], onDelete: Cascade)
-  talentProfile TalentProfile    @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
-
-  @@index([clubUserId, createdAt])
-  @@index([talentProfileId, createdAt])
-  @@index([status])
-  @@map("talent_invitations")
-}
-
-model Resource {
-  id              String            @id @default(cuid())
-  title           String
-  slug            String            @unique
-  excerpt         String            @db.Text
-  content         String            @db.Text // Rich HTML content
-  category        ResourceCategory
-  status          ResourceStatus    @default(draft)
-  featured        Boolean           @default(false)
-  featuredImage   String?           // URL to image in Supabase
-  author          String
-  readTime        Int               @default(5) // Minutes
-  views           Int               @default(0)
-  
-  // SEO
-  metaTitle       String?
-  metaDescription String?
-  
-  // Relations
-  userId          String
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  publishedAt     DateTime?
-  
-  @@index([slug])
-  @@index([category])
-  @@index([status])
-  @@index([featured])
-  @@index([publishedAt])
-  @@index([userId])
-  @@map("resources")
-}
-
-model Notification {
-  id          String   @id @default(cuid())
-  type        String   // application_received, application_viewed, application_accepted, message_received, profile_saved
-  title       String
-  message     String
-  link        String?  // URL donde debe ir al hacer click
-  read        Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  
-  // Relations
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([userId])
-  @@index([read])
-  @@index([createdAt])
-  @@map("notifications")
-}
-
-model FunnelEvent {
-  id        String   @id @default(cuid())
-  eventName String
-  userId    String?
-  role      String?
-  metadata  String?
-  createdAt DateTime @default(now())
-
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([eventName, createdAt])
-  @@index([userId, createdAt])
-  @@map("funnel_events")
-}
-
-model EmailPreference {
-  id        String   @id @default(cuid())
-  userId    String
-  category  String
-  enabled   Boolean  @default(true)
-  frequency String   @default("immediate")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, category])
-  @@index([userId])
-  @@map("email_preferences")
-}
-
-model ProfileView {
-  id            String   @id @default(cuid())
-  profileUserId String   // userId del dueño del perfil
-  viewerIp      String?  // IP del visitante (para dedup)
-  viewerUserId  String?  // userId si está logueado
-  profileType   String   // 'jugador' | 'entrenador'
-  createdAt     DateTime @default(now())
-
-  profileUser User  @relation("ProfileViews", fields: [profileUserId], references: [id], onDelete: Cascade)
-  viewer      User? @relation("ViewsMade", fields: [viewerUserId], references: [id], onDelete: SetNull)
-
-  @@index([profileUserId, createdAt])
-  @@index([viewerIp, profileUserId, createdAt])
-  @@map("profile_views")
-}
-
-model EmailEvent {
-  id        String   @id @default(cuid())
-  userId    String?
-  email     String
-  template  String
-  category  String
-  dedupeKey String?
-  status    String
-  error     String?
-  createdAt DateTime @default(now())
-  sentAt    DateTime?
-
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([userId, category, createdAt])
-  @@index([email, template, createdAt])
-  @@index([dedupeKey])
-  @@map("email_events")
 }
