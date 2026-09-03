@@ -1,37 +1,47 @@
 # Migraciones de Prisma
 
-Este proyecto usa `prisma migrate` con PostgreSQL (Supabase). La migración `0_init`
-es la **baseline**: representa el estado completo del schema en el momento de adoptar
-migraciones versionadas (julio 2026). Las migraciones parciales anteriores están
-archivadas en `docs/sql-legacy/applied-migrations/`.
+`0_production_baseline` es el baseline canónico del schema de Production
+capturado el 2 de septiembre de 2026. Sustituye a `0_init`, archivada en
+`docs/migrations/legacy/0_init.sql` por no representar la base real.
 
-## Puesta en marcha (una sola vez, contra producción)
+## Production existente
 
-La base de datos de producción ya tiene todas las tablas, así que hay que marcar la
-baseline como aplicada SIN ejecutarla:
+Production ya contiene las tablas, enums, índices y políticas del baseline, pero
+no tiene `_prisma_migrations`. Cuando se autorice el baseline, debe registrarse
+**sin ejecutar su SQL**:
 
 ```bash
-DATABASE_URL="<url de producción>" npx prisma migrate resolve --applied 0_init
+DATABASE_URL="<URL directa de Production>" yarn prisma migrate resolve --applied 0_production_baseline
 ```
 
-Esto solo inserta un registro en la tabla `_prisma_migrations`. No toca ningún dato.
+Después, comprueba el estado y aplica únicamente migraciones posteriores:
 
-## Flujo de trabajo a partir de ahora
+```bash
+DATABASE_URL="<URL directa de Production>" yarn prisma migrate status
+DATABASE_URL="<URL directa de Production>" yarn prisma migrate deploy
+```
 
-1. Editar `prisma/schema.prisma`.
-2. Generar la migración contra una BD de desarrollo:
-   ```bash
-   npx prisma migrate dev --name descripcion_del_cambio
-   ```
-3. Commitear la carpeta de migración generada junto con el cambio de schema.
-4. Aplicar en producción (idealmente en el build de Vercel o a mano):
-   ```bash
-   npx prisma migrate deploy
-   ```
+No ejecutes `migrate deploy` hasta que el baseline esté marcado como aplicado y
+la siguiente migración haya sido revisada.
+
+## Base de datos nueva en Supabase
+
+En un proyecto nuevo de Supabase, una vez que Supabase haya provisionado sus
+roles y esquema `auth`, `migrate deploy` ejecuta el baseline y después todas las
+migraciones posteriores:
+
+```bash
+DATABASE_URL="<URL de la base nueva>" yarn prisma migrate deploy
+```
+
+El baseline replica las políticas RLS de Production y depende de los roles
+`anon`/`authenticated` y de `auth.uid()` que provee Supabase. No es un bootstrap
+autónomo para PostgreSQL vanilla sin esos prerrequisitos.
 
 ## Reglas
 
-- **No usar `prisma db push` contra producción.** Es la causa histórica de las
-  desincronizaciones entre schema y BD real.
-- No editar migraciones ya aplicadas; crear una nueva.
-- No ejecutar SQL a mano en Supabase para cambios de schema; siempre vía migración.
+- No usar `prisma db push` contra Production.
+- No editar una migración que ya haya sido aplicada.
+- Crear cada cambio de schema como una migración nueva sobre el baseline.
+- El baseline incluye SQL complementario para `pgcrypto`, RLS y políticas porque
+  Prisma Migrate no los genera automáticamente.
