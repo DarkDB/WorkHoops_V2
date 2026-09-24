@@ -96,11 +96,6 @@ export async function POST(request: NextRequest) {
     const weightKg = normalizeOptionalNumber(validatedData.weight)
     const wingspanCm = normalizeOptionalNumber(validatedData.wingspan)
     const weeklyCommitmentNum = normalizeOptionalNumber(validatedData.weeklyCommitment)
-    const availabilityStatus = validatedData.availabilityStatus || 'OPEN_TO_OFFERS'
-    const availableFromDate =
-      availabilityStatus !== 'NOT_AVAILABLE' && validatedData.availableFrom
-        ? new Date(validatedData.availableFrom)
-        : null
     const targetCountries = Array.from(new Set(validatedData.targetCountries || []))
 
     const defaultSkills = {
@@ -129,17 +124,24 @@ export async function POST(request: NextRequest) {
     validateNumberRange(weightKg, PHYSICAL_LIMITS.weight.min, PHYSICAL_LIMITS.weight.max, 'El peso')
     validateNumberRange(wingspanCm, PHYSICAL_LIMITS.wingspan.min, PHYSICAL_LIMITS.wingspan.max, 'La envergadura')
 
+    // Buscar perfil existente
+    const existingProfile = await prisma.talentProfile.findUnique({
+      where: { userId: session.user.id }
+    })
+
+    const availabilityStatus = validatedData.availabilityStatus ?? existingProfile?.availabilityStatus ?? 'OPEN_TO_OFFERS'
+    const availableFromDate = availabilityStatus === 'NOT_AVAILABLE'
+      ? null
+      : validatedData.availableFrom !== undefined
+        ? (validatedData.availableFrom ? new Date(validatedData.availableFrom) : null)
+        : existingProfile?.availableFrom ?? null
+
     const profileCompletionPercentage = calculateTalentProfileCompletion({
       fullName: validatedData.fullName,
       city: validatedData.city,
       position: validatedData.position,
       height: validatedData.height,
       availabilityStatus
-    })
-
-    // Buscar perfil existente
-    const existingProfile = await prisma.talentProfile.findUnique({
-      where: { userId: session.user.id }
     })
 
     if (existingProfile) {
@@ -178,11 +180,11 @@ export async function POST(request: NextRequest) {
           hasLicense: validatedData.hasLicense || false,
           injuryHistory: validatedData.injuryHistory || null,
           currentGoal: validatedData.currentGoal || null,
-          nationality: validatedData.nationality || null,
-          euPassportStatus: validatedData.euPassportStatus || 'NOT_PROVIDED',
-          targetCountries,
-          relocationPreference: validatedData.relocationPreference || 'NOT_PROVIDED',
-          isStudent: validatedData.isStudent ?? null,
+          nationality: validatedData.nationality !== undefined ? validatedData.nationality || null : existingProfile.nationality,
+          euPassportStatus: validatedData.euPassportStatus ?? existingProfile.euPassportStatus,
+          targetCountries: validatedData.targetCountries !== undefined ? targetCountries : existingProfile.targetCountries,
+          relocationPreference: validatedData.relocationPreference ?? existingProfile.relocationPreference,
+          isStudent: validatedData.isStudent !== undefined ? validatedData.isStudent : existingProfile.isStudent,
           bio: validatedData.bio || null,
           availabilityStatus,
           availableFrom: availableFromDate,
