@@ -48,6 +48,8 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
     birthDate: existingProfile?.birthDate || '',
     city: existingProfile?.city || '',
     country: existingProfile?.country || '',
+    nationality: existingProfile?.nationality || '',
+    euPassportStatus: existingProfile?.euPassportStatus || 'NOT_PROVIDED',
     position: existingProfile?.position || '',
     secondaryPosition: existingProfile?.secondaryPosition || '',
     height: existingProfile?.height || '',
@@ -126,6 +128,10 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
     currentGoal: existingProfile?.currentGoal || '',
     bio: existingProfile?.bio || '',
     availabilityStatus: existingProfile?.availabilityStatus || 'OPEN_TO_OFFERS',
+    availabilityConfirmationRequested: false,
+    targetCountries: Array.isArray(existingProfile?.targetCountries) ? existingProfile.targetCountries : [],
+    relocationPreference: existingProfile?.relocationPreference || 'NOT_PROVIDED',
+    isStudent: existingProfile?.isStudent ?? null,
     availableFrom: existingProfile?.availableFrom
       ? new Date(existingProfile.availableFrom).toISOString().split('T')[0]
       : '',

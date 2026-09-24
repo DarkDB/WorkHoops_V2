@@ -47,6 +47,11 @@ export default async function CompleteProfilePage() {
     const serializedProfile = profile ? {
       ...profile,
       birthDate: profile.birthDate?.toISOString() || null,
+      ...(userRole === 'jugador' ? {
+        availableFrom: profile.availableFrom?.toISOString() || null,
+        availabilityUpdatedAt: profile.availabilityUpdatedAt?.toISOString() || null,
+        availabilityConfirmedAt: profile.availabilityConfirmedAt?.toISOString() || null
+      } : {}),
       createdAt: profile.createdAt.toISOString(),
       updatedAt: profile.updatedAt.toISOString(),
       ...(userRole === 'jugador' && profile.playerSkills ? {

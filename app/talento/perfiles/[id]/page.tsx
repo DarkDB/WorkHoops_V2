@@ -29,6 +29,7 @@ import Link from 'next/link'
 import ContactButton from './ContactButton'
 import ClubRecruitmentActions from '@/components/talent/ClubRecruitmentActions'
 import { formatLocation, toValidDate } from '@/lib/utils'
+import { euPassportLabel, relocationPreferenceLabel } from '@/lib/recruiting-preferences'
 
 interface PageProps {
   params: {
@@ -372,6 +373,34 @@ export default async function TalentProfileDetailPage({ params }: PageProps) {
                 )}
               </CardContent>
             </Card>
+
+            {!isCoach && (() => {
+              const playerProfile = profile as typeof talentProfile
+              const passport = euPassportLabel(playerProfile?.euPassportStatus)
+              const relocation = relocationPreferenceLabel(playerProfile?.relocationPreference)
+              const hasPreferences = Boolean(
+                playerProfile?.nationality ||
+                (passport && playerProfile.euPassportStatus !== 'NOT_PROVIDED') ||
+                playerProfile?.targetCountries.length ||
+                (relocation && playerProfile.relocationPreference !== 'NOT_PROVIDED') ||
+                playerProfile?.isStudent !== null
+              )
+
+              if (!hasPreferences || !playerProfile) return null
+
+              return (
+                <Card>
+                  <CardHeader><CardTitle>Preferencias para encontrar equipo</CardTitle></CardHeader>
+                  <CardContent className="space-y-3 text-sm text-gray-700">
+                    {playerProfile.nationality && <p><span className="font-medium">Nacionalidad:</span> {playerProfile.nationality}</p>}
+                    {passport && playerProfile.euPassportStatus !== 'NOT_PROVIDED' && <p><span className="font-medium">Pasaporte UE:</span> {passport}</p>}
+                    {playerProfile.targetCountries.length > 0 && <p><span className="font-medium">Países de interés:</span> {playerProfile.targetCountries.join(', ')}</p>}
+                    {relocation && playerProfile.relocationPreference !== 'NOT_PROVIDED' && <p><span className="font-medium">Movilidad:</span> {relocation}</p>}
+                    {playerProfile.isStudent !== null && <p><span className="font-medium">Estudia actualmente:</span> {playerProfile.isStudent ? 'Sí' : 'No'}</p>}
+                  </CardContent>
+                </Card>
+              )
+            })()}
 
             {/* Player Skills */}
             {!isCoach && (profile as any).role === 'jugador' && (profile as any).playerSkills && (

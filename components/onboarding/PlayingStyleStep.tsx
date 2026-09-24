@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card } from '@/components/ui/card'
+import { COUNTRY_OPTIONS, RELOCATION_PREFERENCE_OPTIONS } from '@/lib/recruiting-preferences'
 
 interface PlayingStyleStepProps {
   formData: any
@@ -79,6 +80,16 @@ export default function PlayingStyleStep({ formData, updateFormData }: PlayingSt
     }
   }
 
+  const toggleTargetCountry = (country: string) => {
+    const current = formData.targetCountries || []
+    if (!current.includes(country) && current.length >= 12) return
+    updateFormData({
+      targetCountries: current.includes(country)
+        ? current.filter((item: string) => item !== country)
+        : [...current, country]
+    })
+  }
+
   return (
     <div className="space-y-6">
       {/* Estilo de Juego */}
@@ -134,6 +145,60 @@ export default function PlayingStyleStep({ formData, updateFormData }: PlayingSt
 
       {/* Aspectos Complementarios */}
       <Card className="p-6">
+        <h3 className="text-lg font-semibold text-gray-900">Preferencias para encontrar equipo</h3>
+        <p className="mt-1 text-sm text-gray-600">
+          Opcional. Ayuda a los clubes a entender qué oportunidades pueden encajar contigo.
+        </p>
+        <div className="mt-5 space-y-5">
+          <div>
+            <Label htmlFor="relocationPreference">Movilidad</Label>
+            <Select
+              value={formData.relocationPreference || 'NOT_PROVIDED'}
+              onValueChange={(value) => updateFormData({ relocationPreference: value })}
+            >
+              <SelectTrigger><SelectValue placeholder="Selecciona una opción" /></SelectTrigger>
+              <SelectContent>
+                {RELOCATION_PREFERENCE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label className="mb-2 block">Países donde te interesaría jugar (máximo 12)</Label>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {COUNTRY_OPTIONS.map((country) => (
+                <div key={country} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`target-country-${country}`}
+                    checked={(formData.targetCountries || []).includes(country)}
+                    onCheckedChange={() => toggleTargetCountry(country)}
+                  />
+                  <Label htmlFor={`target-country-${country}`} className="cursor-pointer text-sm">{country}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="isStudent">Situación de estudios</Label>
+            <Select
+              value={formData.isStudent === null || formData.isStudent === undefined ? 'NOT_PROVIDED' : formData.isStudent ? 'YES' : 'NO'}
+              onValueChange={(value) => updateFormData({ isStudent: value === 'NOT_PROVIDED' ? null : value === 'YES' })}
+            >
+              <SelectTrigger><SelectValue placeholder="Selecciona una opción" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NOT_PROVIDED">Prefiero no indicarlo</SelectItem>
+                <SelectItem value="YES">Estoy estudiando</SelectItem>
+                <SelectItem value="NO">No estoy estudiando</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4 text-gray-900">
           Información Adicional
         </h3>
@@ -168,7 +233,10 @@ export default function PlayingStyleStep({ formData, updateFormData }: PlayingSt
             <Label htmlFor="availabilityStatus">Estado de disponibilidad</Label>
             <Select
               value={formData.availabilityStatus || 'OPEN_TO_OFFERS'}
-              onValueChange={(value) => updateFormData({ availabilityStatus: value })}
+              onValueChange={(value) => updateFormData({
+                availabilityStatus: value,
+                availabilityConfirmationRequested: true
+              })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona tu disponibilidad" />
