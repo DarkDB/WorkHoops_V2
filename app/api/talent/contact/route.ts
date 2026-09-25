@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { rateLimitByUser, getRateLimitHeaders } from '@/lib/rate-limit'
 import { z } from 'zod'
 import { trackFunnelEvent } from '@/lib/funnel-events'
+import { canContactTalent, selectPublicContactTarget } from '@/lib/agency-pilot-safety'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (session.user.role !== 'club' && session.user.role !== 'agencia' && session.user.role !== 'admin') {
+    if (!canContactTalent(session.user.role)) {
       return NextResponse.json(
         { message: 'Solo clubes y agencias pueden contactar perfiles de talento' },
         { status: 403 }
@@ -58,10 +59,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { profileId, profileUserId, contactName, contactEmail, contactMessage } = contactSchema.parse(body)
 
-    // Fetch target profile for contact details
-    const profile = await prisma.talentProfile.findUnique({
+    const player = await prisma.talentProfile.findUnique({
       where: { id: profileId },
-      include: {
+      select: {
+        fullName: true,
+        isPublic: true,
         user: {
           select: {
             id: true,
@@ -72,19 +74,30 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    if (!profile) {
+    const coach = player ? null : await prisma.coachProfile.findUnique({
+      where: { id: profileId },
+      select: {
+        fullName: true,
+        isPublic: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true
+          }
+        }
+      }
+    })
+
+    const target = selectPublicContactTarget(player, coach, profileUserId)
+    if (!target) {
       return NextResponse.json(
         { message: 'Perfil no encontrado' },
         { status: 404 }
       )
     }
 
-    if (profile.user.id !== profileUserId) {
-      return NextResponse.json(
-        { message: 'Datos de perfil inválidos' },
-        { status: 400 }
-      )
-    }
+    const profile = target.profile
 
     if (session.user.id === profile.user.id) {
       return NextResponse.json(
@@ -93,7 +106,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Send email notification using Resend
+    // An email failure must not be reported as a successful contact.
     try {
       const { sendTalentContactEmail } = await import('@/lib/email')
       const profileUrl = `${process.env.APP_URL || 'https://workhoops.es'}/talento/perfiles/${profileId}`
@@ -108,11 +121,11 @@ export async function POST(request: NextRequest) {
       )
     } catch (emailError) {
       console.error('Error sending contact email:', emailError)
-      // Don't fail the request if email fails, just log it
+      return NextResponse.json({ message: 'No se pudo enviar la solicitud de contacto' }, { status: 502 })
     }
 
-    // Pipeline tracking: mark as CONTACTED for the club/agency
-    if (session.user.role === 'club' || session.user.role === 'agencia' || session.user.role === 'admin') {
+    // Shortlists only support players; coach contact remains email-only.
+    if (target.kind === 'player') {
       const existingShortlist = await prisma.talentShortlist.findUnique({
         where: {
           clubUserId_talentProfileId: {
@@ -153,14 +166,14 @@ export async function POST(request: NextRequest) {
     //   }
     // })
 
-    await trackFunnelEvent({
-      eventName: 'talent_contacted',
-      userId: session.user.id,
-      role: session.user.role,
-      metadata: {
-        profileId
-      }
-    })
+    if (target.kind === 'player') {
+      await trackFunnelEvent({
+        eventName: 'talent_contacted',
+        userId: session.user.id,
+        role: session.user.role,
+        metadata: { profileId }
+      })
+    }
 
     return NextResponse.json(
       {

@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma'
 import { createNotification } from '@/lib/notifications'
 import { trackFunnelEvent } from '@/lib/funnel-events'
 import { logEmailEvent, shouldSendEmail } from '@/lib/email-lifecycle'
+import { isPublicPlayerProfile } from '@/lib/agency-pilot-safety'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,6 +36,7 @@ export async function POST(request: NextRequest) {
       select: {
         id: true,
         role: true,
+        isPublic: true,
         fullName: true,
         userId: true,
         user: {
@@ -46,7 +48,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    if (!talentProfile || talentProfile.role !== 'jugador') {
+    if (!isPublicPlayerProfile(talentProfile)) {
       return NextResponse.json({ message: 'Jugador no encontrado' }, { status: 404 })
     }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { toPublicClubListItem } from '@/lib/agency-pilot-safety'
 
 export const dynamic = 'force-dynamic'
 
@@ -36,15 +37,25 @@ export async function GET(request: NextRequest) {
           }
         },
       },
-      include: {
-        clubAgencyProfile: true,
+      select: {
+        id: true,
+        verified: true,
+        planType: true,
+        clubAgencyProfile: {
+          select: {
+            slug: true,
+            legalName: true,
+            commercialName: true,
+            city: true,
+            logo: true
+          }
+        },
         opportunities: {
           where: {
             status: 'publicada'
           },
           select: {
-            id: true,
-            title: true
+            id: true
           }
         }
       },
@@ -56,18 +67,8 @@ export async function GET(request: NextRequest) {
     })
 
     const clubsWithCount = clubs
-      .filter((club) => !!club.clubAgencyProfile)
-      .map(club => ({
-      id: club.id,
-      name: club.name,
-      email: club.email,
-      image: club.image,
-      role: club.role,
-      planType: club.planType,
-      verified: club.verified,
-      profile: club.clubAgencyProfile!,
-      opportunitiesCount: club.opportunities.length
-    }))
+      .map((club) => ({ item: toPublicClubListItem(club), planType: club.planType }))
+      .filter((club): club is { item: NonNullable<typeof club.item>; planType: string } => !!club.item)
 
     // Sort by opportunities count (most first), keeping destacado priority
     clubsWithCount.sort((a, b) => {
@@ -76,11 +77,11 @@ export async function GET(request: NextRequest) {
       if (a.planType !== 'destacado' && b.planType === 'destacado') return 1
       
       // Then by opportunities count
-      return b.opportunitiesCount - a.opportunitiesCount
+      return b.item.opportunitiesCount - a.item.opportunitiesCount
     })
 
     return NextResponse.json({
-      clubs: clubsWithCount,
+      clubs: clubsWithCount.map(({ item }) => item),
       total: clubsWithCount.length
     })
 
