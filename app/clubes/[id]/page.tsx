@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -49,11 +49,15 @@ export default async function ClubProfilePage({ params }: PageProps) {
     }
   })
 
-  if (!club || !club.clubAgencyProfile) {
+  if (!club || !club.clubAgencyProfile?.isPublic) {
     notFound()
   }
 
   const profile = club.clubAgencyProfile
+  if (club.role === 'agencia' || profile.entityType === 'agencia') {
+    if (!profile.slug) notFound()
+    redirect(`/club/${profile.slug}`)
+  }
 
   const getEntityTypeLabel = (type: string) => {
     const labels: Record<string, string> = {

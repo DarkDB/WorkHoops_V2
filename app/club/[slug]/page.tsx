@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import ClubInterestForm from '@/components/clubs/ClubInterestForm'
+import { getPublicEntityCopy } from '@/lib/agency-identity'
 import {
   Building2,
   MapPin,
@@ -55,7 +56,7 @@ async function getClubBySlug(slug: string) {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const club = await getClubBySlug(params.slug)
 
-  if (!club) {
+  if (!club || !club.isPublic || (club.user.role !== 'club' && club.user.role !== 'agencia')) {
     return {
       title: 'Club no encontrado | WorkHoops',
       description: 'El club que buscas no está disponible en WorkHoops.'
@@ -63,13 +64,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const clubName = club.commercialName || club.legalName
+  const entityCopy = getPublicEntityCopy(club.entityType)
 
   return {
-    title: `${clubName} | Club en WorkHoops`,
-    description: club.description || `Conoce ${clubName}, revisa sus ofertas activas y envía tu interés para jugar en su proyecto.`,
+    title: `${clubName} | ${entityCopy.metaTitle}`,
+    description: club.description || (club.entityType === 'agencia' ? `Conoce la agencia ${clubName} y revisa sus oportunidades activas.` : `Conoce ${clubName}, revisa sus ofertas activas y envía tu interés para jugar en su proyecto.`),
     openGraph: {
       title: `${clubName} | WorkHoops`,
-      description: club.description || `Página pública del club ${clubName} en WorkHoops.`,
+      description: club.description || `Página pública de ${club.entityType === 'agencia' ? 'la agencia' : 'el club'} ${clubName} en WorkHoops.`,
       images: club.logo ? [club.logo] : undefined
     }
   }
@@ -86,6 +88,8 @@ export default async function ClubPublicPage({ params }: PageProps) {
   }
 
   const clubName = club.commercialName || club.legalName
+  const isAgency = club.entityType === 'agencia'
+  const entityCopy = getPublicEntityCopy(club.entityType)
   const viewerIsClubOwner = session?.user?.id === club.userId
   const viewerIsClubOrAgency = session?.user?.role === 'club' || session?.user?.role === 'agencia'
   const canPrefillLeadForm = !!session?.user?.id && !viewerIsClubOwner && !viewerIsClubOrAgency
@@ -110,7 +114,7 @@ export default async function ClubPublicPage({ params }: PageProps) {
         createdAt: true
       }
     }),
-    prisma.talentProfile.findMany({
+    isAgency ? Promise.resolve([]) : prisma.talentProfile.findMany({
       where: {
         isPublic: true,
         OR: [
@@ -170,10 +174,10 @@ export default async function ClubPublicPage({ params }: PageProps) {
       <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Link href="/clubes" className="inline-flex items-center text-sm text-gray-500 hover:text-workhoops-accent mb-6">
+        {!isAgency && <Link href="/clubes" className="inline-flex items-center text-sm text-gray-500 hover:text-workhoops-accent mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver a clubes
-        </Link>
+        </Link>}
 
         <Card className="mb-8">
           <CardContent className="p-8">
@@ -188,6 +192,7 @@ export default async function ClubPublicPage({ params }: PageProps) {
 
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{clubName}</h1>
+                {isAgency && <Badge variant="outline" className="mb-3">{entityCopy.label}</Badge>}
                 <div className="flex flex-wrap items-center gap-4 text-gray-600 mb-4">
                   <span className="inline-flex items-center">
                     <MapPin className="w-4 h-4 mr-2" />
@@ -203,12 +208,12 @@ export default async function ClubPublicPage({ params }: PageProps) {
                   <Link href="/talento/perfiles">
                     <Button className="bg-workhoops-accent hover:bg-orange-600">
                       <Users className="w-4 h-4 mr-2" />
-                      Buscar jugadores
+                      {entityCopy.searchCta}
                     </Button>
                   </Link>
-                  <a href="#quiero-jugar">
-                    <Button variant="outline">Quiero jugar en este club</Button>
-                  </a>
+                  {entityCopy.interestCta && <a href="#quiero-jugar">
+                    <Button variant="outline">{entityCopy.interestCta}</Button>
+                  </a>}
                 </div>
               </div>
             </div>
@@ -220,7 +225,7 @@ export default async function ClubPublicPage({ params }: PageProps) {
             {club.description && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Sobre el club</CardTitle>
+                  <CardTitle>{entityCopy.about}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-700 whitespace-pre-wrap">{club.description}</p>
@@ -234,7 +239,7 @@ export default async function ClubPublicPage({ params }: PageProps) {
               </CardHeader>
               <CardContent>
                 {opportunities.length === 0 ? (
-                  <p className="text-gray-600 text-sm">Este club no tiene ofertas activas en este momento.</p>
+                  <p className="text-gray-600 text-sm">{entityCopy.emptyOpportunities}</p>
                 ) : (
                   <div className="space-y-3">
                     {opportunities.map((opportunity) => (
@@ -255,7 +260,7 @@ export default async function ClubPublicPage({ params }: PageProps) {
               </CardContent>
             </Card>
 
-            <Card>
+            {!isAgency && <Card>
               <CardHeader>
                 <CardTitle>Jugadores asociados</CardTitle>
               </CardHeader>
@@ -291,11 +296,11 @@ export default async function ClubPublicPage({ params }: PageProps) {
                   </div>
                 )}
               </CardContent>
-            </Card>
+            </Card>}
 
-            <Card id="quiero-jugar">
+            {entityCopy.interestCta && <Card id="quiero-jugar">
               <CardHeader>
-                <CardTitle>Quiero jugar en este club</CardTitle>
+                <CardTitle>{entityCopy.interestCta}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ClubInterestForm
@@ -311,7 +316,7 @@ export default async function ClubPublicPage({ params }: PageProps) {
                   }}
                 />
               </CardContent>
-            </Card>
+            </Card>}
           </div>
 
           <div className="space-y-6">
@@ -346,7 +351,7 @@ export default async function ClubPublicPage({ params }: PageProps) {
                   </a>
                 )}
                 {!club.website && !club.instagramUrl && !club.twitterUrl && !club.linkedinUrl && !club.youtubeUrl && (
-                  <p className="text-sm text-gray-500">El club aún no ha añadido enlaces públicos.</p>
+                  <p className="text-sm text-gray-500">{isAgency ? 'La agencia aún no ha añadido enlaces públicos.' : 'El club aún no ha añadido enlaces públicos.'}</p>
                 )}
               </CardContent>
             </Card>
@@ -359,14 +364,14 @@ export default async function ClubPublicPage({ params }: PageProps) {
                 <Link href="/talento/perfiles" className="block">
                   <Button variant="outline" className="w-full justify-start">
                     <Users className="w-4 h-4 mr-2" />
-                    Buscar jugadores
+                    {entityCopy.searchCta}
                   </Button>
                 </Link>
-                <a href="#quiero-jugar" className="block">
+                {entityCopy.interestCta && <a href="#quiero-jugar" className="block">
                   <Button className="w-full bg-workhoops-accent hover:bg-orange-600">
-                    Quiero jugar en este club
+                    {entityCopy.interestCta}
                   </Button>
-                </a>
+                </a>}
               </CardContent>
             </Card>
           </div>

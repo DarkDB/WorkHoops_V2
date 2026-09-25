@@ -8,6 +8,7 @@ import { sendClubLeadReceivedEmail } from '@/lib/email'
 import { trackFunnelEvent } from '@/lib/funnel-events'
 import { logEmailEvent, shouldSendEmail } from '@/lib/email-lifecycle'
 import { PHYSICAL_LIMITS } from '@/lib/physical-validations'
+import { canReceiveClubInterest } from '@/lib/agency-identity'
 
 const createClubLeadSchema = z.object({
   fullName: z.string().min(2, 'El nombre es requerido'),
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest, context: { params: { slug: stri
       }
     })
 
-    if (!club || (club.user.role !== 'club' && club.user.role !== 'agencia')) {
+    if (!club || !canReceiveClubInterest(club.user.role, club.entityType, club.isPublic)) {
       return NextResponse.json({ message: 'Club no encontrado' }, { status: 404 })
     }
 

@@ -559,7 +559,7 @@ export async function sendWelcomeEmail(
   try {
     logger.info({ to: userEmail }, '[RESEND] Sending welcome email')
 
-    type RoleKey = 'jugador' | 'entrenador' | 'club'
+    type RoleKey = 'jugador' | 'entrenador' | 'club' | 'agencia'
 
     const roleContent: Record<RoleKey, { subject: string; headline: string; subheadline: string; body: string; ctaLabel: string; ctaUrl: string }> = {
       jugador: {
@@ -610,6 +610,17 @@ export async function sendWelcomeEmail(
         ctaLabel: 'Completar mi perfil',
         ctaUrl: `${APP_URL}/profile/complete`,
       },
+      agencia: {
+        subject: 'Bienvenido a WorkHoops: empieza a buscar talento',
+        headline: 'Bienvenido a WorkHoops, ' + userName.split(' ')[0],
+        subheadline: 'Tu agencia ya puede explorar perfiles de talento',
+        body: `
+          <p>Tu cuenta de agencia está creada. Completa el perfil de tu agencia y empieza a buscar jugadores y entrenadores en WorkHoops.</p>
+          <p>El perfil de agencia permanecerá privado hasta que decidas publicarlo.</p>
+        `,
+        ctaLabel: 'Completar perfil de agencia',
+        ctaUrl: `${APP_URL}/profile/complete`,
+      },
       club: {
         subject: '¡Bienvenido a WorkHoops! Miles de jugadores ya buscan equipo',
         headline: 'Bienvenido, ' + userName.split(' ')[0],
@@ -646,6 +657,10 @@ export async function sendWelcomeEmail(
         <h2 style="color: white; margin: 0; font-size: 22px; font-weight: 700;">Tu filosofía de juego merece ser vista, ${userName.split(' ')[0]} 🎯</h2>
         <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 15px; line-height: 1.5;">Los clubes no contratan al mejor entrenador. Contratan al que aparece primero.</p>
       </div>`,
+      agencia: `<div style="background: #0f0f1a; padding: 28px 36px;">
+        <h2 style="color: white; margin: 0; font-size: 22px; font-weight: 700;">Bienvenido a WorkHoops</h2>
+        <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 15px;">Descubre talento para tu agencia.</p>
+      </div>`,
       club: `<div style="background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 28px 36px;">
         <h2 style="color: white; margin: 0; font-size: 22px; font-weight: 700;">Miles de jugadores ya buscan equipo en WorkHoops 🏀</h2>
         <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 15px; line-height: 1.5;">Publica tu primera oferta en 5 minutos. Sin WhatsApps, sin intermediarios.</p>
@@ -656,6 +671,7 @@ export async function sendWelcomeEmail(
       jugador: '#FF6B1A',
       entrenador: '#0EA5E9',
       club: '#16A34A',
+      agencia: '#16A34A',
     }
 
     const banner = banners[userRole] ?? banners.jugador
@@ -701,13 +717,13 @@ export async function sendWelcomeEmail(
               </a>
             </div>
 
-            <div style="background: #fafafa; border-radius: 10px; padding: 20px 24px; text-align: center;">
+            ${userRole !== 'agencia' ? `<div style="background: #fafafa; border-radius: 10px; padding: 20px 24px; text-align: center;">
               <p style="margin: 0 0 10px; color: #555; font-size: 14px; font-weight: 600;">Progreso de tu perfil — <span style="color: ${pColor};">20%</span></p>
               <div style="background: #e5e7eb; border-radius: 999px; height: 10px; overflow: hidden;">
                 <div style="background: linear-gradient(90deg, ${pColor}, ${pColor}99); height: 100%; width: 20%; border-radius: 999px;"></div>
               </div>
               <p style="margin: 10px 0 0; color: #aaa; font-size: 12px;">Complétalo al 100% para aparecer en las búsquedas de los clubes</p>
-            </div>
+            </div>` : ''}
           </div>
 
           ${FOOTER_HTML}

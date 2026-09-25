@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
+import { getProfileEntityType } from '@/lib/agency-identity'
 
 interface ClubAgencyProfileOnboardingProps {
   user: {
@@ -26,16 +28,17 @@ export default function ClubAgencyProfileOnboarding({
 }: ClubAgencyProfileOnboardingProps) {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
+  const isAgency = user?.role === 'agencia'
   const [formData, setFormData] = useState({
-    legalName: existingProfile?.legalName || user?.name || '',
+    legalName: existingProfile?.legalName || (isAgency ? '' : user?.name || ''),
     commercialName: existingProfile?.commercialName || '',
     entityType:
-      existingProfile?.entityType ||
-      (user?.role === 'agencia' ? 'agencia' : 'club'),
+      getProfileEntityType(user?.role || 'club', existingProfile?.entityType || 'club'),
     city: existingProfile?.city || '',
     description: existingProfile?.description || '',
     logo: existingProfile?.logo || '',
   })
+  const [isPublic, setIsPublic] = useState(existingProfile?.isPublic ?? !isAgency)
 
   const clubPreviewName = useMemo(
     () => formData.commercialName.trim() || formData.legalName.trim() || 'tu-club',
@@ -46,7 +49,7 @@ export default function ClubAgencyProfileOnboarding({
     event.preventDefault()
 
     if (!formData.legalName.trim()) {
-      toast.error('El nombre del club es obligatorio')
+      toast.error(isAgency ? 'El nombre de la agencia es obligatorio' : 'El nombre del club es obligatorio')
       return
     }
 
@@ -66,26 +69,26 @@ export default function ClubAgencyProfileOnboarding({
         body: JSON.stringify({
           legalName: formData.legalName.trim(),
           commercialName: formData.commercialName.trim() || null,
-          entityType: formData.entityType,
+          entityType: isAgency ? 'agencia' : formData.entityType,
           city: formData.city.trim(),
           description: formData.description.trim() || null,
           logo: formData.logo.trim() || null,
           contactEmail: user?.email || null,
-          isPublic: true,
+          isPublic,
         }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || 'No se pudo guardar el perfil del club')
+        throw new Error(data.message || 'No se pudo guardar el perfil')
       }
 
       toast.success('Perfil básico creado', {
-        description: 'Ya puedes usar WorkHoops como club y completar el resto después.',
+        description: isAgency ? 'Ya puedes buscar talento y completar tu agencia después.' : 'Ya puedes usar WorkHoops como club y completar el resto después.',
       })
 
-      router.push('/publicar?onboarding=1')
+      router.push(isAgency ? '/dashboard' : '/publicar?onboarding=1')
       router.refresh()
     } catch (error) {
       console.error('Error saving club onboarding:', error)
@@ -104,12 +107,12 @@ export default function ClubAgencyProfileOnboarding({
         <CardHeader className="space-y-4">
           <div className="inline-flex w-fit items-center gap-2 rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-800">
             <Building className="h-4 w-4" />
-            <span>Onboarding rápido para clubes</span>
+            <span>{isAgency ? 'Onboarding rápido para agencias' : 'Onboarding rápido para clubes'}</span>
           </div>
           <div>
-            <CardTitle className="text-3xl text-gray-900">Activa tu club en menos de 2 minutos</CardTitle>
+            <CardTitle className="text-3xl text-gray-900">{isAgency ? 'Activa tu agencia en menos de 2 minutos' : 'Activa tu club en menos de 2 minutos'}</CardTitle>
             <CardDescription className="mt-2 text-base">
-              Solo necesitamos lo mínimo para crear tu página pública y empezar a recibir interés.
+              {isAgency ? 'Solo necesitamos lo mínimo para crear tu perfil de agencia y empezar a buscar talento.' : 'Solo necesitamos lo mínimo para crear tu página pública y empezar a recibir interés.'}
               El resto lo podrás completar después desde tu panel.
             </CardDescription>
           </div>
@@ -119,14 +122,14 @@ export default function ClubAgencyProfileOnboarding({
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label htmlFor="legalName">Nombre del club *</Label>
+                <Label htmlFor="legalName">{isAgency ? 'Nombre de la agencia *' : 'Nombre del club *'}</Label>
                 <Input
                   id="legalName"
                   value={formData.legalName}
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, legalName: e.target.value }))
                   }
-                  placeholder="Escola Pia Sabadell"
+                  placeholder={isAgency ? 'CRM Basketball Agency' : 'Escola Pia Sabadell'}
                   required
                 />
               </div>
@@ -149,6 +152,7 @@ export default function ClubAgencyProfileOnboarding({
                 <Label htmlFor="entityType">Tipo de entidad *</Label>
                 <Select
                   value={formData.entityType}
+                  disabled={isAgency}
                   onValueChange={(value) =>
                     setFormData((prev) => ({ ...prev, entityType: value }))
                   }
@@ -188,7 +192,7 @@ export default function ClubAgencyProfileOnboarding({
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, description: e.target.value }))
                 }
-                placeholder="Ej: Club de baloncesto fundado en 2003 en Sabadell. Competimos en 3ª FEB y buscamos jugadores con perfil competitivo. Cuéntanos vuestra historia aquí — las plazas disponibles las publicáis como ofertas por separado."
+                placeholder={isAgency ? 'Describe tu agencia y el tipo de talento con el que trabajas.' : 'Ej: Club de baloncesto fundado en 2003 en Sabadell. Competimos en 3ª FEB y buscamos jugadores con perfil competitivo. Cuéntanos vuestra historia aquí — las plazas disponibles las publicáis como ofertas por separado.'}
               />
             </div>
 
@@ -205,10 +209,18 @@ export default function ClubAgencyProfileOnboarding({
               />
             </div>
 
+            <div className="flex items-start gap-3 rounded-xl border bg-gray-50 p-4">
+              <Checkbox id="isPublic" checked={isPublic} onCheckedChange={(checked) => setIsPublic(checked === true)} />
+              <div>
+                <Label htmlFor="isPublic">Publicar mi perfil</Label>
+                <p className="mt-1 text-sm text-gray-600">{isAgency ? 'Tu agencia no aparecerá públicamente hasta que actives esta opción.' : 'Tu página de club será visible para otros usuarios si activas esta opción.'}</p>
+              </div>
+            </div>
+
             <div className="rounded-xl border bg-gray-50 p-4 text-sm text-gray-600">
               <p className="font-medium text-gray-900">Vista previa de la URL pública</p>
               <p className="mt-1">
-                Se generará automáticamente a partir del nombre del club. Si vienes de un slug
+                Se generará automáticamente a partir del nombre {isAgency ? 'de la agencia' : 'del club'}. Si vienes de un slug
                 provisional como <code>club-3</code>, se corregirá al guardar.
               </p>
               <p className="mt-2 font-medium text-workhoops-accent">/club/{clubPreviewName}</p>
@@ -226,7 +238,7 @@ export default function ClubAgencyProfileOnboarding({
                   </>
                 ) : (
                   <>
-                    Crear página del club
+                    {isAgency ? 'Crear perfil de agencia' : 'Crear página del club'}
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </>
                 )}

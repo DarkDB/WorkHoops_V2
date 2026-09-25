@@ -11,6 +11,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, Mail, Lock, User, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { Navbar } from '@/components/shared/Navbar'
+import { getRegistrationPayload, getRegistrationRole } from '@/lib/agency-identity'
 
 const roleCards = [
   {
@@ -28,9 +29,14 @@ const roleCards = [
   {
     value: 'club',
     emoji: '🏟️',
-    label: 'Club / Agencia',
+    label: 'Club',
     sublabel: 'Quiero fichar talento',
-    fullWidth: true,
+  },
+  {
+    value: 'agencia',
+    emoji: '🤝',
+    label: 'Agencia',
+    sublabel: 'Represento talento',
   },
 ]
 
@@ -72,11 +78,12 @@ function RegisterContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const roleFromUrl = searchParams?.get('role') ?? searchParams?.get('rol') ?? ''
+  const organizationRoleFromUrl = roleFromUrl === 'club' || roleFromUrl === 'agencia'
 
   useEffect(() => {
-    if (roleFromUrl && ['jugador', 'entrenador', 'club', 'agencia'].includes(roleFromUrl)) {
-      const normalizedRole = roleFromUrl === 'agencia' ? 'club' : roleFromUrl
-      setFormData(prev => ({ ...prev, role: normalizedRole }))
+    const role = getRegistrationRole(roleFromUrl)
+    if (role) {
+      setFormData(prev => ({ ...prev, role }))
     }
   }, [roleFromUrl])
 
@@ -100,7 +107,8 @@ function RegisterContent() {
     setIsLoading(true)
     setError('')
 
-    if (!formData.role) {
+    const selectedRole = getRegistrationRole(formData.role)
+    if (!selectedRole) {
       setError('Por favor, selecciona tu rol')
       setIsLoading(false)
       return
@@ -122,13 +130,7 @@ function RegisterContent() {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          role: formData.role,
-          planType: 'free_amateur',
-        }),
+        body: JSON.stringify(getRegistrationPayload(formData.name, formData.email, formData.password, selectedRole)),
       })
 
       const data = await response.json()
@@ -146,7 +148,7 @@ function RegisterContent() {
       if (result?.error) {
         setError('Cuenta creada, pero error al iniciar sesión. Intenta iniciar sesión manualmente.')
       } else {
-        if (formData.role === 'club') {
+        if (formData.role === 'club' || formData.role === 'agencia') {
           router.push('/profile/complete')
         } else {
           router.push('/dashboard')
@@ -221,8 +223,8 @@ function RegisterContent() {
 
               {step === 1 && (
                 <>
-                  {/* Google — CTA principal */}
-                  <Button
+                  {/* Google creates a player account; organization registration uses email. */}
+                  {!organizationRoleFromUrl && <Button
                     type="button"
                     variant="outline"
                     onClick={handleGoogleRegister}
@@ -231,17 +233,17 @@ function RegisterContent() {
                   >
                     <GoogleIcon />
                     Continuar con Google
-                  </Button>
+                  </Button>}
 
                   {/* Separador */}
-                  <div className="relative">
+                  {!organizationRoleFromUrl && <div className="relative">
                     <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t border-gray-200" />
                     </div>
                     <div className="relative flex justify-center text-xs">
                       <span className="bg-white px-3 text-gray-400">o continúa con email</span>
                     </div>
-                  </div>
+                  </div>}
 
                   {/* Formulario solo email */}
                   <form onSubmit={handleStep1Submit} className="space-y-4">
@@ -321,7 +323,7 @@ function RegisterContent() {
                   <div className="space-y-2">
                     <Label>¿Cuál es tu rol?</Label>
                     <div className="grid grid-cols-2 gap-3">
-                      {roleCards.filter(r => !r.fullWidth).map((role) => (
+                      {roleCards.map((role) => (
                         <button
                           key={role.value}
                           type="button"
@@ -335,25 +337,6 @@ function RegisterContent() {
                           <span className="text-2xl mb-1">{role.emoji}</span>
                           <span className="font-semibold text-sm text-workhoops-primary">{role.label}</span>
                           <span className="text-xs text-gray-500">{role.sublabel}</span>
-                        </button>
-                      ))}
-                      {/* Club card full width */}
-                      {roleCards.filter(r => r.fullWidth).map((role) => (
-                        <button
-                          key={role.value}
-                          type="button"
-                          onClick={() => handleInputChange('role', role.value)}
-                          className={`col-span-2 flex items-center gap-3 p-3 rounded-lg border-2 text-left transition-all ${
-                            formData.role === role.value
-                              ? 'border-workhoops-accent bg-orange-50'
-                              : 'border-gray-200 hover:border-gray-300 bg-white'
-                          }`}
-                        >
-                          <span className="text-2xl">{role.emoji}</span>
-                          <div>
-                            <span className="font-semibold text-sm text-workhoops-primary block">{role.label}</span>
-                            <span className="text-xs text-gray-500">{role.sublabel}</span>
-                          </div>
                         </button>
                       ))}
                     </div>

@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     const profileCompletionPercentage = calculateClubProfileCompletion({
       legalName: validatedData.legalName || '',
-      entityType: validatedData.entityType || '',
+      entityType: session.user.role === 'agencia' ? 'agencia' : validatedData.entityType || '',
       city: validatedData.city || '',
       description: validatedData.description || null,
       logo: validatedData.logo || null
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     const profileData = {
       legalName: validatedData.legalName || '',
       commercialName: validatedData.commercialName || null,
-      entityType: validatedData.entityType || '',
+      entityType: session.user.role === 'agencia' ? 'agencia' : validatedData.entityType || '',
       foundedYear: validatedData.foundedYear || null,
       country: validatedData.country || 'España',
       province: validatedData.province || null,
@@ -186,6 +186,7 @@ export async function POST(request: NextRequest) {
         data: {
           userId: session.user.id,
           ...profileData,
+          isPublic: session.user.role !== 'agencia',
           slug
         }
       })

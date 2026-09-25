@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { generateUniqueClubSlug, shouldRegenerateClubSlug } from '@/lib/club-slug'
 import { calculateClubProfileCompletion } from '@/lib/club-profile-completion'
 import { z } from 'zod'
+import { getProfileEntityType, resolveProfileVisibility } from '@/lib/agency-identity'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,7 +36,7 @@ const clubAgencyProfileSchema = z.object({
   contactPreference: z.string().optional().nullable(),
   facilityPhotos: z.string().optional().nullable(), // JSON
   institutionalVideo: z.string().url().optional().nullable(),
-  isPublic: z.boolean().default(true),
+  isPublic: z.boolean().optional(),
 })
 
 // GET - Fetch club/agency profile
@@ -110,10 +111,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = clubAgencyProfileSchema.parse(body)
 
+    if (getProfileEntityType(session.user.role, validatedData.entityType) !== validatedData.entityType) {
+      return NextResponse.json({ message: 'El perfil de una agencia debe tener tipo agencia' }, { status: 400 })
+    }
+
     // Check if profile already exists
     const existingProfile = await prisma.clubAgencyProfile.findUnique({
       where: { userId: session.user.id }
     })
+    const isPublic = resolveProfileVisibility(session.user.role, validatedData.isPublic, existingProfile?.isPublic)
 
     let profile
 
@@ -142,6 +148,7 @@ export async function POST(request: NextRequest) {
         where: { userId: session.user.id },
         data: {
           ...(cleanedData as any),
+          isPublic,
           profileCompletionPercentage,
           slug
         }
@@ -152,6 +159,7 @@ export async function POST(request: NextRequest) {
       profile = await prisma.clubAgencyProfile.create({
         data: {
           ...cleanedData,
+          isPublic,
           profileCompletionPercentage,
           slug,
           userId: session.user.id
