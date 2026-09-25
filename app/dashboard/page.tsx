@@ -244,6 +244,7 @@ export default async function DashboardPage() {
         prisma.talentInvitation.count({
           where: {
             clubUserId: user.id,
+            talentProfile: { isPublic: true },
             status: {
               in: ['SENT', 'VIEWED']
             }
@@ -252,6 +253,7 @@ export default async function DashboardPage() {
         prisma.talentShortlist.count({
           where: {
             clubUserId: user.id,
+            talentProfile: { isPublic: true },
             status: {
               in: ['SAVED', 'CONTACTED']
             }
@@ -276,6 +278,7 @@ export default async function DashboardPage() {
         prisma.talentInvitation.findMany({
           where: {
             clubUserId: user.id,
+            talentProfile: { isPublic: true },
             status: {
               in: ['SENT', 'VIEWED']
             }
@@ -300,6 +303,7 @@ export default async function DashboardPage() {
         prisma.talentShortlist.findMany({
           where: {
             clubUserId: user.id,
+            talentProfile: { isPublic: true },
             status: {
               in: ['SAVED', 'CONTACTED']
             }

@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { createNotification } from '@/lib/notifications'
 import { trackFunnelEvent } from '@/lib/funnel-events'
+import { isPublicPlayerProfile } from '@/lib/agency-pilot-safety'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,12 +33,11 @@ export async function GET(request: NextRequest) {
 
     const profileId = request.nextUrl.searchParams.get('profileId')
     if (profileId) {
-      const item = await prisma.talentShortlist.findUnique({
+      const item = await prisma.talentShortlist.findFirst({
         where: {
-          clubUserId_talentProfileId: {
-            clubUserId: session.user.id,
-            talentProfileId: profileId
-          }
+          clubUserId: session.user.id,
+          talentProfileId: profileId,
+          talentProfile: { isPublic: true }
         },
         include: {
           invitations: {
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     }
 
     const items = await prisma.talentShortlist.findMany({
-      where: { clubUserId: session.user.id },
+      where: { clubUserId: session.user.id, talentProfile: { isPublic: true } },
       include: {
         talentProfile: {
           select: {
@@ -105,11 +105,12 @@ export async function POST(request: NextRequest) {
       select: {
         id: true,
         role: true,
+        isPublic: true,
         userId: true
       }
     })
 
-    if (!talentProfile || talentProfile.role !== 'jugador') {
+    if (!isPublicPlayerProfile(talentProfile)) {
       return NextResponse.json({ message: 'Jugador no encontrado' }, { status: 404 })
     }
 
@@ -186,6 +187,14 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json()
     const { profileId, status } = shortlistUpdateSchema.parse(body)
 
+    const talentProfile = await prisma.talentProfile.findUnique({
+      where: { id: profileId },
+      select: { role: true, isPublic: true }
+    })
+    if (!isPublicPlayerProfile(talentProfile)) {
+      return NextResponse.json({ message: 'Jugador no encontrado' }, { status: 404 })
+    }
+
     const item = await prisma.talentShortlist.update({
       where: {
         clubUserId_talentProfileId: {
@@ -224,6 +233,14 @@ export async function DELETE(request: NextRequest) {
 
     const body = await request.json()
     const { profileId } = shortlistSchema.parse(body)
+
+    const talentProfile = await prisma.talentProfile.findUnique({
+      where: { id: profileId },
+      select: { role: true, isPublic: true }
+    })
+    if (!isPublicPlayerProfile(talentProfile)) {
+      return NextResponse.json({ message: 'Jugador no encontrado' }, { status: 404 })
+    }
 
     await prisma.talentShortlist.delete({
       where: {

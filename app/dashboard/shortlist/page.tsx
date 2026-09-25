@@ -20,7 +20,7 @@ export default async function ClubShortlistPage() {
   }
 
   const items = await prisma.talentShortlist.findMany({
-    where: { clubUserId: session.user.id },
+    where: { clubUserId: session.user.id, talentProfile: { isPublic: true } },
     include: {
       talentProfile: {
         select: {
