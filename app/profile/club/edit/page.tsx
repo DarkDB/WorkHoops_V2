@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
+import { getProfileEntityType } from '@/lib/agency-identity'
 import { Loader2, Save, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -35,6 +37,8 @@ export default function EditClubProfilePage() {
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [formData, setFormData] = useState(defaultFormData)
+  const [isPublic, setIsPublic] = useState<boolean | null>(null)
+  const isAgency = session?.user.role === 'agencia'
   const hasLoadedProfileRef = useRef(false)
 
   useEffect(() => {
@@ -72,7 +76,7 @@ export default function EditClubProfilePage() {
       setFormData({
         legalName: data.legalName || '',
         commercialName: data.commercialName || '',
-        entityType: data.entityType || 'club',
+        entityType: getProfileEntityType(session?.user.role || 'club', data.entityType || 'club'),
         city: data.city || '',
         description: data.description || '',
         logo: data.logo || '',
@@ -82,6 +86,7 @@ export default function EditClubProfilePage() {
         linkedinUrl: data.linkedinUrl || '',
         youtubeUrl: data.youtubeUrl || ''
       })
+      setIsPublic(data.isPublic === true)
     } catch (error) {
       console.error('Error loading club profile:', error)
       toast.error('No se pudo cargar el perfil')
@@ -114,7 +119,8 @@ export default function EditClubProfilePage() {
         body: JSON.stringify({
           legalName: formData.legalName,
           commercialName: formData.commercialName || null,
-          entityType: formData.entityType,
+          entityType: isAgency ? 'agencia' : formData.entityType,
+          ...(isPublic !== null ? { isPublic } : {}),
           city: formData.city,
           description: formData.description || null,
           logo: formData.logo || null,
@@ -166,9 +172,9 @@ export default function EditClubProfilePage() {
           </Button>
         </Link>
 
-        <h1 className="text-3xl font-bold text-gray-900">Editar perfil de club</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{isAgency ? 'Editar perfil de agencia' : 'Editar perfil de club'}</h1>
         <p className="text-gray-600 mt-2 mb-8">
-          Esta información se mostrará en tu página pública del club.
+          {isPublic ? `Esta información se mostrará en tu página pública ${isAgency ? 'de agencia' : 'del club'}.` : 'Tu perfil es privado hasta que decidas publicarlo.'}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -201,7 +207,7 @@ export default function EditClubProfilePage() {
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="entityType">Tipo de entidad *</Label>
-                  <Select value={formData.entityType} onValueChange={(value) => setFormData((prev) => ({ ...prev, entityType: value }))}>
+                  <Select value={formData.entityType} disabled={isAgency} onValueChange={(value) => setFormData((prev) => ({ ...prev, entityType: value }))}>
                     <SelectTrigger id="entityType">
                       <SelectValue />
                     </SelectTrigger>
@@ -242,7 +248,7 @@ export default function EditClubProfilePage() {
                   rows={6}
                   value={formData.description}
                   onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Ej: Club fundado en 2003 en Madrid. Competimos en 2ª FEB y apostamos por jugadores jóvenes con proyección. Cuéntanos vuestra historia aquí — las plazas disponibles se publican como ofertas por separado."
+                  placeholder={isAgency ? 'Describe tu agencia y el talento que representas.' : 'Ej: Club fundado en 2003 en Madrid. Competimos en 2ª FEB y apostamos por jugadores jóvenes con proyección. Cuéntanos vuestra historia aquí — las plazas disponibles se publican como ofertas por separado.'}
                 />
               </div>
             </CardContent>
@@ -251,7 +257,7 @@ export default function EditClubProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle>Redes y enlaces</CardTitle>
-              <CardDescription>Opcional, para mejorar visibilidad de tu club.</CardDescription>
+              <CardDescription>Opcional, para mejorar visibilidad de tu {isAgency ? 'agencia' : 'club'}.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -308,6 +314,14 @@ export default function EditClubProfilePage() {
               </div>
             </CardContent>
           </Card>
+
+          <div className="flex items-start gap-3 rounded-xl border bg-white p-4">
+            <Checkbox id="isPublic" checked={isPublic === true} onCheckedChange={(checked) => setIsPublic(checked === true)} />
+            <div>
+              <Label htmlFor="isPublic">Publicar mi perfil</Label>
+              <p className="mt-1 text-sm text-gray-600">Desactívalo para ocultar tu página del directorio y del acceso público.</p>
+            </div>
+          </div>
 
           <div className="flex gap-3">
             <Button type="submit" className="bg-workhoops-accent hover:bg-orange-600" disabled={loading}>

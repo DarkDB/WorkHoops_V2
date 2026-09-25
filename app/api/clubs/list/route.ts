@@ -12,12 +12,11 @@ export async function GET(request: NextRequest) {
 
     const clubs = await prisma.user.findMany({
       where: {
-        role: {
-          in: ['club', 'agencia']
-        },
+        role: 'club',
         clubAgencyProfile: {
           is: {
             isPublic: true,
+            entityType: { not: 'agencia' },
             slug: {
               not: null
             },
