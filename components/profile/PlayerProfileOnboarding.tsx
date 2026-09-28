@@ -22,6 +22,7 @@ import TechnicalDataStep from '@/components/onboarding/TechnicalDataStep'
 import SkillsStep from '@/components/onboarding/SkillsStep'
 import PlayingStyleStep from '@/components/onboarding/PlayingStyleStep'
 import MultimediaStep from '@/components/onboarding/MultimediaStep'
+import { getTechnicalStepErrors, TechnicalErrors, TechnicalField } from '@/lib/onboarding-technical-validation'
 
 interface User {
   id: string
@@ -40,6 +41,7 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
   const [currentStep, setCurrentStep] = useState(1)
   const [isSaving, setIsSaving] = useState(false)
   const [canSkip, setCanSkip] = useState(false)
+  const [technicalErrors, setTechnicalErrors] = useState<TechnicalErrors>({})
   
   // Form data state
   const [formData, setFormData] = useState({
@@ -186,17 +188,6 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
     return ((currentStep - 1) / (steps.length - 1)) * 100
   }
 
-  // Validar campos obligatorios del paso actual
-  const validateCurrentStep = () => {
-    if (currentStep === 1) {
-      // Perfil mínimo visible para reclutamiento: nombre, posición, ciudad, altura
-      const required = ['fullName', 'city', 'position', 'height']
-      return required.every(field => formData[field as keyof typeof formData])
-    }
-    // Pasos 2, 3 y 4 son opcionales
-    return true
-  }
-
   // Guardar progreso automáticamente
   const saveProgress = async (showToast = true) => {
     setIsSaving(true)
@@ -214,7 +205,10 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
       })
 
       if (!response.ok) {
-        throw new Error('Error al guardar')
+        const result = await response.json().catch(() => null)
+        throw new Error(response.status === 400 && typeof result?.message === 'string'
+          ? result.message
+          : 'No se pudo guardar el progreso')
       }
 
       if (showToast) {
@@ -222,13 +216,13 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
           description: 'Tus datos se han guardado correctamente'
         })
       }
+      return true
     } catch (error) {
       console.error('Error saving progress:', error)
-      if (showToast) {
-        toast.error('Error', {
-          description: 'No se pudo guardar el progreso'
-        })
-      }
+      toast.error('Error al guardar', {
+        description: error instanceof Error ? error.message : 'No se pudo guardar el progreso'
+      })
+      return false
     } finally {
       setIsSaving(false)
     }
@@ -236,14 +230,19 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
 
   // Ir al siguiente paso
   const handleNext = async () => {
-    if (!validateCurrentStep()) {
-      toast.error('Campos requeridos', {
-        description: 'Por favor completa todos los campos obligatorios'
-      })
-      return
+    if (currentStep === 1) {
+      const errors = getTechnicalStepErrors(formData)
+      setTechnicalErrors(errors)
+      const firstInvalid = (Object.keys(errors) as TechnicalField[])[0]
+      if (firstInvalid) {
+        const field = document.getElementById(firstInvalid)
+        field?.focus({ preventScroll: true })
+        field?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        return
+      }
     }
 
-    await saveProgress(false)
+    if (!await saveProgress(false)) return
     
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1)
@@ -259,13 +258,13 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
 
   // Saltar y guardar
   const handleSkipAndSave = async () => {
-    await saveProgress()
+    if (!await saveProgress()) return
     router.push('/dashboard')
   }
 
   // Finalizar onboarding
   const handleFinish = async () => {
-    await saveProgress(false)
+    if (!await saveProgress(false)) return
     
     toast.success('¡Perfil completado!', {
       description: 'Tu perfil está listo y visible para los clubs'
@@ -277,6 +276,11 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
   // Actualizar formData
   const updateFormData = (updates: Partial<typeof formData>) => {
     setFormData(prev => ({ ...prev, ...updates }))
+    setTechnicalErrors(prev => {
+      const next = { ...prev }
+      for (const field of Object.keys(updates) as TechnicalField[]) delete next[field]
+      return next
+    })
   }
 
   // Determinar si puede saltar
@@ -364,6 +368,7 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
             <TechnicalDataStep 
               formData={formData} 
               updateFormData={updateFormData}
+              errors={technicalErrors}
             />
           )}
           {currentStep === 2 && (
@@ -417,7 +422,7 @@ export default function PlayerProfileOnboarding({ user, existingProfile }: Playe
           {currentStep < steps.length ? (
             <Button
               onClick={handleNext}
-              disabled={isSaving || !validateCurrentStep()}
+              disabled={isSaving}
               className="bg-workhoops-accent hover:bg-orange-600"
             >
               Siguiente

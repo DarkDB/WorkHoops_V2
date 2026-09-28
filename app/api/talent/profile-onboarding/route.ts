@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { trackFunnelEvent } from '@/lib/funnel-events'
 import { calculateTalentProfileCompletion } from '@/lib/profile-completion'
 import { normalizeOptionalNumber, PHYSICAL_LIMITS, validateNumberRange } from '@/lib/physical-validations'
+import { parseWingspanCm, WINGSPAN_FORMAT_ERROR } from '@/lib/onboarding-technical-validation'
 import { COUNTRY_OPTIONS } from '@/lib/recruiting-preferences'
 
 // Esquema de validación para el onboarding
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
     // Convertir valores numéricos
     const heightCm = normalizeOptionalNumber(validatedData.height)
     const weightKg = normalizeOptionalNumber(validatedData.weight)
-    const wingspanCm = normalizeOptionalNumber(validatedData.wingspan)
+    const wingspanCm = parseWingspanCm(validatedData.wingspan)
     const weeklyCommitmentNum = normalizeOptionalNumber(validatedData.weeklyCommitment)
     const targetCountries = Array.from(new Set(validatedData.targetCountries || []))
 
@@ -347,7 +348,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error in profile-onboarding:', error)
 
-    if (error instanceof Error && error.message.includes('debe estar entre')) {
+    if (error instanceof Error && (error.message.includes('debe estar entre') || error.message === WINGSPAN_FORMAT_ERROR)) {
       return NextResponse.json({
         error: 'Datos inválidos',
         message: error.message
