@@ -4,13 +4,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { EU_PASSPORT_OPTIONS } from '@/lib/recruiting-preferences'
+import { TechnicalErrors } from '@/lib/onboarding-technical-validation'
 
 interface TechnicalDataStepProps {
   formData: any
   updateFormData: (data: any) => void
+  errors: TechnicalErrors
 }
 
-export default function TechnicalDataStep({ formData, updateFormData }: TechnicalDataStepProps) {
+export default function TechnicalDataStep({ formData, updateFormData, errors }: TechnicalDataStepProps) {
   const positions = [
     { value: 'Base', label: 'Base (Point Guard)' },
     { value: 'Escolta', label: 'Escolta (Shooting Guard)' },
@@ -58,7 +60,10 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               onChange={(e) => updateFormData({ fullName: e.target.value })}
               placeholder="Ej: Juan García López"
               required
+              aria-invalid={Boolean(errors.fullName)}
+              aria-describedby={errors.fullName ? 'fullName-error' : undefined}
             />
+            {errors.fullName && <p id="fullName-error" role="alert" className="mt-1 text-sm text-red-600">{errors.fullName}</p>}
           </div>
           
           <div>
@@ -79,7 +84,10 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               onChange={(e) => updateFormData({ city: e.target.value })}
               placeholder="Ej: Madrid"
               required
+              aria-invalid={Boolean(errors.city)}
+              aria-describedby={errors.city ? 'city-error' : undefined}
             />
+            {errors.city && <p id="city-error" role="alert" className="mt-1 text-sm text-red-600">{errors.city}</p>}
           </div>
 
           <div>
@@ -131,7 +139,7 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               value={formData.position}
               onValueChange={(value) => updateFormData({ position: value })}
             >
-              <SelectTrigger>
+              <SelectTrigger id="position" aria-invalid={Boolean(errors.position)} aria-describedby={errors.position ? 'position-error' : undefined}>
                 <SelectValue placeholder="Selecciona tu posición" />
               </SelectTrigger>
               <SelectContent>
@@ -142,6 +150,7 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
                 ))}
               </SelectContent>
             </Select>
+            {errors.position && <p id="position-error" role="alert" className="mt-1 text-sm text-red-600">{errors.position}</p>}
           </div>
 
           <div>
@@ -175,7 +184,10 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               min="140"
               max="240"
               required
+              aria-invalid={Boolean(errors.height)}
+              aria-describedby={errors.height ? 'height-error' : undefined}
             />
+            {errors.height && <p id="height-error" role="alert" className="mt-1 text-sm text-red-600">{errors.height}</p>}
           </div>
 
           <div>
@@ -188,20 +200,26 @@ export default function TechnicalDataStep({ formData, updateFormData }: Technica
               placeholder="Ej: 80"
               min="40"
               max="180"
+              aria-invalid={Boolean(errors.weight)}
+              aria-describedby={errors.weight ? 'weight-error' : undefined}
             />
+            {errors.weight && <p id="weight-error" role="alert" className="mt-1 text-sm text-red-600">{errors.weight}</p>}
           </div>
 
           <div>
             <Label htmlFor="wingspan">Envergadura (cm)</Label>
             <Input
               id="wingspan"
-              type="number"
+              type="text"
+              inputMode="numeric"
               value={formData.wingspan}
               onChange={(e) => updateFormData({ wingspan: e.target.value })}
               placeholder="Ej: 190"
-              min="140"
-              max="260"
+              aria-invalid={Boolean(errors.wingspan)}
+              aria-describedby={errors.wingspan ? 'wingspan-error' : 'wingspan-hint'}
             />
+            <p id="wingspan-hint" className="mt-1 text-xs text-gray-600">Introduce centímetros, sin comas ni apóstrofes (ej.: 190).</p>
+            {errors.wingspan && <p id="wingspan-error" role="alert" className="mt-1 text-sm text-red-600">{errors.wingspan}</p>}
           </div>
 
           <div>
