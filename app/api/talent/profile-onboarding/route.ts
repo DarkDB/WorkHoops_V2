@@ -195,8 +195,8 @@ export async function POST(request: NextRequest) {
           fullGameUrl: validatedData.fullGameUrl || null,
           socialUrl: validatedData.socialUrl || null,
           photoUrls: validatedData.photoUrls ? JSON.stringify(validatedData.photoUrls) : null,
-          profileCompletionPercentage,
-          isPublic: true  // Asegurar que el perfil sea público
+          // Editing profile data must not change its publication state.
+          profileCompletionPercentage
         }
       })
 
@@ -290,7 +290,7 @@ export async function POST(request: NextRequest) {
           socialUrl: validatedData.socialUrl || null,
           photoUrls: validatedData.photoUrls ? JSON.stringify(validatedData.photoUrls) : null,
           profileCompletionPercentage,
-          isPublic: true  // Asegurar que el perfil sea público
+          isPublic: true  // Preserve the existing new-profile publication behavior.
         }
       })
 

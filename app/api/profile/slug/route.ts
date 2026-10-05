@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { generateSlug } from '@/lib/slug'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const userId = searchParams.get('userId')
@@ -10,32 +12,30 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'userId is required' }, { status: 400 })
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: {
-      talentProfile: { select: { fullName: true } },
-      coachProfile: { select: { fullName: true } }
-    }
+  const talent = await prisma.talentProfile.findFirst({
+    where: { userId, isPublic: true },
+    select: { fullName: true, userId: true }
   })
-
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
-
-  const fullName = user.talentProfile?.fullName || user.coachProfile?.fullName || user.name || ''
-  const baseSlug = generateSlug(fullName)
+  const coach = talent ? null : await prisma.coachProfile.findFirst({
+    where: { userId, isPublic: true },
+    select: { fullName: true, userId: true }
+  })
+  const profile = talent || coach
+  const baseSlug = profile ? generateSlug(profile.fullName) : ''
 
   if (!baseSlug) {
-    return NextResponse.json({ error: 'Cannot generate slug for this user' }, { status: 400 })
+    return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
   }
 
   // Check for slug collisions: find all talent/coach profiles whose name generates the same slug
   const [allTalent, allCoach] = await Promise.all([
     prisma.talentProfile.findMany({
-      include: { user: { select: { id: true } } }
+      where: { isPublic: true },
+      select: { fullName: true, userId: true }
     }),
     prisma.coachProfile.findMany({
-      include: { user: { select: { id: true } } }
+      where: { isPublic: true },
+      select: { fullName: true, userId: true }
     })
   ])
 
@@ -52,11 +52,11 @@ export async function GET(request: NextRequest) {
     ? `${baseSlug}-${userId.slice(-6)}`
     : baseSlug
 
-  const profileType = user.talentProfile ? 'jugador' : user.coachProfile ? 'entrenador' : null
+  const profileType = talent ? 'jugador' : 'entrenador'
 
   return NextResponse.json({
     slug,
     profileType,
-    publicUrl: profileType ? `/${profileType}/${slug}` : null
+    publicUrl: `/${profileType}/${slug}`
   })
 }

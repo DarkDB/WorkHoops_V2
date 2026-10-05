@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { generateSlug } from '@/lib/slug'
+import {
+  publicPlayerSelect,
+  publicCoachSelect,
+  toPublicPlayerProfile,
+  toPublicCoachProfile
+} from '@/lib/public-talent-profile'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(
   request: NextRequest,
@@ -10,12 +18,8 @@ export async function GET(
 
   // Search TalentProfiles
   const talentProfiles = await prisma.talentProfile.findMany({
-    include: {
-      user: {
-        select: { id: true, name: true, image: true, planType: true }
-      },
-      playerSkills: true
-    }
+    where: { isPublic: true },
+    select: publicPlayerSelect
   })
 
   const talentMatch = talentProfiles.find(p => {
@@ -25,17 +29,15 @@ export async function GET(
     return byFullName || byUserName || withId
   })
 
-  if (talentMatch) {
-    return NextResponse.json({ type: 'talent', profile: talentMatch })
+  const publicTalent = talentMatch ? toPublicPlayerProfile(talentMatch) : null
+  if (publicTalent) {
+    return NextResponse.json({ type: 'talent', profile: publicTalent })
   }
 
   // Search CoachProfiles
   const coachProfiles = await prisma.coachProfile.findMany({
-    include: {
-      user: {
-        select: { id: true, name: true, image: true, planType: true }
-      }
-    }
+    where: { isPublic: true },
+    select: publicCoachSelect
   })
 
   const coachMatch = coachProfiles.find(p => {
@@ -45,8 +47,9 @@ export async function GET(
     return byFullName || byUserName || withId
   })
 
-  if (coachMatch) {
-    return NextResponse.json({ type: 'coach', profile: coachMatch })
+  const publicCoach = coachMatch ? toPublicCoachProfile(coachMatch) : null
+  if (publicCoach) {
+    return NextResponse.json({ type: 'coach', profile: publicCoach })
   }
 
   return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
