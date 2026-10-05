@@ -1,12 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 
-// Endpoint temporal para corregir perfiles que no son públicos
-export async function POST(request: NextRequest) {
+// Retired utility: bulk publication cannot infer consent from a private profile.
+export async function POST() {
   try {
     const session = await getServerSession(authOptions)
 
@@ -15,29 +14,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
     }
 
-    // Actualizar todos los TalentProfiles para que sean públicos
-    const updatedTalentProfiles = await prisma.talentProfile.updateMany({
-      where: {
-        isPublic: false
-      },
-      data: {
-        isPublic: true
-      }
-    })
-
-    // Actualizar todos los CoachProfiles para que sean públicos (si tienen el campo)
-    // Nota: verificar si CoachProfile tiene campo isPublic
-
     return NextResponse.json({
-      success: true,
-      message: 'Perfiles actualizados correctamente',
-      updatedCount: updatedTalentProfiles.count
-    })
-  } catch (error: any) {
+      error: 'Esta utilidad de publicación masiva ha sido retirada.'
+    }, { status: 410 })
+  } catch (error) {
     console.error('Error fixing public profiles:', error)
     return NextResponse.json({
-      error: 'Error al actualizar perfiles',
-      message: error.message
+      error: 'Error al comprobar autorización'
     }, { status: 500 })
   }
 }

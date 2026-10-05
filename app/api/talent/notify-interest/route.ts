@@ -45,12 +45,13 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { profileId, profileUserId } = notifyInterestSchema.parse(body)
+    const { profileId } = notifyInterestSchema.parse(body)
 
     // Fetch the profile
-    const profile = await prisma.talentProfile.findUnique({
-      where: { id: profileId },
-      include: {
+    const profile = await prisma.talentProfile.findFirst({
+      where: { id: profileId, isPublic: true },
+      select: {
+        fullName: true,
         user: {
           select: {
             planType: true,

@@ -12,8 +12,19 @@ export async function POST(request: NextRequest) {
       profileType: 'jugador' | 'entrenador'
     }
 
-    if (!profileUserId || !profileType) {
+    if (typeof profileUserId !== 'string' || !profileUserId ||
+      (profileType !== 'jugador' && profileType !== 'entrenador')) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    // Visibility must be checked before analytics, owner shortcuts or notifications.
+    const where = { userId: profileUserId, isPublic: true }
+    const profile = profileType === 'jugador'
+      ? await prisma.talentProfile.findFirst({ where, select: { id: true } })
+      : await prisma.coachProfile.findFirst({ where, select: { id: true } })
+
+    if (!profile) {
+      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
 
     // Get session (may be null for anonymous visitors)

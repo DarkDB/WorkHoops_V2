@@ -8,14 +8,10 @@ export const dynamic = 'force-dynamic'
 
 function isAuthorized(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET
-  if (!cronSecret) return true
+  if (!cronSecret?.trim()) return false
 
   const authHeader = request.headers.get('authorization')
-  if (authHeader === `Bearer ${cronSecret}`) return true
-
-  if (request.headers.get('x-vercel-cron') === '1') return true
-
-  return false
+  return authHeader === `Bearer ${cronSecret}`
 }
 
 export async function GET(request: NextRequest) {

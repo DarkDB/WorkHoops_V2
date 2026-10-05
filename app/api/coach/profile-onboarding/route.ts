@@ -147,8 +147,7 @@ export async function POST(request: NextRequest) {
       innovation: validatedData.innovation,
       bio: validatedData.bio || null,
       
-      profileCompletionPercentage,
-      isPublic: true  // Asegurar que el perfil sea público
+      profileCompletionPercentage
     }
 
     if (existingProfile) {
@@ -181,7 +180,8 @@ export async function POST(request: NextRequest) {
       const newProfile = await prisma.coachProfile.create({
         data: {
           userId: session.user.id,
-          ...profileData
+          ...profileData,
+          isPublic: true
         }
       })
 
