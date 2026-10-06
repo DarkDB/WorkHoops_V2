@@ -237,6 +237,20 @@ model TalentProfile {
   relocationPreference        RelocationPreference   @default(NOT_PROVIDED)
   isStudent                   Boolean?
   availabilityConfirmedAt     DateTime?
+  contractStatus              ContractStatus @default(NOT_PROVIDED)
+  contractUntil               DateTime?
+  representationStatus        RepresentationStatus @default(NOT_PROVIDED)
+  representativeName          String?
+  passportEvidenceStatus      EvidenceStatus @default(DECLARED)
+  videoEvidenceStatus         EvidenceStatus @default(DECLARED)
+  fullGameEvidenceStatus      EvidenceStatus @default(DECLARED)
+  passportVerifiedAt          DateTime?
+  passportVerifiedById        String?
+  videoVerifiedAt             DateTime?
+  videoVerifiedById           String?
+  fullGameVerifiedAt          DateTime?
+  fullGameVerifiedById        String?
+  careerEntries               TalentCareerEntry[]
   interestNotifications       InterestNotification[]
   playerSkills                PlayerSkills?
   invitations                 TalentInvitation[]
@@ -247,6 +261,53 @@ model TalentProfile {
   @@index([role])
   @@index([userId], map: "talent_profiles_userid_idx")
   @@map("talent_profiles")
+}
+
+enum ContractStatus {
+  NOT_PROVIDED
+  FREE_AGENT
+  UNDER_CONTRACT
+}
+
+enum RepresentationStatus {
+  NOT_PROVIDED
+  UNREPRESENTED
+  REPRESENTED
+}
+
+enum EvidenceStatus {
+  DECLARED
+  CONTRASTED
+}
+
+model TalentCareerEntry {
+  id                         String @id @default(cuid())
+  talentProfileId            String
+  season                     String
+  clubName                   String
+  country                    String?
+  competition                String?
+  roleDescription            String?
+  notes                      String?
+  isCurrent                  Boolean @default(false)
+  gamesPlayed                Int?
+  minutesPerGame             Float?
+  pointsPerGame              Float?
+  reboundsPerGame            Float?
+  assistsPerGame             Float?
+  experienceEvidenceStatus   EvidenceStatus @default(DECLARED)
+  statsEvidenceStatus        EvidenceStatus @default(DECLARED)
+  experienceVerifiedAt       DateTime?
+  statsVerifiedAt            DateTime?
+  experienceVerifiedById     String?
+  statsVerifiedById          String?
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+  talentProfile              TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([talentProfileId])
+  @@index([season])
+  @@map("talent_career_entries")
 }
 
 model PlayerSkills {

@@ -11,6 +11,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { normalizeOptionalNumber, PHYSICAL_LIMITS, validateNumberRange } from '@/lib/physical-validations'
 import { COUNTRY_OPTIONS } from '@/lib/recruiting-preferences'
+import { getProfileEvidenceGuard, getProfileEvidenceReset } from '@/lib/professional-profile'
 
 export const dynamic = 'force-dynamic'
 
@@ -64,8 +65,12 @@ export async function POST(request: NextRequest) {
         existingProfile.availabilityStatus !== validatedData.availabilityStatus
       // Update existing profile
       const updatedProfile = await prisma.talentProfile.update({
-        where: { userId: session.user.id },
+        where: { userId: session.user.id, ...getProfileEvidenceGuard(existingProfile) },
         data: {
+          ...getProfileEvidenceReset(existingProfile, {
+            euPassportStatus: validatedData.euPassportStatus ?? existingProfile.euPassportStatus,
+            videoUrl: validatedData.video || null
+          }),
           fullName: validatedData.fullName,
           birthDate: new Date(validatedData.birthDate),
           role: validatedData.role,
@@ -137,6 +142,9 @@ export async function POST(request: NextRequest) {
     }, { status: 201 })
 
   } catch (error) {
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2025') {
+      return NextResponse.json({ message: 'El perfil ha cambiado. Recarga e inténtalo de nuevo' }, { status: 409 })
+    }
     if (error instanceof Error && error.message.includes('debe estar entre')) {
       return NextResponse.json(
         { message: error.message },

@@ -10,6 +10,7 @@ import * as completion from '../lib/profile-completion'
 import * as physical from '../lib/physical-validations'
 import * as technical from '../lib/onboarding-technical-validation'
 import * as recruiting from '../lib/recruiting-preferences'
+import * as professional from '../lib/professional-profile'
 
 type Handler = (request: Request, context?: { params: { slug: string } }) => Promise<Response>
 
@@ -150,6 +151,7 @@ function onboardingRoute(existing: typeof publicPlayer | null) {
     } },
     '@/lib/funnel-events': { trackFunnelEvent: async () => undefined },
     '@/lib/profile-completion': completion,
+    '@/lib/professional-profile': professional,
     '@/lib/physical-validations': physical,
     '@/lib/onboarding-technical-validation': technical,
     '@/lib/recruiting-preferences': recruiting
@@ -195,6 +197,57 @@ test('new profiles retain existing public creation behavior without changing ver
   assert.equal(profile.isPublic, true)
   assert.equal(profile.verified, false)
   assert.equal(route.getWrites(), 1)
+})
+
+test('actual onboarding route clears only changed evidence and cannot accept forged evidence', async () => {
+  const original = {
+    ...publicPlayer, passportEvidenceStatus: 'CONTRASTED', videoEvidenceStatus: 'CONTRASTED',
+    fullGameEvidenceStatus: 'CONTRASTED', passportVerifiedById: 'reviewer',
+    videoVerifiedById: 'reviewer', fullGameVerifiedById: 'reviewer'
+  }
+  const route = onboardingRoute(original)
+  const response = await route.handler(editRequest({
+    euPassportStatus: 'NO', videoUrl: publicPlayer.videoUrl,
+    fullGameUrl: 'https://example.com/new-full-game', passportEvidenceStatus: 'CONTRASTED'
+  }))
+  assert.equal(response.status, 200)
+  const { profile } = await response.json()
+  assert.equal(profile.passportEvidenceStatus, 'DECLARED')
+  assert.equal(profile.passportVerifiedById, null)
+  assert.equal(profile.fullGameEvidenceStatus, 'DECLARED')
+  assert.equal(profile.fullGameVerifiedById, null)
+  assert.equal(profile.videoEvidenceStatus, 'CONTRASTED')
+  assert.equal(profile.videoVerifiedById, 'reviewer')
+})
+
+test('actual legacy talent create/edit route invalidates changed video/passport only', async () => {
+  let written: Record<string, unknown> | undefined
+  const original = { ...publicPlayer, passportEvidenceStatus: 'CONTRASTED', videoEvidenceStatus: 'CONTRASTED', fullGameEvidenceStatus: 'CONTRASTED' }
+  const handler = loadRoute('app/api/talent/create/route.ts', {
+    'next-auth/next': { getServerSession: async () => ({ user: { id: publicPlayer.userId, role: 'jugador' } }) },
+    '@/lib/auth': { authOptions: {} },
+    '@/lib/prisma': { prisma: { talentProfile: {
+      findUnique: async () => original,
+      update: async ({ where, data }: { where: { updatedAt: Date }; data: Record<string, unknown> }) => {
+        assert.equal(where.updatedAt, original.updatedAt)
+        written = data
+        return { ...original, ...data }
+      }
+    } } },
+    '@/lib/professional-profile': professional,
+    '@/lib/physical-validations': physical,
+    '@/lib/recruiting-preferences': recruiting
+  }).POST
+  const response = await handler(new Request('https://example.com/api/talent/create', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fullName: 'Public Player', birthDate: '2000-01-01', role: 'jugador', city: 'Paris', video: 'https://example.com/new', euPassportStatus: 'NO', videoEvidenceStatus: 'CONTRASTED' })
+  }))
+  assert.equal(response.status, 200)
+  assert.equal(written!.videoEvidenceStatus, 'DECLARED')
+  assert.equal(written!.passportEvidenceStatus, 'DECLARED')
+  assert.equal('fullGameEvidenceStatus' in written!, false)
+  assert.equal('verified' in written!, false)
+  assert.equal('isPublic' in written!, false)
 })
 
 type SlugProfile = { userId: string, fullName: string, isPublic: boolean | null }
