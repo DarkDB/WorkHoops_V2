@@ -8,6 +8,7 @@ import { calculateTalentProfileCompletion } from '@/lib/profile-completion'
 import { normalizeOptionalNumber, PHYSICAL_LIMITS, validateNumberRange } from '@/lib/physical-validations'
 import { parseWingspanCm, WINGSPAN_FORMAT_ERROR } from '@/lib/onboarding-technical-validation'
 import { COUNTRY_OPTIONS } from '@/lib/recruiting-preferences'
+import { getProfileEvidenceGuard, getProfileEvidenceReset } from '@/lib/professional-profile'
 
 // Esquema de validación para el onboarding
 const profileOnboardingSchema = z.object({
@@ -157,8 +158,13 @@ export async function POST(request: NextRequest) {
 
       // Actualizar perfil existente
       const updatedProfile = await prisma.talentProfile.update({
-        where: { userId: session.user.id },
+        where: { userId: session.user.id, ...getProfileEvidenceGuard(existingProfile) },
         data: {
+          ...getProfileEvidenceReset(existingProfile, {
+            euPassportStatus: validatedData.euPassportStatus ?? existingProfile.euPassportStatus,
+            videoUrl: validatedData.videoUrl || null,
+            fullGameUrl: validatedData.fullGameUrl || null
+          }),
           fullName: validatedData.fullName,
           birthDate: birthDateObj,
           role: session.user.role,
@@ -346,6 +352,9 @@ export async function POST(request: NextRequest) {
       })
     }
   } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return NextResponse.json({ error: 'El perfil ha cambiado. Recarga e inténtalo de nuevo' }, { status: 409 })
+    }
     console.error('Error in profile-onboarding:', error)
 
     if (error instanceof Error && (error.message.includes('debe estar entre') || error.message === WINGSPAN_FORMAT_ERROR)) {
